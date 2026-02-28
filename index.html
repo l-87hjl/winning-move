@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>World Strategy Sandbox</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>World Strategy Sandbox</h1>
+    <p>Explore war, diplomacy, political systems, and nuclear restraint across historical world conditions.</p>
+  </header>
+
+  <main>
+    <section class="panel setup-panel">
+      <h2>Scenario Setup</h2>
+      <div class="grid-2">
+        <label>
+          World Condition
+          <select id="eraSelect">
+            <option value="2026">2026 (Multipolar, high information)</option>
+            <option value="1984">1984 (Cold-war brinkmanship)</option>
+            <option value="1939">1939 (Industrial total war)</option>
+          </select>
+        </label>
+        <label>
+          Human Player
+          <select id="humanSelect">
+            <option value="yes">Included</option>
+            <option value="no">Observer mode (all AI)</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="setup-actions">
+        <button id="startBtn">Start New Game</button>
+        <button id="nextTurnBtn" disabled>Advance Turn</button>
+      </div>
+    </section>
+
+    <section class="layout-grid">
+      <section class="panel map-panel">
+        <h2>World Map (Simplified)</h2>
+        <svg id="worldMap" viewBox="0 0 820 420" aria-label="Simplified world map regions"></svg>
+        <p class="caption">Click a region to target it for your next action.</p>
+      </section>
+
+      <section class="panel status-panel">
+        <h2>Faction Overview</h2>
+        <div id="turnInfo"></div>
+        <table id="factionTable">
+          <thead>
+            <tr>
+              <th>Faction</th>
+              <th>Type</th>
+              <th>Resources</th>
+              <th>Political</th>
+              <th>Nukes</th>
+              <th>Stability</th>
+              <th>Gov Model</th>
+              <th>Corporatism</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <section class="panel actions-panel">
+        <h2>Command Console</h2>
+        <div id="humanControls" class="controls disabled">
+          <label>
+            Action
+            <select id="actionSelect"></select>
+          </label>
+          <label>
+            Target Faction
+            <select id="targetFactionSelect"></select>
+          </label>
+          <label>
+            Target Region
+            <input id="targetRegionInput" readonly placeholder="Select map region" />
+          </label>
+          <button id="executeActionBtn">Execute Action</button>
+        </div>
+
+        <h3>Point Conversion (Pentagon-style planning)</h3>
+        <div class="converter-row">
+          <label>
+            Convert
+            <select id="convertFrom">
+              <option value="resources">Resources</option>
+              <option value="political">Political</option>
+            </select>
+          </label>
+          <label>
+            to
+            <select id="convertTo">
+              <option value="political">Political</option>
+              <option value="resources">Resources</option>
+            </select>
+          </label>
+          <label>
+            Amount
+            <input id="convertAmount" type="number" min="1" value="10" />
+          </label>
+          <button id="convertBtn">Convert</button>
+        </div>
+
+        <h3>Tic-Tac-Toe (Side-channel diplomacy game)</h3>
+        <p class="caption">Win for +20 political points, lose for -10 political points, draw for +5.</p>
+        <div id="tttBoard" class="ttt-board"></div>
+        <button id="resetTttBtn">Reset Tic-Tac-Toe</button>
+      </section>
+
+      <section class="panel log-panel">
+        <h2>Strategic Log</h2>
+        <div id="log"></div>
+      </section>
+    </section>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>
