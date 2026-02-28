@@ -1,0 +1,202 @@
+:root {
+  --bg: #0f172a;
+  --panel: #111827;
+  --soft: #1f2937;
+  --text: #e5e7eb;
+  --accent: #38bdf8;
+  --warning: #f87171;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(180deg, #020617, #0b1228);
+  color: var(--text);
+}
+
+header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #334155;
+  background: #020617;
+}
+
+h1, h2, h3 {
+  margin-top: 0;
+}
+
+main {
+  padding: 1rem;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+}
+
+.setup-panel {
+  margin-bottom: 1rem;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.layout-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 1rem;
+}
+
+.map-panel, .status-panel, .actions-panel, .log-panel {
+  min-height: 220px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.6rem;
+  font-size: 0.92rem;
+}
+
+select, input, button {
+  background: var(--soft);
+  color: var(--text);
+  border: 1px solid #475569;
+  padding: 0.5rem;
+  border-radius: 8px;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: var(--accent);
+}
+
+.setup-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+#worldMap {
+  width: 100%;
+  min-height: 300px;
+  background: radial-gradient(circle at center, #0f2444, #0a1b34);
+  border-radius: 10px;
+  border: 1px solid #475569;
+}
+
+.region {
+  cursor: pointer;
+  stroke: #020617;
+  stroke-width: 2;
+  transition: opacity 0.2s;
+}
+
+.region:hover {
+  opacity: 0.85;
+}
+
+.region.selected {
+  stroke: #f8fafc;
+  stroke-width: 3;
+}
+
+.caption {
+  margin-bottom: 0;
+  color: #93c5fd;
+  font-size: 0.85rem;
+}
+
+#factionTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+#factionTable th,
+#factionTable td {
+  border-bottom: 1px solid #334155;
+  padding: 0.4rem;
+  text-align: left;
+}
+
+.controls.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.converter-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.5rem;
+  align-items: end;
+}
+
+.pill {
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 0.5rem;
+  background: #0c152c;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #bfdbfe;
+}
+
+.ttt-board {
+  width: 180px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin: 0.7rem 0;
+}
+
+.ttt-cell {
+  width: 58px;
+  height: 58px;
+  border: 1px solid #64748b;
+  background: #0b132a;
+  color: #e2e8f0;
+  font-size: 1.5rem;
+  display: grid;
+  place-items: center;
+}
+
+#log {
+  max-height: 360px;
+  overflow-y: auto;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 0.5rem;
+  background: #0a1020;
+}
+
+.log-entry {
+  padding: 0.4rem;
+  border-bottom: 1px dashed #334155;
+  font-size: 0.86rem;
+}
+
+.log-entry:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 980px) {
+  .layout-grid {
+    grid-template-columns: 1fr;
+  }
+}
