@@ -9,7 +9,7 @@
 <body>
   <header>
     <h1>World Strategy Sandbox</h1>
-    <p>Explore war, diplomacy, political systems, and nuclear restraint across historical world conditions.</p>
+    <p>Explore war, diplomacy, political systems, revolutions, and nuclear restraint across historical world conditions.</p>
   </header>
 
   <main>
@@ -42,9 +42,9 @@
 
     <section class="layout-grid">
       <section class="panel map-panel">
-        <h2>World Map (Simplified)</h2>
-        <svg id="worldMap" viewBox="0 0 820 420" aria-label="Simplified world map regions"></svg>
-        <p class="caption">Click a region to target it for your next action.</p>
+        <h2>World Map (Era-Specific Regions)</h2>
+        <svg id="worldMap" viewBox="0 0 820 420" aria-label="Era-specific world map regions"></svg>
+        <p class="caption">Regions vary by era. Contested zones are highlighted.</p>
       </section>
 
       <section class="panel status-panel">
@@ -89,7 +89,7 @@
           <button id="executeActionBtn">Execute Action</button>
         </div>
 
-        <h3>Point Conversion (Pentagon-style planning)</h3>
+        <h3>Point Conversion</h3>
         <div class="converter-row">
           <label>
             Convert
@@ -113,11 +113,15 @@
         </div>
 
         <h3>High-Stakes Tic-Tac-Toe</h3>
-        <p class="caption">Max gamble rises with turn count. Opponent wager is hidden until round ends.</p>
+        <p class="caption">Perks influence revolutions and AI pacing.</p>
         <div class="converter-row">
           <label>
-            Your Gamble (political points)
+            Your Gamble
             <input id="tttGambleInput" type="number" min="1" value="10" />
+          </label>
+          <label>
+            Perk
+            <select id="tttPerkSelect"></select>
           </label>
           <div id="tttMaxInfo" class="pill"></div>
           <div id="tttRoundInfo" class="pill"></div>
