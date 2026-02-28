@@ -87,6 +87,7 @@ button:hover {
 .setup-actions {
   display: flex;
   gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 #worldMap {
@@ -139,9 +140,21 @@ button:hover {
 
 .converter-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 0.5rem;
   align-items: end;
+}
+
+.pill {
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 0.5rem;
+  background: #0c152c;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #bfdbfe;
 }
 
 .ttt-board {
@@ -149,7 +162,7 @@ button:hover {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 4px;
-  margin-bottom: 0.6rem;
+  margin: 0.7rem 0;
 }
 
 .ttt-cell {
