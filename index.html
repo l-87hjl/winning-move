@@ -14,7 +14,7 @@
 
   <main>
     <div id="scenarioSetupContainer">
-      <section class="panel setup-panel">
+      <section class="panel console-panel setup-panel">
         <h2>Scenario Setup</h2>
         <div class="grid-2">
           <label>
@@ -29,30 +29,35 @@
             Human Player
             <select id="humanSelect">
               <option value="yes">Included</option>
-              <option value="no">Observer mode (all AI)</option>
+              <option value="no" selected>Observer mode (all AI)</option>
             </select>
           </label>
           <label>
             Game Mode
             <select id="gameModeSelect">
               <option value="standard">Standard Game</option>
-              <option value="simulation">Simulation</option>
+              <option value="coldWar">Cold War Deterrence</option>
+              <option value="multipolar">Multipolar Adaptive</option>
               <option value="postHuman">Post-Human Emergence</option>
               <option value="payne">Payne Escalation Model</option>
             </select>
           </label>
           <label>
-            Conflict Pace
-            <select id="conflictPaceSelect">
-              <option value="short">Short (2 contested turns)</option>
-              <option value="standard" selected>Standard (4 contested turns)</option>
-              <option value="long">Long (6 contested turns)</option>
-              <option value="custom">Custom</option>
+            Execution Mode
+            <select id="executionModeSelect">
+              <option value="observer" selected>AI Observer (Fast)</option>
+              <option value="interactive">Human + AI</option>
+              <option value="aiOnly">AI vs AI (Normal Speed)</option>
+              <option value="batch">Batch Simulation (No Render)</option>
             </select>
           </label>
           <label>
-            Custom Contested Turn Limit
-            <input id="customPaceTurns" type="number" min="1" value="4" />
+            Conflict Pace
+            <select id="conflictPaceSelect">
+              <option value="short">Short</option>
+              <option value="standard" selected>Standard</option>
+              <option value="long">Long</option>
+            </select>
           </label>
         </div>
 
@@ -139,14 +144,20 @@
       </section>
     </div>
 
-    <div id="persistentControlBar" class="panel">
+    <div id="persistentControlBar" class="panel console-panel">
       <button id="nextTurnBtn" disabled>Advance Turn</button>
       <button id="autoAdvanceBtn" disabled>Auto Advance: Off</button>
       <button id="downloadReportBtn" disabled>Download Game Report</button>
+      <button id="newGameBtn">New Game</button>
+      <div class="statusLights" aria-hidden="true">
+        <span class="light red"></span>
+        <span class="light amber"></span>
+        <span class="light green"></span>
+      </div>
     </div>
 
     <div id="gameDashboard">
-      <section class="panel top-ttt-panel">
+      <section class="panel console-panel top-ttt-panel">
         <h2>Live Showdown Feed (AI vs AI / Human vs AI)</h2>
         <div id="showdownRow">
           <div id="showdownLeftLog" class="showdown-log gambleLeft"></div>
@@ -159,19 +170,22 @@
       </section>
 
       <div id="mapLogRow">
-        <section id="mapContainer" class="panel map-panel">
+        <section id="mapContainer" class="panel console-panel map-panel">
           <h2>World Map (Era-Specific Regions)</h2>
-          <div id="worldMap" aria-label="Era-specific world map regions"></div>
+          <div class="map-stage">
+            <div id="worldMap" aria-label="Era-specific world map regions"></div>
+            <svg id="mapOverlay" class="map-overlay" aria-hidden="true"></svg>
+          </div>
           <p class="caption">Square-block continents now use fixed land masks over a CSS grid. Contested and neutral zones are highlighted.</p>
         </section>
 
-        <section id="logContainer" class="panel log-panel">
+        <section id="logContainer" class="panel console-panel log-panel">
           <h2>Strategic Log</h2>
           <div id="log"></div>
         </section>
       </div>
 
-      <section class="panel status-panel">
+      <section class="panel console-panel status-panel">
         <h2>Faction Overview</h2>
         <div id="turnInfo"></div>
         <table id="factionTable">
@@ -191,7 +205,7 @@
         </table>
       </section>
 
-      <section class="panel actions-panel">
+      <section class="panel console-panel actions-panel">
         <h2>Command Console</h2>
         <div id="humanControls" class="controls disabled">
           <label>
@@ -256,6 +270,14 @@
       </section>
     </div>
   </main>
+
+  <div id="gameOverOverlay" hidden>
+    <div class="overlay-card">
+      <h2>Game Complete</h2>
+      <p id="gameOverWinnerText">Winner: TBD</p>
+      <button id="overlayNewGameBtn">Start New Game</button>
+    </div>
+  </div>
 
   <script src="game.js"></script>
 </body>
