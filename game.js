@@ -13,6 +13,8 @@ const ACTIONS = [
 const PERKS = ["Double Turn", "Intel Surge", "Stability Shield"];
 const STRIKE_TYPES = ["Counterforce", "Countervalue", "Demonstration", "Submarine Launch", "Silo Saturation", "Bomber Penetration"];
 const MAX_TURNS = 60;
+const MAP_TILE = { size: 16, gap: 4, radius: 4 };
+const MAP_PITCH = MAP_TILE.size + MAP_TILE.gap;
 
 const SCENARIO_SETTINGS = {
   nuclearPenaltySeverity: 1,
@@ -63,7 +65,12 @@ ERA_REGION_MAPS[1984] = ERA_REGION_MAPS[2026].map((x) => ({ ...x, id: `84_${x.id
 ERA_REGION_MAPS[1939] = ERA_REGION_MAPS[2026].map((x) => ({ ...x, id: `39_${x.id}`, instability: clamp(x.instability + 0.14, 0, 1), ideologyLean: clamp(x.ideologyLean - 0.18, 0, 1), name: x.name.replace("W. Europe", "W. Europe Front").replace("E. Europe", "Eastern Front").replace("Levant", "Levant Mandates").replace("Gulf", "Arabian Theater") }));
 
 function r(id, name, continent, x, y, w, h, sx, sy, props) {
-  return { id, name, continent, x, y, w, h, skewX: sx, skewY: sy, resourceValue: props.res, chokepoint: props.choke, ideologyLean: props.lean, instability: props.unstable };
+  return {
+    id, name, continent,
+    gx: Math.round(x / MAP_PITCH), gy: Math.round(y / MAP_PITCH),
+    cols: Math.max(2, Math.round(w / MAP_PITCH)), rows: Math.max(2, Math.round(h / MAP_PITCH)),
+    resourceValue: props.res, chokepoint: props.choke, ideologyLean: props.lean, instability: props.unstable
+  };
 }
 
 const state = {
@@ -174,19 +181,34 @@ function assignStartingOwnership() {
 function drawMap() {
   dom.worldMap.innerHTML = "";
   for (const region of state.regions) {
-    const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-    poly.setAttribute("points", regionPoints(region));
-    poly.setAttribute("class", "region");
-    poly.dataset.regionId = region.id;
-    poly.addEventListener("click", () => {
+    const cluster = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    cluster.setAttribute("class", "region");
+    cluster.dataset.regionId = region.id;
+    cluster.addEventListener("click", () => {
       state.selectedRegionId = region.id;
       dom.targetRegionInput.value = region.name;
       highlightSelectedRegion();
     });
-    dom.worldMap.append(poly);
+    const tiles = regionTiles(region);
+    tiles.forEach((tile) => {
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", region.gx * MAP_PITCH + tile.c * MAP_PITCH);
+      rect.setAttribute("y", region.gy * MAP_PITCH + tile.r * MAP_PITCH);
+      rect.setAttribute("width", MAP_TILE.size);
+      rect.setAttribute("height", MAP_TILE.size);
+      rect.setAttribute("rx", MAP_TILE.radius);
+      rect.setAttribute("ry", MAP_TILE.radius);
+      rect.setAttribute("class", "region-tile");
+      cluster.append(rect);
+    });
+    dom.worldMap.append(cluster);
+
+    const avg = tiles.reduce((acc, t) => ({ x: acc.x + t.c, y: acc.y + t.r }), { x: 0, y: 0 });
+    const cx = (avg.x / tiles.length) * MAP_PITCH + region.gx * MAP_PITCH + 2;
+    const cy = (avg.y / tiles.length) * MAP_PITCH + region.gy * MAP_PITCH - 6;
     const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    text.setAttribute("x", region.x + 4);
-    text.setAttribute("y", region.y + 16);
+    text.setAttribute("x", cx);
+    text.setAttribute("y", cy);
     text.setAttribute("font-size", "10");
     text.setAttribute("fill", "#e2e8f0");
     text.textContent = region.name;
@@ -195,21 +217,55 @@ function drawMap() {
   recolorMap();
 }
 
-function regionPoints(region) {
-  const { x, y, w, h, skewX, skewY } = region;
-  return `${x},${y} ${x + w},${y + skewY} ${x + w - skewX},${y + h} ${x + skewX},${y + h - skewY}`;
+function regionTiles(region) {
+  if (region.tiles?.length) return region.tiles;
+  const centerC = (region.cols - 1) / 2;
+  const centerR = (region.rows - 1) / 2;
+  const tiles = [];
+  for (let r = 0; r < region.rows; r += 1) {
+    for (let c = 0; c < region.cols; c += 1) {
+      const nx = centerC === 0 ? 0 : (c - centerC) / centerC;
+      const ny = centerR === 0 ? 0 : (r - centerR) / centerR;
+      const dist = Math.sqrt(nx * nx + ny * ny);
+      const shapeNoise = tileNoise(region.id, c, r);
+      const edgeBias = Math.abs(nx) + Math.abs(ny);
+      const keep = dist < 1.05 + shapeNoise * 0.12 || edgeBias < 1.25;
+      if (keep) tiles.push({ c, r });
+    }
+  }
+  region.tiles = tiles.length >= 4 ? tiles : fallbackTiles(region);
+  return region.tiles;
+}
+
+function fallbackTiles(region) {
+  const tiles = [];
+  for (let r = 0; r < region.rows; r += 1) {
+    for (let c = 0; c < region.cols; c += 1) tiles.push({ c, r });
+  }
+  return tiles;
+}
+
+function tileNoise(key, x, y) {
+  let hash = 2166136261;
+  const seed = `${key}:${x},${y}`;
+  for (let i = 0; i < seed.length; i += 1) {
+    hash ^= seed.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return ((hash >>> 0) % 1000) / 1000;
 }
 
 function recolorMap() {
   [...dom.worldMap.querySelectorAll(".region")].forEach((el) => {
     const id = el.dataset.regionId;
+    const tiles = [...el.querySelectorAll(".region-tile")];
     if (state.neutralRegions[id]) {
       el.classList.add("neutral");
-      el.style.fill = "#94a3b8";
+      tiles.forEach((tile) => { tile.style.fill = "#94a3b8"; });
     } else {
       el.classList.remove("neutral");
       const owner = state.factions.find((f) => f.id === state.mapOwnership[id]);
-      el.style.fill = owner?.color || "#64748b";
+      tiles.forEach((tile) => { tile.style.fill = owner?.color || "#64748b"; });
     }
     el.classList.toggle("contested", Boolean(state.contestedRegions[id]));
   });
