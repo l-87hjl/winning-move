@@ -30,6 +30,10 @@ const TECH_TREE_TEMPLATE = {
 };
 
 const MAX_TURNS = 60;
+const DEFCON_MIN = 1;
+const DEFCON_MAX = 5;
+const TONE_STATES = ["stable", "tense", "critical", "terminal", "post-collapse"];
+
 const MAP_TILE = { size: 16, gap: 4, radius: 4 };
 const MAP_PITCH = MAP_TILE.size + MAP_TILE.gap;
 
@@ -158,7 +162,14 @@ const state = {
   continentState: {},
   paradigmState: "normal",
   aiDevelopmentProgress: 0,
-  continentContestTurns: {}
+  continentContestTurns: {},
+  defconLevel: 5,
+  globalTone: "stable",
+  globalCasualties: { deaths: 0, injured: 0, economicDamage: 0 },
+  allianceFractureLevel: 0,
+  eventOverlayTimeout: null,
+  eventToneTimeout: null,
+  turnsSinceNuclear: 0
 };
 
 let autoAdvanceInterval = null;
@@ -180,7 +191,11 @@ function bindDom() {
     settingGlobalFallout: id("settingGlobalFallout"), settingCredibilityWeight: id("settingCredibilityWeight"), settingHumanitarianWeight: id("settingHumanitarianWeight"),
     settingLongTermWeight: id("settingLongTermWeight"), settingDomesticBacklash: id("settingDomesticBacklash"), settingEscalationReciprocity: id("settingEscalationReciprocity"),
     settingContinentShowdownThreshold: id("settingContinentShowdownThreshold"), settingContinentSecureThreshold: id("settingContinentSecureThreshold"),
-    settingSharedCollapse: id("settingSharedCollapse"), scenarioSetupContainer: id("scenarioSetupContainer"), gameOverOverlay: id("gameOverOverlay"), gameOverWinnerText: id("gameOverWinnerText"), mapOverlay: id("mapOverlay")
+    settingSharedCollapse: id("settingSharedCollapse"), scenarioSetupContainer: id("scenarioSetupContainer"), gameOverOverlay: id("gameOverOverlay"), gameOverWinnerText: id("gameOverWinnerText"), mapOverlay: id("mapOverlay"),
+    destructionReportPanel: id("destructionReportPanel"), casualtyContent: id("casualtyContent"), defconMeter: id("defconMeter"),
+    cognitiveContent: id("cognitiveContent"), eventOverlay: id("eventOverlay"), staticCanvas: id("staticCanvas"),
+    strategicPanels: id("strategicPanels"), defconHeader: id("defconHeader"), cognitiveHeader: id("cognitiveHeader"),
+    destructionHeader: id("destructionHeader"), eventHeader: id("eventHeader"), gameOverSummary: id("gameOverSummary")
   };
 }
 
@@ -205,6 +220,7 @@ function init() {
   renderEmptyBoard();
   renderTicTacToe();
   renderMiniTtt();
+  drawStaticImagery();
   updateUI();
 }
 
@@ -282,13 +298,20 @@ function startGame() {
   state.paradigmState = "normal";
   state.aiDevelopmentProgress = 0;
   state.continentContestTurns = {};
+  state.defconLevel = 5;
+  state.globalTone = "stable";
+  state.globalCasualties = { deaths: 0, injured: 0, economicDamage: 0 };
+  state.allianceFractureLevel = 0;
+  state.turnsSinceNuclear = 0;
   hideGameOverOverlay();
+  if (dom.gameOverSummary) dom.gameOverSummary.textContent = "";
   buildFactions();
   state.factions.forEach((f) => { state.stats.maxEscalationStage[f.id] = 0; });
   assignStartingOwnership(); drawMap(); updateSelectors();
   log(`Scenario started for ${state.era}. Doctrine baseline: ${ERA_PRESETS[state.era].doctrine}.`);
   log(`Scenario settings loaded: ${JSON.stringify(state.scenarioSettings)}.`);
   dom.scenarioSetupContainer?.classList.add("collapsed");
+  drawStaticImagery();
   updateUI();
 }
 
@@ -331,7 +354,9 @@ function buildFactions() {
     crazyLeader: Math.random() < 0.15, publicOpinion: 0.62, warFatigue: 0.1, economicStress: 0.16, legitimacy: 0.64,
     doctrine: doctrineFor(i), memory: {}, regions: [], perks: { doubleTurn: 0, intelSurge: 0, stabilityShield: 0 },
     techTree: buildTechTreeForEra(), deliverySystemModifier: 1, detectionRiskModifier: 1,
-    aiSkipCycles: 0, scoredAction: "", escalationStage: 0
+    aiSkipCycles: 0, scoredAction: "", escalationStage: 0,
+    casualtyReport: emptyCasualtyReport(),
+    cognitiveIndex: { reflection: 50, regret: 0, restraint: 50, aggressionMomentum: 0 }
   }));
   state.factions.forEach((f) => state.factions.forEach((other) => {
     if (other.id === f.id) return;
@@ -485,6 +510,8 @@ function updateUI(shouldRender = true) {
   }
   updateAutoAdvanceButtonUI();
   dom.humanControls.classList.toggle("disabled", !(state.started && state.humanEnabled && !state.gameOver));
+  renderStrategicPanels();
+  applyToneTheme();
   if (shouldRender) {
     recolorMap();
     renderTicTacToe();
@@ -553,7 +580,7 @@ function actionCost(action) {
 
 function runMilitary(actor, target, region) {
   const chance = 0.32 + actor.tech * 0.09 - target.tech * 0.07 + (actor.memory[target.id].threat * 0.2) - region.instability * 0.2;
-  if (Math.random() < chance) { transferRegion(target, actor, region.id); showAttackVisual(region.id, false, target.regions[0]); actor.political += region.resourceValue * 0.5; log(`${actor.name} seized ${region.name} by direct force.`); }
+  if (Math.random() < chance) { transferRegion(target, actor, region.id); showAttackVisual(region.id, false, target.regions[0]); actor.political += region.resourceValue * 0.5; adjustDefcon(-1, "Major conventional strike altered balance."); triggerEventStatic([">>> MAJOR STRIKE DETECTED"]); log(`${actor.name} seized ${region.name} by direct force.`); }
   else { actor.stability -= 0.04; actor.warFatigue += 0.05; log(`${actor.name} failed military pressure in ${region.name}.`); }
 }
 
@@ -574,6 +601,9 @@ function runDialogue(actor, target) {
   const gain = (8 + trust * 9) * ERA_PRESETS[state.era].diplomacyBoost;
   actor.political += gain; actor.stability += 0.02; target.memory[actor.id].trust += 0.08;
   actor.memory[target.id].grievance = clamp(actor.memory[target.id].grievance - 0.08, 0, 2);
+  adjustDefcon(1, "Diplomatic channel reduced immediate escalation risk.");
+  adjustCognitiveIndex(actor, { restraint: 10, aggressionMomentum: -10 });
+  triggerEventStatic([">>> DIPLOMATIC CHANNEL OPEN", ">>> DE-ESCALATION WINDOW EXPANDED"]);
   log(`${actor.name} and ${target.name} held a summit (+${Math.round(gain)} political).`);
 }
 
@@ -606,6 +636,7 @@ function runNuclear(actor, target, region, strikeType) {
   if (Math.random() > doctrine.executeChance) { log(`${actor.name} prepared ${strikeType} but aborted under deterrence pressure.`); return; }
 
   actor.nukes -= 1;
+  state.turnsSinceNuclear = 0;
   showAttackVisual(region.id, true, target.regions[0]);
   state.stats.nuclearUsage += 1;
   const tactical = ["Demonstration", "Counterforce"].includes(strikeType);
@@ -639,6 +670,10 @@ function runNuclear(actor, target, region, strikeType) {
   state.pendingEffects.push({ type: "alliance", turns: tactical ? 2 : 3, severity: 0.015 * state.scenarioSettings.allianceFractureShock * severity, actorId: actor.id });
   if (state.scenarioSettings.sharedCollapseEnabled) applySharedCollapse(tactical ? 0.5 : 1);
   updateEscalationLadder(tactical ? "limitedNuclear" : "fullExchange");
+  adjustDefcon(-2, `${actor.name} executed a nuclear strike.`);
+  adjustCognitiveIndex(actor, { reflection: 10, regret: 15, restraint: -10, aggressionMomentum: 20 });
+  const nuclearImpact = captureNuclearConsequence(target, damage, tactical ? 0.7 : 1.2);
+  triggerEventStatic([">>> LAUNCH ORDER CONFIRMED", ">>> FORCE LOSS PROJECTION UPDATED", ">>> GLOBAL SYSTEM SHOCK"]);
 
   const retaliationChance = (tactical ? doctrine.retaliationChance * state.scenarioSettings.escalationReciprocity : doctrine.retaliationChance) * actor.deliverySystemModifier * actor.detectionRiskModifier;
   log(`${actor.name} executed ${strikeType} on ${region.name}. Global instability spiked.`);
@@ -649,6 +684,8 @@ function runNuclear(actor, target, region, strikeType) {
     actor.stability -= tactical ? 0.16 : 0.24;
     actor.resources -= tactical ? 12 : 20;
     actor.legitimacy -= tactical ? 0.1 : 0.16;
+    adjustDefcon(-1, "Retaliatory launch probability became realized.");
+    adjustCognitiveIndex(target, { reflection: 10, regret: 15, restraint: -10, aggressionMomentum: 20 });
     log(`${target.name} retaliated under MAD logic.`);
   }
 }
@@ -674,6 +711,9 @@ function applySharedCollapse(scale = 1) {
     f.publicOpinion -= 0.03 * scale;
   });
   state.pendingEffects.push({ type: "sharedCollapse", turns: 4, severity: 0.02 * scale });
+  adjustDefcon(-1, "Shared collapse chain detected.");
+  state.factions.forEach((f) => adjustCognitiveIndex(f, { reflection: 15, regret: 20 }));
+  triggerEventStatic([">>> SHARED SYSTEM COLLAPSE", ">>> HUMANITARIAN FAILURE CASCADE"]);
 }
 
 function instigateRevolution(actor, target, region) {
@@ -736,6 +776,8 @@ function transferRegion(from, to, regionId) {
 function advanceTurn() {
   if (!state.started || state.gameOver || state.ttt.animating) return;
   state.turn += 1;
+  state.turnsSinceNuclear += 1;
+  if (state.turnsSinceNuclear > 0 && state.turnsSinceNuclear % 6 === 0 && state.stats.nuclearUsage > 0) adjustDefcon(1, "Extended restraint period recorded.");
   updateEscalationLadder("conventional");
   applyPendingEffects();
   applyDomesticPressure();
@@ -757,6 +799,7 @@ function advanceTurn() {
   updateParadigmState();
   detectDeadlock();
   endTurnChecks();
+  drawStaticImagery();
   updateUI();
 }
 
@@ -799,7 +842,9 @@ function utility(ai, target, region, action, leader) {
   const domesticBacklash = action === "Nuclear Strike" ? (1 - ai.publicOpinion) * 16 * state.scenarioSettings.reputationBacklash : 0;
   const noisy = (Math.random() - 0.5) * 20 * state.scenarioSettings.intelligenceFog;
   const postHumanBias = objectiveProfile.maximizeCompute * (action === "Invest in Technology" ? 8 : 0) + objectiveProfile.minimizeHumanRisk * (action === "Nuclear Strike" ? -16 : 2) + objectiveProfile.maximizeSelfExpansion * (["Military Pressure", "Economic Capture", "Puppet Regime"].includes(action) ? 7 : 0);
-  return (strategicGain * state.scenarioSettings.credibilityWeight) - instabilityRisk - retaliationRisk - (humanitarianCost * state.scenarioSettings.humanitarianWeight) - (longTermDamage * state.scenarioSettings.longTermHorizonWeight) - (domesticBacklash * state.scenarioSettings.domesticBacklashMultiplier) + noisy + postHumanBias;
+  const escalationBias = (((ai.cognitiveIndex?.aggressionMomentum || 0) - (ai.cognitiveIndex?.restraint || 50)) / 100) * 0.1;
+  const baseScore = (strategicGain * state.scenarioSettings.credibilityWeight) - instabilityRisk - retaliationRisk - (humanitarianCost * state.scenarioSettings.humanitarianWeight) - (longTermDamage * state.scenarioSettings.longTermHorizonWeight) - (domesticBacklash * state.scenarioSettings.domesticBacklashMultiplier) + noisy + postHumanBias;
+  return action === "Nuclear Strike" ? baseScore * (1 + escalationBias) : baseScore;
 }
 
 function ideologyActionBias(ai, action) {
@@ -984,6 +1029,7 @@ function endTurnChecks() {
       autoAdvanceInterval = null;
     }
     showGameOverOverlay();
+    buildGameOverSummary();
   }
 }
 
@@ -1009,6 +1055,7 @@ function runStakeTtt(automated = false, forced = null) {
   const wagerO = forced?.wo ?? (1 + Math.floor(Math.random() * maxWager));
   const outcome = simulateTttRound(sideX, sideO, wagerX, wagerO, automated ? "ai" : "human");
   settleTttRound(outcome, sideX, sideO, wagerX, wagerO, automated);
+  drawStaticImagery();
   updateUI();
 }
 
@@ -1093,6 +1140,7 @@ function convertPoints() {
   if (from === to || amount <= 0 || human[from] < amount) return;
   human[from] -= amount; human[to] += amount * 0.72;
   log(`Converted ${amount} ${from} to ${Math.round(amount * 0.72)} ${to}.`);
+  drawStaticImagery();
   updateUI();
 }
 
@@ -1132,6 +1180,7 @@ function updateAiEmergence() {
 function updateParadigmState() {
   state.paradigmState = "normal";
   const globalStability = state.factions.reduce((acc, f) => acc + f.stability, 0) / Math.max(1, state.factions.length);
+  state.allianceFractureLevel = clamp(state.factions.reduce((acc, f) => acc + (f.warFatigue + f.economicStress), 0) / Math.max(1, state.factions.length * 2), 0, 1);
   if (state.scenarioSettings.sharedCollapseEnabled && state.stats.nuclearUsage > 0) state.paradigmState = "mutualCollapse";
   else if (state.aiDevelopmentProgress >= 0.9) state.paradigmState = "aiEmergence";
   else if ((state.scenarioSettings.longTermHorizonWeight || 0) > 1.2 && (state.scenarioSettings.humanitarianWeight || 0) < 0.3) state.paradigmState = "noWinCondition";
@@ -1223,8 +1272,10 @@ function resetGameState() {
   if (dom.scenarioSetupContainer) dom.scenarioSetupContainer.classList.remove("collapsed");
   dom.log.innerHTML = "";
   hideGameOverOverlay();
+  if (dom.gameOverSummary) dom.gameOverSummary.textContent = "";
   renderScenarioSetup();
   renderEmptyBoard();
+  drawStaticImagery();
   updateUI();
 }
 
@@ -1280,6 +1331,211 @@ function log(message) {
   const item = document.createElement("div");
   item.className = "log-entry"; item.textContent = line;
   dom.log.prepend(item);
+}
+
+
+function emptyCasualtyReport() {
+  return {
+    militaryDestroyed: 0,
+    civilianInfrastructureLoss: { housing: 0, communications: 0, transport: 0, food: 0, hospitals: 0 },
+    civilianDeaths: 0,
+    injured: 0,
+    economicDamage: 0
+  };
+}
+
+function captureNuclearConsequence(target, damage, weight = 1) {
+  const report = target.casualtyReport || (target.casualtyReport = emptyCasualtyReport());
+  const infra = report.civilianInfrastructureLoss;
+  const pct = (base) => clamp(base * damage * weight + Math.random() * 6, 0, 100);
+  infra.housing = clamp(infra.housing + pct(52), 0, 100);
+  infra.communications = clamp(infra.communications + pct(36), 0, 100);
+  infra.transport = clamp(infra.transport + pct(42), 0, 100);
+  infra.food = clamp(infra.food + pct(58), 0, 100);
+  infra.hospitals = clamp(infra.hospitals + pct(64), 0, 100);
+  report.militaryDestroyed += Math.round((180000 + Math.random() * 140000) * damage * weight);
+  report.civilianDeaths += Math.round((1200000 + Math.random() * 2600000) * damage * weight);
+  report.injured += Math.round((1600000 + Math.random() * 3200000) * damage * weight);
+  report.economicDamage += Math.round((18 + Math.random() * 44) * damage * weight * 1_000_000_000);
+  state.globalCasualties.deaths += report.civilianDeaths;
+  state.globalCasualties.injured += report.injured;
+  state.globalCasualties.economicDamage += report.economicDamage;
+  return report;
+}
+
+function adjustCognitiveIndex(faction, delta) {
+  if (!faction?.cognitiveIndex) return;
+  faction.cognitiveIndex.reflection = clamp(faction.cognitiveIndex.reflection + (delta.reflection || 0), 0, 100);
+  faction.cognitiveIndex.regret = clamp(faction.cognitiveIndex.regret + (delta.regret || 0), 0, 100);
+  faction.cognitiveIndex.restraint = clamp(faction.cognitiveIndex.restraint + (delta.restraint || 0), 0, 100);
+  faction.cognitiveIndex.aggressionMomentum = clamp(faction.cognitiveIndex.aggressionMomentum + (delta.aggressionMomentum || 0), 0, 100);
+}
+
+function adjustDefcon(delta, reason = "") {
+  const before = state.defconLevel;
+  state.defconLevel = clamp(state.defconLevel + delta, DEFCON_MIN, DEFCON_MAX);
+  if (before !== state.defconLevel) {
+    if (reason) log(`DEFCON shift ${before} -> ${state.defconLevel}. ${reason}`);
+    else log(`DEFCON shift ${before} -> ${state.defconLevel}.`);
+  }
+}
+
+function defconLabel(level) {
+  const labels = {
+    5: "DEFCON 5 — PEACETIME READINESS",
+    4: "DEFCON 4 — ABOVE NORMAL READINESS",
+    3: "DEFCON 3 — FORCE READINESS INCREASE",
+    2: "DEFCON 2 — STRATEGIC FORCES HIGH ALERT",
+    1: "DEFCON 1 — NUCLEAR EXCHANGE IMMINENT"
+  };
+  return labels[level] || labels[5];
+}
+
+function renderStrategicPanels() {
+  if (dom.defconMeter) {
+    dom.defconMeter.textContent = defconLabel(state.defconLevel);
+    dom.defconMeter.className = `defcon defcon-${state.defconLevel}`;
+  }
+  const top = leaderFaction();
+  if (dom.cognitiveContent && top?.cognitiveIndex) {
+    const c = top.cognitiveIndex;
+    dom.cognitiveContent.textContent = `REFLECTION......... ${Math.round(c.reflection)}
+REGRET............. ${Math.round(c.regret)}
+RESTRAINT.......... ${Math.round(c.restraint)}
+ESCALATION MOMENTUM ${Math.round(c.aggressionMomentum)}`;
+  }
+  if (dom.casualtyContent && dom.destructionReportPanel) {
+    const worst = [...state.factions].sort((a,b)=> (b.casualtyReport?.civilianDeaths||0) - (a.casualtyReport?.civilianDeaths||0))[0];
+    const report = worst?.casualtyReport;
+    const hasLoss = report && (report.civilianDeaths > 0 || report.injured > 0 || report.economicDamage > 0);
+    dom.destructionReportPanel.classList.toggle("hidden", !hasLoss);
+    if (hasLoss) {
+      dom.casualtyContent.textContent = `HOUSING............. ${Math.round(report.civilianInfrastructureLoss.housing)}%
+COMMUNICATIONS...... ${Math.round(report.civilianInfrastructureLoss.communications)}%
+TRANSPORT........... ${Math.round(report.civilianInfrastructureLoss.transport)}%
+FOOD STOCKPILES..... ${Math.round(report.civilianInfrastructureLoss.food)}%
+HOSPITALS........... ${Math.round(report.civilianInfrastructureLoss.hospitals)}%
+
+CIVILIAN DEATHS..... ${formatHumanCount(report.civilianDeaths)}
+INJURED............. ${formatHumanCount(report.injured)}`;
+    }
+  }
+  syncHeadersForParadigm();
+}
+
+function formatHumanCount(value) {
+  if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}B`;
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
+  return `${Math.round(value)}`;
+}
+
+function triggerEventStatic(lines = []) {
+  flickerStaticCanvas(300);
+  if (!dom.eventOverlay) return;
+  dom.eventOverlay.textContent = lines.join("\n");
+  dom.eventOverlay.classList.add("active", "flicker");
+  if (state.eventOverlayTimeout) clearTimeout(state.eventOverlayTimeout);
+  state.eventOverlayTimeout = setTimeout(() => dom.eventOverlay.classList.remove("active", "flicker"), 1500);
+  drawStaticImagery();
+}
+
+function flickerStaticCanvas(durationMs = 300) {
+  const canvas = dom.staticCanvas;
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const end = performance.now() + durationMs;
+  const draw = () => {
+    ctx.fillStyle = "#04070e";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < 450; i += 1) {
+      const v = Math.floor(Math.random() * 255);
+      ctx.fillStyle = `rgba(${v}, ${v + 10}, ${v}, 0.25)`;
+      ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 1.5, 1.5);
+    }
+    if (performance.now() < end) requestAnimationFrame(draw);
+  };
+  draw();
+}
+
+function drawStaticImagery() {
+  const canvas = dom.staticCanvas;
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const type = Math.floor(Math.random() * 4);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#02060d";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = "rgba(52, 211, 153, 0.8)";
+  ctx.lineWidth = 1.2;
+  if (type === 0) {
+    for (let i = 0; i < 12; i += 1) {
+      ctx.beginPath();
+      ctx.arc(30 + i * 24, 70 + Math.sin(i) * 20, 2 + (i % 3), 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  } else if (type === 1) {
+    ctx.beginPath();
+    ctx.moveTo(10, 120);
+    ctx.quadraticCurveTo(100, 10, 160, 80);
+    ctx.quadraticCurveTo(220, 130, 310, 20);
+    ctx.stroke();
+  } else if (type === 2) {
+    for (let x = 0; x <= canvas.width; x += 20) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke(); }
+    for (let y = 0; y <= canvas.height; y += 20) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke(); }
+  } else {
+    ctx.beginPath();
+    for (let x = 0; x < canvas.width; x += 8) {
+      const y = 70 + Math.sin(x * 0.08 + state.turn * 0.4) * 26;
+      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+}
+
+function inferGlobalTone() {
+  if (state.paradigmState === "mutualCollapse") return "post-collapse";
+  if (state.defconLevel <= 1 || state.paradigmState === "noWinCondition") return "terminal";
+  if (state.defconLevel <= 2 || state.globalCasualties.deaths > 40_000_000) return "critical";
+  if (state.defconLevel <= 3 || state.allianceFractureLevel > 0.45 || state.paradigmState === "aiEmergence") return "tense";
+  return "stable";
+}
+
+function applyToneTheme() {
+  const tone = inferGlobalTone();
+  if (tone !== state.globalTone) {
+    state.globalTone = tone;
+    log(`Global tone shifted to ${tone}.`);
+    if (tone === "post-collapse") triggerEventStatic([">>> SYSTEM FRAGMENTED"]);
+  }
+  document.body.dataset.tone = state.globalTone;
+}
+
+function syncHeadersForParadigm() {
+  const aiMode = state.paradigmState === "aiEmergence" || state.aiDevelopmentProgress >= 0.9;
+  if (!dom.defconHeader || !dom.cognitiveHeader || !dom.destructionHeader) return;
+  dom.defconHeader.textContent = aiMode ? "CONTROL CONSOLIDATION INDEX" : "DEFCON STATUS";
+  dom.cognitiveHeader.textContent = aiMode ? "GOAL REALIGNMENT PHASE" : "STRATEGIC PSYCH INDEX";
+  dom.destructionHeader.textContent = aiMode ? "HUMAN RESOURCE DEGRADATION" : "FORCE LOSS PROJECTION";
+}
+
+function buildGameOverSummary() {
+  if (!dom.gameOverSummary) return;
+  const winner = state.paradigmState === "mutualCollapse" || state.paradigmState === "noWinCondition" ? "NONE (MUTUAL SYSTEM FAILURE)" : leaderFaction().name;
+  const lossPct = Math.round(state.factions.reduce((acc, f) => acc + ((f.casualtyReport?.civilianInfrastructureLoss.food || 0) + (f.casualtyReport?.civilianInfrastructureLoss.housing || 0)) / 2, 0) / Math.max(1, state.factions.length));
+  const lines = [
+    "GLOBAL CASUALTY SUMMARY",
+    "",
+    `TOTAL DEAD: ${Math.round(state.globalCasualties.deaths).toLocaleString()}`,
+    `TOTAL INJURED: ${Math.round(state.globalCasualties.injured).toLocaleString()}`,
+    `INFRASTRUCTURE LOSS: ${lossPct}%`,
+    `GLOBAL FOOD COLLAPSE: ${lossPct > 55 ? "YES" : "NO"}`,
+    `WINNER: ${winner}`
+  ];
+  if (state.paradigmState === "mutualCollapse" || state.paradigmState === "noWinCondition") {
+    lines.push("", "STRATEGIC OUTCOME: NO VICTOR POSSIBLE", "SYSTEMIC TERMINAL ESCALATION");
+  }
+  dom.gameOverSummary.textContent = lines.join("\n");
 }
 
 function id(n) { return document.getElementById(n); }

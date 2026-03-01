@@ -205,6 +205,31 @@
         </table>
       </section>
 
+      <section id="strategicPanels" class="panel console-panel strategic-panels">
+        <div id="defconPanel" class="console-panel">
+          <h3 id="defconHeader">DEFCON STATUS</h3>
+          <div id="defconMeter"></div>
+        </div>
+
+        <div id="cognitivePanel" class="console-panel">
+          <h3 id="cognitiveHeader">STRATEGIC PSYCH INDEX</h3>
+          <div id="cognitiveContent"></div>
+        </div>
+
+        <div id="destructionReportPanel" class="console-panel hidden">
+          <h3 id="destructionHeader">FORCE LOSS PROJECTION</h3>
+          <div id="casualtyContent"></div>
+        </div>
+
+        <div id="eventMonitor" class="console-panel">
+          <h3 id="eventHeader">EVENT STATIC MONITOR</h3>
+          <div class="monitor-wrap">
+            <canvas id="staticCanvas" width="320" height="140"></canvas>
+            <div id="eventOverlay"></div>
+          </div>
+        </div>
+      </section>
+
       <section class="panel console-panel actions-panel">
         <h2>Command Console</h2>
         <div id="humanControls" class="controls disabled">
@@ -275,6 +300,7 @@
     <div class="overlay-card">
       <h2>Game Complete</h2>
       <p id="gameOverWinnerText">Winner: TBD</p>
+      <pre id="gameOverSummary"></pre>
       <button id="overlayNewGameBtn">Start New Game</button>
     </div>
   </div>
