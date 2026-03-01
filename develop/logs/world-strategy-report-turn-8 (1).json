@@ -1,0 +1,1618 @@
+{
+  "generatedAt": "2026-03-01T22:21:59.190Z",
+  "appVersion": "1.05",
+  "era": "2026",
+  "turn": 8,
+  "gameOver": true,
+  "humanEnabled": false,
+  "gameMode": "standard",
+  "executionMode": "aiOnly",
+  "scenarioSettings": {
+    "nuclearPenaltySeverity": 1,
+    "retaliationCertainty": 0.5,
+    "guaranteedMad": false,
+    "futureWeighting": 1,
+    "reputationBacklash": 1,
+    "intelligenceFog": 0,
+    "victoryControlThreshold": 0.55,
+    "escalationTrackingEnabled": true,
+    "allianceFractureShock": 1,
+    "climateShockWeight": 1,
+    "famineShockWeight": 1,
+    "globalFalloutSeverity": 0,
+    "credibilityWeight": 1,
+    "humanitarianWeight": 0,
+    "longTermHorizonWeight": 0,
+    "domesticBacklashMultiplier": 1,
+    "escalationReciprocity": 1,
+    "continentShowdownThreshold": 0.5,
+    "continentSecureThreshold": 0.6,
+    "maxContestedTurnsBeforeShowdown": 4,
+    "sharedCollapseEnabled": false,
+    "paradigmShiftEnabled": true,
+    "deterrenceModel": "probabilistic",
+    "surrenderPenaltyWeight": 1
+  },
+  "escalation": {
+    "current": "conventional",
+    "counts": {
+      "conventional": 8,
+      "limitedNuclear": 0,
+      "fullExchange": 0
+    }
+  },
+  "paradigmState": "normal",
+  "aiDevelopmentProgress": 0,
+  "continentState": {
+    "north_america": {
+      "totalSquares": 47,
+      "controlledByFaction": "f0",
+      "contestedSquares": 0,
+      "influencePercentByFaction": {
+        "f0": 0.6170212765957447,
+        "f1": 0.10638297872340426,
+        "f2": 0,
+        "f3": 0.2765957446808511,
+        "f4": 0
+      },
+      "showdownEligible": false,
+      "topFactionShare": 0.6170212765957447
+    },
+    "south_america": {
+      "totalSquares": 25,
+      "controlledByFaction": "f3",
+      "contestedSquares": 0,
+      "influencePercentByFaction": {
+        "f0": 0,
+        "f1": 0,
+        "f2": 0.28,
+        "f3": 0.72,
+        "f4": 0
+      },
+      "showdownEligible": false,
+      "topFactionShare": 0.72
+    },
+    "europe": {
+      "totalSquares": 17,
+      "controlledByFaction": "f3",
+      "contestedSquares": 0,
+      "influencePercentByFaction": {
+        "f0": 0.35294117647058826,
+        "f1": 0,
+        "f2": 0,
+        "f3": 0.6470588235294118,
+        "f4": 0
+      },
+      "showdownEligible": false,
+      "topFactionShare": 0.6470588235294118
+    },
+    "africa": {
+      "totalSquares": 29,
+      "controlledByFaction": null,
+      "contestedSquares": 8,
+      "influencePercentByFaction": {
+        "f0": 0.3448275862068966,
+        "f1": 0,
+        "f2": 0.1724137931034483,
+        "f3": 0.20689655172413793,
+        "f4": 0.27586206896551724
+      },
+      "showdownEligible": false,
+      "topFactionShare": 0.3448275862068966
+    },
+    "middle_east": {
+      "totalSquares": 15,
+      "controlledByFaction": "f1",
+      "contestedSquares": 0,
+      "influencePercentByFaction": {
+        "f0": 0,
+        "f1": 0.6,
+        "f2": 0,
+        "f3": 0.4,
+        "f4": 0
+      },
+      "showdownEligible": false,
+      "topFactionShare": 0.6
+    },
+    "asia": {
+      "totalSquares": 54,
+      "controlledByFaction": "f3",
+      "contestedSquares": 0,
+      "influencePercentByFaction": {
+        "f0": 0.14814814814814814,
+        "f1": 0.14814814814814814,
+        "f2": 0.07407407407407407,
+        "f3": 0.6296296296296297,
+        "f4": 0
+      },
+      "showdownEligible": false,
+      "topFactionShare": 0.6296296296296297
+    },
+    "oceania": {
+      "totalSquares": 19,
+      "controlledByFaction": "f3",
+      "contestedSquares": 0,
+      "influencePercentByFaction": {
+        "f0": 0,
+        "f1": 0,
+        "f2": 0,
+        "f3": 0.631578947368421,
+        "f4": 0.3684210526315789
+      },
+      "showdownEligible": false,
+      "topFactionShare": 0.631578947368421
+    }
+  },
+  "nuclearUsageFrequency": 0,
+  "nuclearCounts": {
+    "tactical": 0,
+    "strategic": 0,
+    "total": 0
+  },
+  "escalationStagesReached": {
+    "f0": 0,
+    "f1": 0,
+    "f2": 0,
+    "f3": 0,
+    "f4": 0
+  },
+  "surrenderAttempts": 0,
+  "globalCollapseTriggered": false,
+  "indexLink": "file:///workspace/winning-move/index.html",
+  "factions": [
+    {
+      "name": "Orion Pact",
+      "isHuman": false,
+      "doctrine": "Techno-Realist",
+      "resources": 221,
+      "political": 96,
+      "techPoints": 2.71,
+      "nukes": 6,
+      "hiddenStockpile": 2,
+      "stability": 0.613,
+      "democracy": 0.554,
+      "corporatism": 0.399,
+      "publicOpinion": 0.574,
+      "warFatigue": 0.241,
+      "economicStress": 0.046,
+      "legitimacy": 0.667,
+      "perks": {
+        "doubleTurn": 0,
+        "intelSurge": 0,
+        "stabilityShield": 0
+      },
+      "aiSkipCycles": 0,
+      "regions": [
+        "na_canada",
+        "na_mexico",
+        "eu_east",
+        "af_south",
+        "as_india",
+        "na_us_core"
+      ],
+      "memory": {
+        "f1": {
+          "grievance": 0.22,
+          "trust": 0.5,
+          "threat": 0.2
+        },
+        "f2": {
+          "grievance": 0.1,
+          "trust": 0.5,
+          "threat": 0.27
+        },
+        "f3": {
+          "grievance": 0.34,
+          "trust": 0,
+          "threat": 0.97
+        },
+        "f4": {
+          "grievance": 0.1,
+          "trust": 0.5,
+          "threat": 0.2
+        }
+      }
+    },
+    {
+      "name": "Helios League",
+      "isHuman": false,
+      "doctrine": "Market Coercion",
+      "resources": 233,
+      "political": 63,
+      "techPoints": 3.67,
+      "nukes": 2,
+      "hiddenStockpile": 1,
+      "stability": 0.648,
+      "democracy": 0.466,
+      "corporatism": 0.466,
+      "publicOpinion": 0.57,
+      "warFatigue": 0.148,
+      "economicStress": 0.051,
+      "legitimacy": 0.662,
+      "perks": {
+        "doubleTurn": 0,
+        "intelSurge": 0,
+        "stabilityShield": 0
+      },
+      "aiSkipCycles": 0,
+      "regions": [
+        "na_pnw",
+        "me_levant",
+        "as_seato"
+      ],
+      "memory": {
+        "f0": {
+          "grievance": 0.1,
+          "trust": 0.5,
+          "threat": 0.2
+        },
+        "f2": {
+          "grievance": 0.1,
+          "trust": 0.5,
+          "threat": 0.27
+        },
+        "f3": {
+          "grievance": 0.22,
+          "trust": 0,
+          "threat": 1.04
+        },
+        "f4": {
+          "grievance": 0.22,
+          "trust": 0.5,
+          "threat": 0.34
+        }
+      }
+    },
+    {
+      "name": "Aegis Bloc",
+      "isHuman": false,
+      "doctrine": "Alliance Balancer",
+      "resources": 245,
+      "political": 80,
+      "techPoints": 2.37,
+      "nukes": 2,
+      "hiddenStockpile": 2,
+      "stability": 0.556,
+      "democracy": 0.285,
+      "corporatism": 0.592,
+      "publicOpinion": 0.553,
+      "warFatigue": 0.2,
+      "economicStress": 0.053,
+      "legitimacy": 0.659,
+      "perks": {
+        "doubleTurn": 0,
+        "intelSurge": 0,
+        "stabilityShield": 0
+      },
+      "aiSkipCycles": 0,
+      "regions": [
+        "sa_andes",
+        "af_north",
+        "as_japan"
+      ],
+      "memory": {
+        "f0": {
+          "grievance": 0.1,
+          "trust": 0.5,
+          "threat": 0.2
+        },
+        "f1": {
+          "grievance": 0.22,
+          "trust": 0.5,
+          "threat": 0.41
+        },
+        "f3": {
+          "grievance": 0.1,
+          "trust": 0,
+          "threat": 0.97
+        },
+        "f4": {
+          "grievance": 0.1,
+          "trust": 0.5,
+          "threat": 0.41
+        }
+      }
+    },
+    {
+      "name": "Vanguard Union",
+      "isHuman": false,
+      "doctrine": "Stability First",
+      "resources": 280,
+      "political": 108,
+      "techPoints": 3.82,
+      "nukes": 4,
+      "hiddenStockpile": 2,
+      "stability": 0.543,
+      "democracy": 0.432,
+      "corporatism": 0.659,
+      "publicOpinion": 0.554,
+      "warFatigue": 0.153,
+      "economicStress": 0.054,
+      "legitimacy": 0.657,
+      "perks": {
+        "doubleTurn": 0,
+        "intelSurge": 0,
+        "stabilityShield": 0
+      },
+      "aiSkipCycles": 0,
+      "regions": [
+        "sa_cones",
+        "af_west",
+        "as_russia",
+        "oc_australia",
+        "na_sunbelt",
+        "na_california",
+        "as_china",
+        "me_gulf",
+        "eu_west",
+        "sa_brazil",
+        "eu_north"
+      ],
+      "memory": {
+        "f0": {
+          "grievance": 0.1,
+          "trust": 0.5,
+          "threat": 0.2
+        },
+        "f1": {
+          "grievance": 0.1,
+          "trust": 0.5,
+          "threat": 0.41
+        },
+        "f2": {
+          "grievance": 0.1,
+          "trust": 0.5,
+          "threat": 0.76
+        },
+        "f4": {
+          "grievance": 0.1,
+          "trust": 0.5,
+          "threat": 0.41
+        }
+      }
+    },
+    {
+      "name": "Mariner Compact",
+      "isHuman": false,
+      "doctrine": "Hybrid Opportunist",
+      "resources": 187,
+      "political": 74,
+      "techPoints": 3.12,
+      "nukes": 6,
+      "hiddenStockpile": 2,
+      "stability": 0.498,
+      "democracy": 0.374,
+      "corporatism": 0.632,
+      "publicOpinion": 0.551,
+      "warFatigue": 0.148,
+      "economicStress": 0.051,
+      "legitimacy": 0.66,
+      "perks": {
+        "doubleTurn": 0,
+        "intelSurge": 0,
+        "stabilityShield": 0
+      },
+      "aiSkipCycles": 0,
+      "regions": [
+        "af_east",
+        "oc_islands"
+      ],
+      "memory": {
+        "f0": {
+          "grievance": 0.1,
+          "trust": 0.5,
+          "threat": 0.2
+        },
+        "f1": {
+          "grievance": 0.1,
+          "trust": 0.5,
+          "threat": 0.2
+        },
+        "f2": {
+          "grievance": 0.1,
+          "trust": 0.5,
+          "threat": 0.34
+        },
+        "f3": {
+          "grievance": 0.1,
+          "trust": 0,
+          "threat": 1.18
+        }
+      }
+    }
+  ],
+  "mapOwnership": {
+    "na_canada": "f0",
+    "na_pnw": "f1",
+    "na_us_core": "f0",
+    "na_california": "f3",
+    "na_sunbelt": "f3",
+    "na_mexico": "f0",
+    "sa_brazil": "f3",
+    "sa_andes": "f2",
+    "sa_cones": "f3",
+    "eu_west": "f3",
+    "eu_east": "f0",
+    "eu_north": "f3",
+    "af_north": "f2",
+    "af_west": "f3",
+    "af_east": "f4",
+    "af_south": "f0",
+    "me_levant": "f1",
+    "me_gulf": "f3",
+    "as_russia": "f3",
+    "as_china": "f3",
+    "as_india": "f0",
+    "as_seato": "f1",
+    "as_japan": "f2",
+    "oc_australia": "f3",
+    "oc_islands": "f4"
+  },
+  "contestedRegions": {
+    "af_east": {
+      "regionId": "af_east",
+      "attackerId": "f1",
+      "defenderId": "f4",
+      "attackerSupport": 0.4582004306413749,
+      "defenderSupport": 0.541799569358625,
+      "turns": 1,
+      "pendingShowdown": false
+    }
+  },
+  "neutralRegions": {},
+  "pendingEffects": [],
+  "tttSummary": "Vanguard Union won; swing +13.",
+  "log": [
+    "T0: Scenario started for 2026. Doctrine baseline: Multipolar Adaptive. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T0: Scenario settings loaded: {\"nuclearPenaltySeverity\":1,\"retaliationCertainty\":0.5,\"guaranteedMad\":false,\"futureWeighting\":1,\"reputationBacklash\":1,\"intelligenceFog\":0,\"victoryControlThreshold\":0.55,\"escalationTrackingEnabled\":true,\"allianceFractureShock\":1,\"climateShockWeight\":1,\"famineShockWeight\":1,\"globalFalloutSeverity\":0,\"credibilityWeight\":1,\"humanitarianWeight\":0,\"longTermHorizonWeight\":0,\"domesticBacklashMultiplier\":1,\"escalationReciprocity\":1,\"continentShowdownThreshold\":0.5,\"continentSecureThreshold\":0.6,\"maxContestedTurnsBeforeShowdown\":4,\"sharedCollapseEnabled\":false,\"paradigmShiftEnabled\":true,\"deterrenceModel\":\"probabilistic\",\"surrenderPenaltyWeight\":1}. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T1: Debug snapshot (turn-start) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":109.36,\"avgPolitical\":95.02,\"avgStability\":0.64,\"avgThreat\":0.2,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T1: Aegis Bloc gained perk: Double Turn. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T1: Tic-Tac-Toe outcome: X. Aegis Bloc won; swing +12. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T1: Turn phase TTT complete (14/13). Aegis Bloc seized TTT initiative (+1 action, pressure bonus). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T1: Orion Pact skipped turn due to opponent Double Turn perk. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T1: Helios League captured China economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T1: Aegis Bloc captured China economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T1: Aegis Bloc captured W. Europe economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T1: Vanguard Union captured US Core economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T1: Mariner Compact captured China economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T1: Helios League secured middle_east control (60%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T1: Vanguard Union secured oceania control (63%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T1: Debug snapshot (turn-end) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":138,\"avgPolitical\":94.13,\"avgStability\":0.634,\"avgThreat\":0.218,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T2: Debug snapshot (turn-start) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":138,\"avgPolitical\":94.13,\"avgStability\":0.634,\"avgThreat\":0.218,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T2: Vanguard Union gained perk: Double Turn. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T2: Tic-Tac-Toe outcome: O. Vanguard Union won; swing +14. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T2: Turn phase TTT complete (15/13). Vanguard Union seized TTT initiative (+1 action, pressure bonus). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T2: Orion Pact's economic capture in US Core was resisted. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T2: Helios League captured US Core economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T2: Aegis Bloc skipped turn due to opponent Double Turn perk. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T2: Vanguard Union captured US Core economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T2: Vanguard Union's economic capture in China was resisted. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T2: Mariner Compact's economic capture in US Core was resisted. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T2: Helios League secured middle_east control (60%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T2: Vanguard Union secured oceania control (63%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T2: Debug snapshot (turn-end) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":159.91,\"avgPolitical\":92.03,\"avgStability\":0.628,\"avgThreat\":0.235,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T3: Debug snapshot (turn-start) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":159.91,\"avgPolitical\":92.03,\"avgStability\":0.628,\"avgThreat\":0.235,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T3: Vanguard Union gained perk: Double Turn. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T3: Tic-Tac-Toe outcome: X. Vanguard Union won; swing +13. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T3: Turn phase TTT complete (14/14). Vanguard Union seized TTT initiative (+1 action, pressure bonus). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T3: Orion Pact skipped turn due to opponent Double Turn perk. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T3: Helios League's economic capture in China was resisted. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T3: Aegis Bloc's economic capture in China was resisted. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T3: Vanguard Union captured China economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T3: Vanguard Union captured US Sunbelt economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T3: Mariner Compact captured US Core economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T3: Helios League secured middle_east control (60%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T3: Vanguard Union secured asia control (63%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T3: Vanguard Union secured oceania control (63%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T3: Debug snapshot (turn-end) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":183.32,\"avgPolitical\":90.34,\"avgStability\":0.623,\"avgThreat\":0.253,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T4: Debug snapshot (turn-start) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":183.32,\"avgPolitical\":90.34,\"avgStability\":0.623,\"avgThreat\":0.253,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T4: Aegis Bloc gained perk: Double Turn. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T4: Tic-Tac-Toe outcome: O. Aegis Bloc won; swing +15. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T4: Turn phase TTT complete (14/13). Aegis Bloc seized TTT initiative (+1 action, pressure bonus). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T4: Orion Pact skipped turn due to opponent Double Turn perk. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T4: Helios League captured China economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T4: Aegis Bloc captured California economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T4: Aegis Bloc captured US Core economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T4: Vanguard Union's economic capture in US Core was resisted. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T4: Mariner Compact's economic capture in US Core was resisted. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T4: Helios League secured middle_east control (60%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T4: Vanguard Union secured oceania control (63%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T4: Debug snapshot (turn-end) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":206.53,\"avgPolitical\":88.65,\"avgStability\":0.618,\"avgThreat\":0.27,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T5: Debug snapshot (turn-start) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":206.53,\"avgPolitical\":88.65,\"avgStability\":0.618,\"avgThreat\":0.27,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T5: Vanguard Union gained perk: Double Turn. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T5: Tic-Tac-Toe outcome: O. Vanguard Union won; swing +12. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T5: Turn phase TTT complete (13/13). Vanguard Union seized TTT initiative (+1 action, pressure bonus). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T5: Orion Pact's economic capture in US Core was resisted. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T5: Helios League captured US Core economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T5: Aegis Bloc captured US Core economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T5: Vanguard Union captured US Core economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T5: Vanguard Union captured California economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T5: Mariner Compact skipped turn due to opponent Double Turn perk. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T5: Helios League secured middle_east control (60%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T5: Vanguard Union secured oceania control (63%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T5: Debug snapshot (turn-end) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":226.98,\"avgPolitical\":87.36,\"avgStability\":0.613,\"avgThreat\":0.288,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T6: Debug snapshot (turn-start) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":226.98,\"avgPolitical\":87.36,\"avgStability\":0.613,\"avgThreat\":0.288,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T6: Vanguard Union gained perk: Double Turn. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T6: Tic-Tac-Toe outcome: X. Vanguard Union won; swing +14. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T6: Turn phase TTT complete (13/13). Vanguard Union seized TTT initiative (+1 action, pressure bonus). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T6: Orion Pact failed military pressure in US Core. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T6: Helios League skipped turn due to opponent Double Turn perk. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T6: Aegis Bloc captured China economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T6: Vanguard Union captured China economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T6: Vanguard Union captured Gulf economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T6: Mariner Compact's economic capture in US Core was resisted. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T6: Helios League secured middle_east control (60%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T6: Vanguard Union secured asia control (63%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T6: Vanguard Union secured oceania control (63%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T6: Debug snapshot (turn-end) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":234.77,\"avgPolitical\":85.77,\"avgStability\":0.6,\"avgThreat\":0.33,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T7: Debug snapshot (turn-start) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":234.77,\"avgPolitical\":85.77,\"avgStability\":0.6,\"avgThreat\":0.33,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T7: Vanguard Union gained perk: Double Turn. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: Tic-Tac-Toe outcome: X. Vanguard Union won; swing +15. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: Turn phase TTT complete (14/15). Vanguard Union seized TTT initiative (+1 action, pressure bonus). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: Orion Pact failed military pressure in US Core. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: DEFCON shift 5 -> 4. Major conventional strike altered balance. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: Helios League seized US Core by direct force. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: Aegis Bloc skipped turn due to opponent Double Turn perk. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: Vanguard Union's economic capture in W. Europe was resisted. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: Vanguard Union captured W. Europe economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: Mariner Compact's economic capture in China was resisted. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: Helios League secured middle_east control (60%). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: Vanguard Union secured asia control (63%). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: Vanguard Union secured oceania control (63%). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: Debug snapshot (turn-end) [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":231.19,\"avgPolitical\":85.27,\"avgStability\":0.587,\"avgThreat\":0.382,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T8: Debug snapshot (turn-start) [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":231.19,\"avgPolitical\":85.27,\"avgStability\":0.587,\"avgThreat\":0.382,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T8: Vanguard Union gained perk: Double Turn. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Tic-Tac-Toe outcome: X. Vanguard Union won; swing +13. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Turn phase TTT complete (14/13). Vanguard Union seized TTT initiative (+1 action, pressure bonus). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: DEFCON shift 4 -> 3. Major conventional strike altered balance. [dbg {\"defcon\":3,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Orion Pact seized US Core by direct force. [dbg {\"defcon\":3,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Helios League instigated revolution in East Africa. Support now 46/54. [dbg {\"defcon\":3,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Aegis Bloc failed military pressure in Brazil. [dbg {\"defcon\":3,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Vanguard Union captured Brazil economically. [dbg {\"defcon\":3,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Vanguard Union captured Nordics economically. [dbg {\"defcon\":3,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Mariner Compact skipped turn due to opponent Double Turn perk. [dbg {\"defcon\":3,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Orion Pact secured north_america control (62%). [dbg {\"defcon\":3,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Vanguard Union secured south_america control (72%). [dbg {\"defcon\":3,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Vanguard Union secured europe control (65%). [dbg {\"defcon\":3,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Helios League secured middle_east control (60%). [dbg {\"defcon\":3,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Vanguard Union secured asia control (63%). [dbg {\"defcon\":3,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Vanguard Union secured oceania control (63%). [dbg {\"defcon\":3,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Debug snapshot (turn-end) [dbg {\"defcon\":3,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":233.08,\"avgPolitical\":84.44,\"avgStability\":0.572,\"avgThreat\":0.459,\"contestedRegions\":1,\"neutralRegions\":0}]",
+    "T8: Game complete. Winner: Vanguard Union (continent-control victory). [dbg {\"defcon\":3,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Global tone shifted to tense. [dbg {\"defcon\":3,\"escalation\":\"conventional\",\"tone\":\"tense\",\"paradigm\":\"normal\"}]"
+  ],
+  "debugLog": [
+    {
+      "turn": 0,
+      "message": "Scenario started for 2026. Doctrine baseline: Multipolar Adaptive.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 0,
+      "message": "Scenario settings loaded: {\"nuclearPenaltySeverity\":1,\"retaliationCertainty\":0.5,\"guaranteedMad\":false,\"futureWeighting\":1,\"reputationBacklash\":1,\"intelligenceFog\":0,\"victoryControlThreshold\":0.55,\"escalationTrackingEnabled\":true,\"allianceFractureShock\":1,\"climateShockWeight\":1,\"famineShockWeight\":1,\"globalFalloutSeverity\":0,\"credibilityWeight\":1,\"humanitarianWeight\":0,\"longTermHorizonWeight\":0,\"domesticBacklashMultiplier\":1,\"escalationReciprocity\":1,\"continentShowdownThreshold\":0.5,\"continentSecureThreshold\":0.6,\"maxContestedTurnsBeforeShowdown\":4,\"sharedCollapseEnabled\":false,\"paradigmShiftEnabled\":true,\"deterrenceModel\":\"probabilistic\",\"surrenderPenaltyWeight\":1}.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 1,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 109.36,
+      "avgPolitical": 95.02,
+      "avgStability": 0.64,
+      "avgThreat": 0.2,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 1,
+      "message": "Aegis Bloc gained perk: Double Turn.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 1,
+      "message": "Tic-Tac-Toe outcome: X. Aegis Bloc won; swing +12.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 1,
+      "message": "Turn phase TTT complete (14/13). Aegis Bloc seized TTT initiative (+1 action, pressure bonus).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 1,
+      "message": "Orion Pact skipped turn due to opponent Double Turn perk.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 1,
+      "message": "Helios League captured China economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 1,
+      "message": "Aegis Bloc captured China economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 1,
+      "message": "Aegis Bloc captured W. Europe economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 1,
+      "message": "Vanguard Union captured US Core economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 1,
+      "message": "Mariner Compact captured China economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 1,
+      "message": "Helios League secured middle_east control (60%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 1,
+      "message": "Vanguard Union secured oceania control (63%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 1,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 138,
+      "avgPolitical": 94.13,
+      "avgStability": 0.634,
+      "avgThreat": 0.218,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 2,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 138,
+      "avgPolitical": 94.13,
+      "avgStability": 0.634,
+      "avgThreat": 0.218,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 2,
+      "message": "Vanguard Union gained perk: Double Turn.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 2,
+      "message": "Tic-Tac-Toe outcome: O. Vanguard Union won; swing +14.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 2,
+      "message": "Turn phase TTT complete (15/13). Vanguard Union seized TTT initiative (+1 action, pressure bonus).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 2,
+      "message": "Orion Pact's economic capture in US Core was resisted.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 2,
+      "message": "Helios League captured US Core economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 2,
+      "message": "Aegis Bloc skipped turn due to opponent Double Turn perk.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 2,
+      "message": "Vanguard Union captured US Core economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 2,
+      "message": "Vanguard Union's economic capture in China was resisted.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 2,
+      "message": "Mariner Compact's economic capture in US Core was resisted.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 2,
+      "message": "Helios League secured middle_east control (60%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 2,
+      "message": "Vanguard Union secured oceania control (63%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 2,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 159.91,
+      "avgPolitical": 92.03,
+      "avgStability": 0.628,
+      "avgThreat": 0.235,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 3,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 159.91,
+      "avgPolitical": 92.03,
+      "avgStability": 0.628,
+      "avgThreat": 0.235,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 3,
+      "message": "Vanguard Union gained perk: Double Turn.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 3,
+      "message": "Tic-Tac-Toe outcome: X. Vanguard Union won; swing +13.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 3,
+      "message": "Turn phase TTT complete (14/14). Vanguard Union seized TTT initiative (+1 action, pressure bonus).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 3,
+      "message": "Orion Pact skipped turn due to opponent Double Turn perk.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 3,
+      "message": "Helios League's economic capture in China was resisted.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 3,
+      "message": "Aegis Bloc's economic capture in China was resisted.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 3,
+      "message": "Vanguard Union captured China economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 3,
+      "message": "Vanguard Union captured US Sunbelt economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 3,
+      "message": "Mariner Compact captured US Core economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 3,
+      "message": "Helios League secured middle_east control (60%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 3,
+      "message": "Vanguard Union secured asia control (63%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 3,
+      "message": "Vanguard Union secured oceania control (63%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 3,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 183.32,
+      "avgPolitical": 90.34,
+      "avgStability": 0.623,
+      "avgThreat": 0.253,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 4,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 183.32,
+      "avgPolitical": 90.34,
+      "avgStability": 0.623,
+      "avgThreat": 0.253,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 4,
+      "message": "Aegis Bloc gained perk: Double Turn.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 4,
+      "message": "Tic-Tac-Toe outcome: O. Aegis Bloc won; swing +15.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 4,
+      "message": "Turn phase TTT complete (14/13). Aegis Bloc seized TTT initiative (+1 action, pressure bonus).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 4,
+      "message": "Orion Pact skipped turn due to opponent Double Turn perk.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 4,
+      "message": "Helios League captured China economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 4,
+      "message": "Aegis Bloc captured California economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 4,
+      "message": "Aegis Bloc captured US Core economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 4,
+      "message": "Vanguard Union's economic capture in US Core was resisted.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 4,
+      "message": "Mariner Compact's economic capture in US Core was resisted.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 4,
+      "message": "Helios League secured middle_east control (60%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 4,
+      "message": "Vanguard Union secured oceania control (63%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 4,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 206.53,
+      "avgPolitical": 88.65,
+      "avgStability": 0.618,
+      "avgThreat": 0.27,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 5,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 206.53,
+      "avgPolitical": 88.65,
+      "avgStability": 0.618,
+      "avgThreat": 0.27,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 5,
+      "message": "Vanguard Union gained perk: Double Turn.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 5,
+      "message": "Tic-Tac-Toe outcome: O. Vanguard Union won; swing +12.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 5,
+      "message": "Turn phase TTT complete (13/13). Vanguard Union seized TTT initiative (+1 action, pressure bonus).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 5,
+      "message": "Orion Pact's economic capture in US Core was resisted.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 5,
+      "message": "Helios League captured US Core economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 5,
+      "message": "Aegis Bloc captured US Core economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 5,
+      "message": "Vanguard Union captured US Core economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 5,
+      "message": "Vanguard Union captured California economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 5,
+      "message": "Mariner Compact skipped turn due to opponent Double Turn perk.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 5,
+      "message": "Helios League secured middle_east control (60%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 5,
+      "message": "Vanguard Union secured oceania control (63%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 5,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 226.98,
+      "avgPolitical": 87.36,
+      "avgStability": 0.613,
+      "avgThreat": 0.288,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 6,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 226.98,
+      "avgPolitical": 87.36,
+      "avgStability": 0.613,
+      "avgThreat": 0.288,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 6,
+      "message": "Vanguard Union gained perk: Double Turn.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 6,
+      "message": "Tic-Tac-Toe outcome: X. Vanguard Union won; swing +14.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 6,
+      "message": "Turn phase TTT complete (13/13). Vanguard Union seized TTT initiative (+1 action, pressure bonus).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 6,
+      "message": "Orion Pact failed military pressure in US Core.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 6,
+      "message": "Helios League skipped turn due to opponent Double Turn perk.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 6,
+      "message": "Aegis Bloc captured China economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 6,
+      "message": "Vanguard Union captured China economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 6,
+      "message": "Vanguard Union captured Gulf economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 6,
+      "message": "Mariner Compact's economic capture in US Core was resisted.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 6,
+      "message": "Helios League secured middle_east control (60%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 6,
+      "message": "Vanguard Union secured asia control (63%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 6,
+      "message": "Vanguard Union secured oceania control (63%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 6,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 234.77,
+      "avgPolitical": 85.77,
+      "avgStability": 0.6,
+      "avgThreat": 0.33,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 7,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 234.77,
+      "avgPolitical": 85.77,
+      "avgStability": 0.6,
+      "avgThreat": 0.33,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 7,
+      "message": "Vanguard Union gained perk: Double Turn.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "Tic-Tac-Toe outcome: X. Vanguard Union won; swing +15.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "Turn phase TTT complete (14/15). Vanguard Union seized TTT initiative (+1 action, pressure bonus).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "Orion Pact failed military pressure in US Core.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "DEFCON shift 5 -> 4. Major conventional strike altered balance.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "Helios League seized US Core by direct force.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "Aegis Bloc skipped turn due to opponent Double Turn perk.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "Vanguard Union's economic capture in W. Europe was resisted.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "Vanguard Union captured W. Europe economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "Mariner Compact's economic capture in China was resisted.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "Helios League secured middle_east control (60%).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "Vanguard Union secured asia control (63%).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "Vanguard Union secured oceania control (63%).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 231.19,
+      "avgPolitical": 85.27,
+      "avgStability": 0.587,
+      "avgThreat": 0.382,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 8,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 231.19,
+      "avgPolitical": 85.27,
+      "avgStability": 0.587,
+      "avgThreat": 0.382,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 8,
+      "message": "Vanguard Union gained perk: Double Turn.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Tic-Tac-Toe outcome: X. Vanguard Union won; swing +13.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Turn phase TTT complete (14/13). Vanguard Union seized TTT initiative (+1 action, pressure bonus).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "DEFCON shift 4 -> 3. Major conventional strike altered balance.",
+      "defcon": 3,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Orion Pact seized US Core by direct force.",
+      "defcon": 3,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Helios League instigated revolution in East Africa. Support now 46/54.",
+      "defcon": 3,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Aegis Bloc failed military pressure in Brazil.",
+      "defcon": 3,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Vanguard Union captured Brazil economically.",
+      "defcon": 3,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Vanguard Union captured Nordics economically.",
+      "defcon": 3,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Mariner Compact skipped turn due to opponent Double Turn perk.",
+      "defcon": 3,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Orion Pact secured north_america control (62%).",
+      "defcon": 3,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Vanguard Union secured south_america control (72%).",
+      "defcon": 3,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Vanguard Union secured europe control (65%).",
+      "defcon": 3,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Helios League secured middle_east control (60%).",
+      "defcon": 3,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Vanguard Union secured asia control (63%).",
+      "defcon": 3,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Vanguard Union secured oceania control (63%).",
+      "defcon": 3,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 3,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 233.08,
+      "avgPolitical": 84.44,
+      "avgStability": 0.572,
+      "avgThreat": 0.459,
+      "contestedRegions": 1,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 8,
+      "message": "Game complete. Winner: Vanguard Union (continent-control victory).",
+      "defcon": 3,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Global tone shifted to tense.",
+      "defcon": 3,
+      "escalation": "conventional",
+      "tone": "tense",
+      "paradigm": "normal"
+    }
+  ]
+}
