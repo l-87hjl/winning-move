@@ -1,0 +1,269 @@
+Here is a structured analysis of **Turn 8 (2026, Standard, AI-only)**:
+
+📄 Source: 
+
+---
+
+# 1️⃣ Immediate Overview
+
+* **Turn:** 8
+* **Game Over:** true
+* **Winner:** Vanguard Union
+* **Victory Type:** Continent-control victory
+* **Escalation:** Conventional only
+* **DEFCON:** 3
+* **Nuclear Usage:** 0
+* **Paradigm:** normal
+
+This is a **fast, clean conventional dominance victory** — completely different from the later stalemate logs.
+
+---
+
+# 2️⃣ Why It Ended So Early
+
+Victory condition:
+
+```json
+"victoryControlThreshold": 0.55
+```
+
+By Turn 8:
+
+Vanguard Union controlled:
+
+* South America (72%)
+* Europe (65%)
+* Asia (63%)
+* Oceania (63%)
+
+That crosses global dominance threshold under your scoring model.
+
+No escalation beyond conventional.
+No limited nuclear stage.
+No paradigm shift.
+
+This is a **pure territory snowball win.**
+
+---
+
+# 3️⃣ Structural Pattern Emerging
+
+This log exposes a major mechanical behavior:
+
+## 🧠 Vanguard Union snowballs via TTT dominance
+
+Turn-by-turn pattern:
+
+* Vanguard wins Tic-Tac-Toe repeatedly.
+* Gains Double Turn repeatedly.
+* Opponents skip turns repeatedly.
+* Uses economic capture (not military).
+* Secures continents above 60%.
+* Locks in continent control bonuses.
+* Repeats.
+
+This is compounding advantage.
+
+The Double Turn perk appears too frequently and too impactfully.
+
+---
+
+# 4️⃣ Escalation Behavior
+
+Escalation ladder:
+
+* DEFCON 5 → 4 at Turn 7
+* DEFCON 4 → 3 at Turn 8
+* Escalation remains conventional
+* Tone shifts to tense *after* victory
+
+Important:
+
+The war escalates only as a side-effect of conventional strikes — not nuclear behavior.
+
+The nuclear system is effectively dormant in this run.
+
+---
+
+# 5️⃣ Contested Regions & Revolution
+
+Only one contested region exists at end:
+
+```json
+"af_east": {
+  "attackerId": "f1",
+  "defenderId": "f4",
+  "attackerSupport": 0.458,
+  "defenderSupport": 0.542
+}
+```
+
+Revolution was initiated once:
+
+> "Helios League instigated revolution in East Africa. Support now 46/54."
+
+But:
+
+* No showdown triggered.
+* maxContestedTurnsBeforeShowdown = 4.
+* Game ended before it mattered.
+
+Revolution mechanics are too slow relative to economic capture snowball.
+
+---
+
+# 6️⃣ Economic Capture Dominance
+
+Most territory changes were:
+
+* "captured economically"
+* "secured continent control"
+
+Very few military pressure events.
+
+This suggests economic capture is:
+
+* High probability
+* Low cost
+* Low risk
+* High reward
+
+This biases toward rapid peaceful snowball rather than prolonged instability.
+
+---
+
+# 7️⃣ Stability & Threat Trend
+
+By Turn 8:
+
+* Avg stability fell from 0.64 → 0.572
+* Avg threat rose from 0.20 → 0.459
+
+The system is destabilizing…
+
+But victory fires before instability can matter.
+
+So:
+
+Escalation pressure builds
+But victory threshold triggers first
+
+This is important structurally.
+
+---
+
+# 8️⃣ Why This Run Didn’t Become Stalemate
+
+Compare to later logs:
+
+In Turn 21/22:
+
+* No faction reached 55%.
+* DEFCON escalated to 1.
+* Limited nuclear stage triggered.
+* Paradigm shift ended game.
+
+In Turn 8:
+
+* One faction reached dominance before systemic instability matured.
+* Therefore no paradigm shift.
+
+This shows your engine has two competing end states:
+
+1. Snowball dominance win
+2. Terminal stalemate paradigm shift
+
+Which one happens depends on early compounding advantage.
+
+---
+
+# 9️⃣ Hidden Structural Insight
+
+Your game currently behaves like:
+
+> Tic-Tac-Toe → Double Turn → Economic Capture → Continent Secure → Repeat → Victory
+
+The TTT layer is not just aesthetic.
+
+It is the primary acceleration mechanism.
+
+If a faction wins TTT consistently, they break pacing.
+
+---
+
+# 🔟 Nuclear System Again
+
+Even though:
+
+* Nukes exist (multiple factions have 4–6)
+* Humanitarian weight = 0
+* Global fallout severity = 0
+* Long term weight = 0
+* Retaliation certainty = 0.5
+
+No nuclear logic triggered.
+
+Because escalation never reached limitedNuclear.
+
+Escalation only reacts to major conventional strike counts.
+
+So nuclear path requires:
+
+Conventional escalation to exceed threshold
+OR deterrence breach
+
+Which did not happen here.
+
+---
+
+# 11️⃣ Major Behavioral Summary
+
+This run is:
+
+Stable escalation → Economic snowball → Territory dominance → Early win
+
+It never reaches:
+
+* Revolution maturity
+* Showdown mechanics
+* Nuclear decision layer
+* Collapse
+* Paradigm shift
+
+The system terminated too efficiently.
+
+---
+
+# 12️⃣ What This Tells You About Engine Behavior
+
+You currently have:
+
+### Two macro failure modes
+
+A) Fast snowball dominance
+B) High-tension stalemate
+
+What you do not have is:
+
+* Sustained mid-game instability
+* Continent brinkmanship
+* Prolonged contested regions
+* Late-game nuclear decision forcing
+
+The engine either:
+
+Wins too early
+Or stalls too long
+
+There is no middle arc yet.
+
+---
+
+If you want next, we can:
+
+* Compare Turn 8 vs Turn 21 structurally
+* Identify what triggers paradigmShift precisely
+* Map the snowball loop mathematically
+* Or analyze Turn 60 logs for collapse mechanics
+
+Right now this log confirms your system is deterministic under compounding advantage.
