@@ -164,9 +164,7 @@ function r(id, name, continent, x, y, w, h, sx, sy, props) {
   };
 }
 
-// Larger, more geographically-shaped continent masks.
-// Each mask is a 2D binary grid; 1 = land tile, 0 = ocean gap.
-// Wider/taller masks produce more organic continent outlines.
+// Local silhouette masks per continent (used only to build the global mask).
 const CONTINENT_MASKS = {
   north_america: [
     [0,0,0,1,1,1,1,0,0,0],
@@ -231,6 +229,42 @@ const CONTINENT_MASKS = {
     [0,0,0,1,0,0]
   ]
 };
+
+// Global world-space tile layout. Each continent mask is anchored onto one
+// shared coordinate plane so drawMap renders from absolute tile coordinates.
+const GLOBAL_CONTINENT_ANCHORS = {
+  north_america: { x: 1,  y: 2 },
+  south_america: { x: 14, y: 13 },
+  europe:        { x: 23, y: 6 },
+  africa:        { x: 25, y: 12 },
+  middle_east:   { x: 31, y: 10 },
+  asia:          { x: 34, y: 4 },
+  oceania:       { x: 46, y: 17 }
+};
+
+function buildGlobalLandmask() {
+  const byContinent = {};
+  let maxX = 0;
+  let maxY = 0;
+  Object.entries(CONTINENT_MASKS).forEach(([continent, mask]) => {
+    const anchor = GLOBAL_CONTINENT_ANCHORS[continent] || { x: 0, y: 0 };
+    const tiles = [];
+    mask.forEach((row, r) => {
+      row.forEach((cell, c) => {
+        if (cell !== 1) return;
+        const x = anchor.x + c;
+        const y = anchor.y + r;
+        tiles.push({ x, y });
+        maxX = Math.max(maxX, x);
+        maxY = Math.max(maxY, y);
+      });
+    });
+    byContinent[continent] = tiles;
+  });
+  return { byContinent, cols: maxX + 1, rows: maxY + 1 };
+}
+
+const GLOBAL_LANDMASK = buildGlobalLandmask();
 
 const state = {
   turn: 0, era: "2026", started: false, gameOver: false, humanEnabled: false, gameMode: "standard", executionMode: "observer", autoAdvance: false, maxTurns: MAX_TURNS,
@@ -516,6 +550,8 @@ function assignStartingOwnership() {
 
 function drawMap() {
   dom.worldMap.innerHTML = "";
+  dom.worldMap.style.gridTemplateColumns = `repeat(${GLOBAL_LANDMASK.cols}, 16px)`;
+  dom.worldMap.style.gridTemplateRows = `repeat(${GLOBAL_LANDMASK.rows}, 16px)`;
 
   // Track which continent labels have been placed to avoid duplicates.
   const labeledContinents = new Set();
@@ -553,8 +589,8 @@ function drawMap() {
     tiles.forEach((tile, tIdx) => {
       const rect = document.createElement("div");
       rect.setAttribute("class", "region-tile");
-      rect.style.gridColumn = `${region.gx + tile.c + 1}`;
-      rect.style.gridRow    = `${region.gy + tile.r + 1}`;
+      rect.style.gridColumn = `${tile.x + 1}`;
+      rect.style.gridRow    = `${tile.y + 1}`;
       rect.dataset.regionId   = region.id;
       rect.dataset.continent  = region.continent;
       rect.dataset.resource   = primaryRes;
@@ -599,8 +635,8 @@ function drawMap() {
       const labelEl = document.createElement("div");
       labelEl.className = "continent-label";
       labelEl.textContent = region.continent.replace(/_/g, " ").toUpperCase();
-      labelEl.style.gridColumn = `${region.gx + firstTile.c + 1}`;
-      labelEl.style.gridRow    = `${region.gy + firstTile.r + 1}`;
+      labelEl.style.gridColumn = `${firstTile.x + 1}`;
+      labelEl.style.gridRow    = `${firstTile.y + 1}`;
       dom.worldMap.append(labelEl);
     }
 
@@ -611,32 +647,114 @@ function drawMap() {
 
 function regionTiles(region) {
   if (region.tiles?.length) return region.tiles;
-  const mask = CONTINENT_MASKS[region.continent];
-  if (!mask) {
-    region.tiles = fallbackTiles(region);
+  const continentTiles = (GLOBAL_LANDMASK.byContinent[region.continent] || []).map((tile) => ({ ...tile }));
+  if (!continentTiles.length) {
+    region.tiles = [];
     return region.tiles;
   }
-  const tiles = [];
-  for (let r = 0; r < region.rows; r += 1) {
-    for (let c = 0; c < region.cols; c += 1) {
-      const maskR = Math.floor((r / Math.max(1, region.rows - 1)) * (mask.length - 1));
-      const maskRow = mask[maskR] || [];
-      const maskC = Math.floor((c / Math.max(1, region.cols - 1)) * (maskRow.length - 1));
-      if (maskRow[maskC] === 1) tiles.push({ c, r });
-    }
-  }
-  // Accept ≥ 2 shaped tiles so larger masks still produce organic outlines
-  // on small regions (2 or 3 tiles is better than a full rectangle).
-  region.tiles = tiles.length >= 2 ? tiles : fallbackTiles(region);
-  return region.tiles;
-}
 
-function fallbackTiles(region) {
-  const tiles = [];
-  for (let r = 0; r < region.rows; r += 1) {
-    for (let c = 0; c < region.cols; c += 1) tiles.push({ c, r });
+  const continentRegions = state.regions.filter((r) => r.continent === region.continent);
+  const totalWeight = continentRegions.reduce((sum, r) => sum + Math.max(1, r.rows * r.cols), 0);
+  const targetById = {};
+  let assignedTotal = 0;
+  continentRegions.forEach((r, idx) => {
+    const raw = Math.round((Math.max(1, r.rows * r.cols) / totalWeight) * continentTiles.length);
+    const target = Math.max(1, raw);
+    targetById[r.id] = target;
+    assignedTotal += target;
+    if (idx === continentRegions.length - 1 && assignedTotal !== continentTiles.length) {
+      targetById[r.id] = Math.max(1, targetById[r.id] + (continentTiles.length - assignedTotal));
+    }
+  });
+
+  const tileKey = (tile) => `${tile.x},${tile.y}`;
+  const tileMap = new Map(continentTiles.map((tile) => [tileKey(tile), tile]));
+  const neighbors = (tile) => {
+    const deltas = [[1,0],[-1,0],[0,1],[0,-1]];
+    return deltas
+      .map(([dx,dy]) => tileMap.get(`${tile.x + dx},${tile.y + dy}`))
+      .filter(Boolean);
+  };
+
+  const centroid = (r) => ({ x: r.gx + (r.cols / 2), y: r.gy + (r.rows / 2) });
+  const seeds = continentRegions
+    .map((r) => ({ region: r, center: centroid(r) }))
+    .sort((a, b) => a.center.x - b.center.x || a.center.y - b.center.y);
+
+  const unclaimed = new Set(continentTiles.map(tileKey));
+  const assignments = {};
+
+  const nearestUnclaimed = (center) => {
+    let best = null;
+    let bestDist = Infinity;
+    unclaimed.forEach((key) => {
+      const tile = tileMap.get(key);
+      const dist = Math.hypot(tile.x - center.x, tile.y - center.y);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = tile;
+      }
+    });
+    return best;
+  };
+
+  seeds.forEach(({ region: r, center }) => {
+    const quota = Math.min(targetById[r.id] || 1, unclaimed.size);
+    const start = nearestUnclaimed(center);
+    if (!start || quota <= 0) {
+      assignments[r.id] = [];
+      return;
+    }
+    const queue = [start];
+    const seen = new Set([tileKey(start)]);
+    const allocated = [];
+
+    while (queue.length && allocated.length < quota) {
+      const current = queue.shift();
+      const key = tileKey(current);
+      if (!unclaimed.has(key)) continue;
+      unclaimed.delete(key);
+      allocated.push(current);
+      neighbors(current).forEach((n) => {
+        const nKey = tileKey(n);
+        if (!seen.has(nKey)) {
+          seen.add(nKey);
+          queue.push(n);
+        }
+      });
+    }
+
+    if (allocated.length < quota && unclaimed.size) {
+      [...unclaimed]
+        .map((key) => tileMap.get(key))
+        .sort((a, b) => Math.hypot(a.x - center.x, a.y - center.y) - Math.hypot(b.x - center.x, b.y - center.y))
+        .slice(0, quota - allocated.length)
+        .forEach((tile) => {
+          const key = tileKey(tile);
+          if (!unclaimed.has(key)) return;
+          unclaimed.delete(key);
+          allocated.push(tile);
+        });
+    }
+
+    assignments[r.id] = allocated;
+  });
+
+  if (unclaimed.size && continentRegions.length) {
+    const keys = [...unclaimed];
+    keys.forEach((key, idx) => {
+      const tile = tileMap.get(key);
+      const targetRegion = continentRegions[idx % continentRegions.length];
+      assignments[targetRegion.id] ||= [];
+      assignments[targetRegion.id].push(tile);
+    });
   }
-  return tiles;
+
+  continentRegions.forEach((r) => {
+    r.tiles = (assignments[r.id] || []).sort((a, b) => a.y - b.y || a.x - b.x);
+  });
+
+  return region.tiles;
 }
 
 function recolorMap() {
