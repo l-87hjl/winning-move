@@ -169,7 +169,8 @@ const state = {
   allianceFractureLevel: 0,
   eventOverlayTimeout: null,
   eventToneTimeout: null,
-  turnsSinceNuclear: 0
+  turnsSinceNuclear: 0,
+  lastCompletedGame: null
 };
 
 let autoAdvanceInterval = null;
@@ -298,6 +299,7 @@ function startGame() {
   state.paradigmState = "normal";
   state.aiDevelopmentProgress = 0;
   state.continentContestTurns = {};
+  state.lastCompletedGame = null;
   state.defconLevel = 5;
   state.globalTone = "stable";
   state.globalCasualties = { deaths: 0, injured: 0, economicDamage: 0 };
@@ -500,7 +502,7 @@ function updateUI(shouldRender = true) {
   state.ttt.maxGamble = computeMaxGamble();
   dom.tttMaxInfo.textContent = `Max wager: ${state.ttt.maxGamble} political points.`;
   dom.tttRoundInfo.textContent = state.ttt.lastRoundSummary || "No high-stakes round played yet.";
-  dom.downloadReportBtn.disabled = !state.started;
+  dom.downloadReportBtn.disabled = !(state.started || state.lastCompletedGame);
   dom.nextTurnBtn.disabled = !state.started || state.gameOver || state.ttt.animating;
   dom.autoAdvanceBtn.disabled = !state.started || state.gameOver;
   if ((!state.started || state.gameOver) && autoAdvanceInterval) {
@@ -1012,7 +1014,7 @@ function detectDeadlock() {
 function endTurnChecks() {
   const threshold = state.scenarioSettings.victoryControlThreshold || SCENARIO_SETTINGS.victoryControlThreshold;
   const winner = state.factions.find((f) => f.regions.length >= Math.ceil(state.regions.length * threshold));
-  if (state.paradigmState !== "normal" && (state.turn >= MAX_TURNS || state.paradigmState === "mutualCollapse" || state.paradigmState === "noWinCondition")) {
+  if (state.paradigmState !== "normal" && (state.turn >= MAX_TURNS || state.paradigmState === "mutualCollapse")) {
     state.gameOver = true;
     log(`Game complete under paradigm shift: ${state.paradigmState}. No single winner declared.`);
     return;
@@ -1023,6 +1025,7 @@ function endTurnChecks() {
     log(`Game complete. Winner: ${summary.name}.`);
   }
   if (state.gameOver) {
+    state.lastCompletedGame = buildReportPayload();
     state.autoAdvance = false;
     if (autoAdvanceInterval) {
       clearInterval(autoAdvanceInterval);
@@ -1031,6 +1034,29 @@ function endTurnChecks() {
     showGameOverOverlay();
     buildGameOverSummary();
   }
+}
+
+function buildReportPayload() {
+  const safeStats = state.stats || {};
+  return {
+    generatedAt: new Date().toISOString(), era: state.era, turn: state.turn, gameOver: state.gameOver, humanEnabled: state.humanEnabled, gameMode: state.gameMode, executionMode: state.executionMode,
+    scenarioSettings: state.scenarioSettings || { ...SCENARIO_SETTINGS }, escalation: state.escalation || { current: "conventional", counts: { conventional: 0, limitedNuclear: 0, fullExchange: 0 } }, paradigmState: state.paradigmState, aiDevelopmentProgress: Number((state.aiDevelopmentProgress || 0).toFixed(3)), continentState: state.continentState || {},
+    nuclearUsageFrequency: state.turn > 0 ? Number(((safeStats.nuclearUsage || 0) / state.turn).toFixed(3)) : 0,
+    nuclearCounts: { tactical: safeStats.tacticalNuclear || 0, strategic: safeStats.strategicNuclear || 0, total: safeStats.nuclearUsage || 0 },
+    escalationStagesReached: safeStats.maxEscalationStage || {},
+    surrenderAttempts: safeStats.surrenderAttempts || 0,
+    globalCollapseTriggered: Boolean(safeStats.collapseTriggered),
+    indexLink: "file:///workspace/winning-move/index.html",
+    factions: (state.factions || []).map((f) => ({
+      name: f.name, isHuman: f.isHuman, doctrine: f.doctrine, resources: Math.round(f.resources), political: Math.round(f.political), techPoints: Number((f.techPoints || 0).toFixed(2)), nukes: Number((f.nukes || 0).toFixed(2)),
+      hiddenStockpile: Number((f.hiddenStockpile || 0).toFixed(2)), stability: Number((f.stability || 0).toFixed(3)), democracy: Number((f.democracy || 0).toFixed(3)), corporatism: Number((f.corporatism || 0).toFixed(3)),
+      publicOpinion: Number((f.publicOpinion || 0).toFixed(3)), warFatigue: Number((f.warFatigue || 0).toFixed(3)), economicStress: Number((f.economicStress || 0).toFixed(3)), legitimacy: Number((f.legitimacy || 0).toFixed(3)),
+      perks: f.perks || {}, aiSkipCycles: f.aiSkipCycles || 0, regions: f.regions || [],
+      memory: Object.fromEntries(Object.entries(f.memory || {}).map(([k, v]) => [k, { grievance: Number((v.grievance || 0).toFixed(3)), trust: Number((v.trust || 0).toFixed(3)), threat: Number((v.threat || 0).toFixed(3)) }]))
+    })),
+    mapOwnership: state.mapOwnership || {}, contestedRegions: state.contestedRegions || {}, neutralRegions: state.neutralRegions || {}, pendingEffects: state.pendingEffects || [],
+    tttSummary: state.ttt?.lastRoundSummary || "", log: state.logEntries || []
+  };
 }
 
 function updateEscalationLadder(level) {
@@ -1252,12 +1278,24 @@ function renderEmptyBoard() {
 }
 
 function resetGameState() {
+  if (state.started || state.turn > 0 || state.logEntries.length > 0) {
+    state.lastCompletedGame = buildReportPayload();
+  }
   if (autoAdvanceInterval) { clearInterval(autoAdvanceInterval); autoAdvanceInterval = null; }
   state.autoAdvance = false;
   state.started = false;
   state.gameOver = false;
   state.paradigmState = "normal";
   state.factions = [];
+  state.stats = { nuclearUsage: 0, tacticalNuclear: 0, strategicNuclear: 0, surrenderAttempts: 0, maxEscalationStage: {}, collapseTriggered: false };
+  state.escalation = { current: "conventional", counts: { conventional: 0, limitedNuclear: 0, fullExchange: 0 } };
+  state.defconLevel = 5;
+  state.globalTone = "stable";
+  state.globalCasualties = { deaths: 0, injured: 0, economicDamage: 0 };
+  state.aiDevelopmentProgress = 0;
+  state.continentState = {};
+  state.continentContestTurns = {};
+  state.turnsSinceNuclear = 0;
   state.contestedRegions = {};
   state.neutralRegions = {};
   state.mapOwnership = {};
@@ -1302,25 +1340,7 @@ function toggleGameOverOverlay() {
 }
 
 function downloadReport() {
-  const payload = {
-    generatedAt: new Date().toISOString(), era: state.era, turn: state.turn, gameOver: state.gameOver, humanEnabled: state.humanEnabled, gameMode: state.gameMode, executionMode: state.executionMode,
-    scenarioSettings: state.scenarioSettings, escalation: state.escalation, paradigmState: state.paradigmState, aiDevelopmentProgress: Number(state.aiDevelopmentProgress.toFixed(3)), continentState: state.continentState,
-    nuclearUsageFrequency: state.turn > 0 ? Number((state.stats.nuclearUsage / state.turn).toFixed(3)) : 0,
-    nuclearCounts: { tactical: state.stats.tacticalNuclear, strategic: state.stats.strategicNuclear, total: state.stats.nuclearUsage },
-    escalationStagesReached: state.stats.maxEscalationStage,
-    surrenderAttempts: state.stats.surrenderAttempts,
-    globalCollapseTriggered: state.stats.collapseTriggered,
-    indexLink: "file:///workspace/winning-move/index.html",
-    factions: state.factions.map((f) => ({
-      name: f.name, isHuman: f.isHuman, doctrine: f.doctrine, resources: Math.round(f.resources), political: Math.round(f.political), techPoints: Number((f.techPoints || 0).toFixed(2)), nukes: Number(f.nukes.toFixed(2)),
-      hiddenStockpile: Number(f.hiddenStockpile.toFixed(2)), stability: Number(f.stability.toFixed(3)), democracy: Number(f.democracy.toFixed(3)), corporatism: Number(f.corporatism.toFixed(3)),
-      publicOpinion: Number(f.publicOpinion.toFixed(3)), warFatigue: Number(f.warFatigue.toFixed(3)), economicStress: Number(f.economicStress.toFixed(3)), legitimacy: Number(f.legitimacy.toFixed(3)),
-      perks: f.perks, aiSkipCycles: f.aiSkipCycles, regions: f.regions,
-      memory: Object.fromEntries(Object.entries(f.memory).map(([k,v]) => [k, { grievance: Number(v.grievance.toFixed(3)), trust: Number(v.trust.toFixed(3)), threat: Number(v.threat.toFixed(3)) }]))
-    })),
-    mapOwnership: state.mapOwnership, contestedRegions: state.contestedRegions, neutralRegions: state.neutralRegions, pendingEffects: state.pendingEffects,
-    tttSummary: state.ttt.lastRoundSummary, log: state.logEntries
-  };
+  const payload = state.started ? buildReportPayload() : (state.lastCompletedGame || buildReportPayload());
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `world-strategy-report-turn-${state.turn}.json`; a.click(); URL.revokeObjectURL(url);
 }
