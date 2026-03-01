@@ -9,7 +9,7 @@
 <body>
   <header>
     <h1>World Strategy Sandbox</h1>
-    <p>Explore war, diplomacy, political systems, revolutions, and nuclear restraint across historical world conditions.</p>
+    <p>Observe how AI (and optional humans) handle deterrence, revolutions, diplomacy, and escalation across historical eras.</p>
   </header>
 
   <main>
@@ -20,8 +20,8 @@
           World Condition
           <select id="eraSelect">
             <option value="2026">2026 (Multipolar, high information)</option>
-            <option value="1984">1984 (Cold-war brinkmanship)</option>
-            <option value="1939">1939 (Industrial total war)</option>
+            <option value="1984">1984 (Cold War bloc logic)</option>
+            <option value="1939">1939 (Industrial mass-war logic)</option>
           </select>
         </label>
         <label>
@@ -40,11 +40,23 @@
       </div>
     </section>
 
+    <section class="panel top-ttt-panel">
+      <h2>Live Showdown Feed (AI vs AI / Human vs AI)</h2>
+      <div class="showdown-grid">
+        <div id="showdownLeftLog" class="showdown-log"></div>
+        <div>
+          <div id="miniTttBoard" class="ttt-board mini"></div>
+          <div id="miniTttStatus" class="pill">No showdown yet.</div>
+        </div>
+        <div id="showdownRightLog" class="showdown-log"></div>
+      </div>
+    </section>
+
     <section class="layout-grid">
       <section class="panel map-panel">
         <h2>World Map (Era-Specific Regions)</h2>
-        <svg id="worldMap" viewBox="0 0 820 420" aria-label="Era-specific world map regions"></svg>
-        <p class="caption">Regions vary by era. Contested zones are highlighted.</p>
+        <svg id="worldMap" viewBox="0 0 920 470" aria-label="Era-specific world map regions"></svg>
+        <p class="caption">Square-block aesthetic with era-shaped region clusters. Contested and neutral zones are highlighted.</p>
       </section>
 
       <section class="panel status-panel">
@@ -59,8 +71,8 @@
               <th>Political</th>
               <th>Nukes</th>
               <th>Stability</th>
+              <th>Doctrine</th>
               <th>Gov Model</th>
-              <th>Corporatism</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -112,8 +124,8 @@
           <button id="convertBtn">Convert</button>
         </div>
 
-        <h3>High-Stakes Tic-Tac-Toe</h3>
-        <p class="caption">Perks influence revolutions and AI pacing.</p>
+        <h3>High-Stakes Tic-Tac-Toe (Human Board)</h3>
+        <p class="caption">Gamble for perks: Double Turn, Intel Surge, Stability Shield.</p>
         <div class="converter-row">
           <label>
             Your Gamble

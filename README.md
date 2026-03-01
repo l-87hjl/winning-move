@@ -1,58 +1,27 @@
 # Winning Move
 
-A browser-based world strategy sandbox where 1 human (or 0 in observer mode) and 4 AI factions compete across dynamically generated era-specific global maps.
+World Strategy Sandbox is a browser-based geopolitical strategy simulation with one optional human player and four AI factions.
 
-## Core Engine Model
+## Quick open link
+- Repository-local index file: `file:///workspace/winning-move/index.html`
 
-The simulation now runs on an expanded strategic engine featuring:
+## Implemented scope
+- Era-specific region maps for **2026 / 1984 / 1939** with subdivided continental blocks.
+- Optional human mode or observer mode (all AI).
+- Region control via military, economic, puppet, sovereignty support, dialogue, nuclear posture, and **Instigate Revolution**.
+- Multi-turn revolution engine with `state.contestedRegions`, support values, intelligence-based defense, and showdown resolution.
+- High-stakes Tic-Tac-Toe showdown system for revolution contests and continent-control playoffs.
+- TTT perks: **Double Turn**, **Intel Surge**, **Stability Shield**.
+- AI skip-cycle behavior and perk-aware revolution intelligence modifiers.
+- Cat’s-game outcomes with mutual penalties and optional neutral governance creation.
+- Neutral zone and strategic deadlock detection.
+- Expanded JSON report output including contested zones, neutral zones, and pending systemic effects.
+- Nuclear deterrence model with triad deployment, hidden stockpiles, retaliation risk, global instability penalties, and long-term fallout effects.
+- Doctrine-aware AI with strategic memory (grievance/trust/threat), anti-hegemon balancing, and ideology-shaped decision bias.
+- Domestic pressure systems: public opinion, war fatigue, economic stress, legitimacy drift.
 
-- **Era-Specific Regional Maps**  
-  Each era (2026, 1984, 1939) has its own geopolitical layout with 12–15 regions reflecting historical or modern power blocs.
-
-- **Five Competing Factions**  
-  Optional human player + AI factions with asymmetric objectives (dominance, peace, economy).
-
-- **Revolution Engine (Multi-Turn)**  
-  - Instigate Revolution action
-  - Contested zones tracked across turns
-  - Support values for attacker vs defender
-  - Intelligence and technology modifiers
-  - High-stakes Tic-Tac-Toe showdown resolution when support converges
-  - Neutral/merged governance outcomes (cat’s-game scenarios)
-
-- **High-Stakes Tic-Tac-Toe Perk System**  
-  Winning stake rounds can grant:
-  - Double Turn (skip next AI cycle)
-  - Intel Surge (boost next revolution attempt)
-  - Stability Shield (+stability buffer)
-
-- **Nuclear Strategy Layer**  
-  - Extensive named strike catalog
-  - MAD-style retaliation probability
-  - Political legitimacy collapse effects
-  - Hidden stockpiles and triad deployment
-
-- **Systemic Political Drift**  
-  - Democracy and corporatism fluctuate each turn
-  - Volatile leadership emergence
-  - Stability degradation under institutional decay
-
-- **Dynamic Win & Deadlock Detection**  
-  Game ends when:
-  - A faction controls ~55% of regions, OR
-  - Strategic deadlock emerges (neutral/fragmented zones), OR
-  - Turn limit reached.
-
-- **Downloadable Strategic Report**  
-  JSON export includes:
-  - Faction metrics
-  - Contested zones
-  - Neutral regions
-  - Pending systemic effects
-  - Full strategic log
-
-## Run locally
-Open `index.html` directly, or use a local server:
+## Run
+Open `index.html` directly, or run a local server:
 
 ```bash
 python3 -m http.server 8000
