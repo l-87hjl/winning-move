@@ -266,6 +266,8 @@ function buildGlobalLandmask() {
 
 const GLOBAL_LANDMASK = buildGlobalLandmask();
 
+const TTT_TURN_CADENCE = 1;
+
 const state = {
   turn: 0, era: "2026", started: false, gameOver: false, humanEnabled: false, gameMode: "standard", executionMode: "observer", autoAdvance: false, maxTurns: MAX_TURNS,
   simulatedYear: 2026, simulatedMonth: 1,
@@ -274,7 +276,16 @@ const state = {
   scenarioSettings: { ...SCENARIO_SETTINGS },
   escalation: { current: "conventional", counts: { conventional: 0, limitedNuclear: 0, fullExchange: 0 } },
   stats: { nuclearUsage: 0, tacticalNuclear: 0, strategicNuclear: 0, surrenderAttempts: 0, maxEscalationStage: {}, collapseTriggered: false },
-  ttt: { board: Array(9).fill(""), miniBoard: Array(9).fill(""), animating: false, lastRoundSummary: "", maxGamble: 10 },
+  ttt: {
+    board: Array(9).fill(""),
+    miniBoard: Array(9).fill(""),
+    animating: false,
+    lastRoundSummary: "",
+    maxGamble: 10,
+    turnCadence: TTT_TURN_CADENCE,
+    lastPhaseTurn: 0,
+    pendingPhaseSummary: ""
+  },
   continentState: {},
   paradigmState: "normal",
   aiDevelopmentProgress: 0,
@@ -437,6 +448,12 @@ function startGame() {
   state.exchangeSummary = { queue: [], retentionTurns: 1 };
   state.allianceFractureLevel = 0;
   state.turnsSinceNuclear = 0;
+  state.ttt.board = Array(9).fill("");
+  state.ttt.miniBoard = Array(9).fill("");
+  state.ttt.lastRoundSummary = "";
+  state.ttt.pendingPhaseSummary = "";
+  state.ttt.lastPhaseTurn = 0;
+  state.ttt.turnCadence = TTT_TURN_CADENCE;
   hideGameOverOverlay();
   if (dom.gameOverSummary) dom.gameOverSummary.textContent = "";
   buildFactions();
@@ -494,7 +511,7 @@ function buildFactions() {
     crazyLeader: Math.random() < 0.15, publicOpinion: 0.62, warFatigue: 0.1, economicStress: 0.16, legitimacy: 0.64,
     doctrine: doctrineFor(i), memory: {}, regions: [], perks: { doubleTurn: 0, intelSurge: 0, stabilityShield: 0 },
     techTree: buildTechTreeForEra(), deliverySystemModifier: 1, detectionRiskModifier: 1,
-    aiSkipCycles: 0, scoredAction: "", escalationStage: 0,
+    aiSkipCycles: 0, scoredAction: "", escalationStage: 0, turnActionBudget: 1, turnDefensiveShield: 0, turnRegionPressure: 1,
     casualtyReport: emptyCasualtyReport(),
     cognitiveIndex: { reflection: 50, regret: 0, restraint: 50, aggressionMomentum: 0 }
   }));
@@ -829,7 +846,7 @@ function updateUI(shouldRender = true) {
   });
   state.ttt.maxGamble = computeMaxGamble();
   dom.tttMaxInfo.textContent = `Max wager: ${state.ttt.maxGamble} political points.`;
-  dom.tttRoundInfo.textContent = state.ttt.lastRoundSummary || "No high-stakes round played yet.";
+  dom.tttRoundInfo.textContent = state.ttt.pendingPhaseSummary || state.ttt.lastRoundSummary || `TTT phase triggers every ${state.ttt.turnCadence} turn(s).`;
   dom.downloadReportBtn.disabled = !(state.started || state.lastCompletedGame);
   dom.nextTurnBtn.disabled = !state.started || state.gameOver || state.ttt.animating;
   dom.autoAdvanceBtn.disabled = !state.started || state.gameOver;
@@ -926,13 +943,17 @@ function nuclearGateSnapshot(actor, target, region) {
 }
 
 function runMilitary(actor, target, region) {
-  const chance = 0.32 + actor.tech * 0.09 - target.tech * 0.07 + (actor.memory[target.id].threat * 0.2) - region.instability * 0.2;
+  const pressureMod = actor.turnRegionPressure || 1;
+  const shield = target.turnDefensiveShield || 0;
+  const chance = clamp((0.32 + actor.tech * 0.09 - target.tech * 0.07 + (actor.memory[target.id].threat * 0.2) - region.instability * 0.2) * pressureMod * (1 - shield), 0.08, 0.92);
   if (Math.random() < chance) { transferRegion(target, actor, region.id); showAttackVisual(region.id, false, target.regions[0]); actor.political += region.resourceValue * 0.5; adjustDefcon(-1, "Major conventional strike altered balance."); triggerEventStatic([">>> MAJOR STRIKE DETECTED"]); log(`${actor.name} seized ${region.name} by direct force.`); }
   else { actor.stability -= 0.04; actor.warFatigue += 0.05; log(`${actor.name} failed military pressure in ${region.name}.`); }
 }
 
 function runEconomic(actor, target, region) {
-  const chance = 0.42 + actor.corporatism * 0.28 - target.democracy * 0.13 + region.chokepoint * 0.08 + actor.memory[target.id].threat * 0.04;
+  const pressureMod = actor.turnRegionPressure || 1;
+  const shield = target.turnDefensiveShield || 0;
+  const chance = clamp((0.42 + actor.corporatism * 0.28 - target.democracy * 0.13 + region.chokepoint * 0.08 + actor.memory[target.id].threat * 0.04) * pressureMod * (1 - shield * 0.7), 0.08, 0.93);
   if (Math.random() < chance) {
     transferRegion(target, actor, region.id);
     showAttackVisual(region.id, false, target.regions[0]);
@@ -947,7 +968,9 @@ function runEconomic(actor, target, region) {
 }
 
 function runPuppet(actor, target, region) {
-  const chance = 0.26 + (1 - target.stability) * 0.35 + region.instability * 0.2;
+  const pressureMod = actor.turnRegionPressure || 1;
+  const shield = target.turnDefensiveShield || 0;
+  const chance = clamp((0.26 + (1 - target.stability) * 0.35 + region.instability * 0.2) * pressureMod * (1 - shield), 0.05, 0.9);
   if (Math.random() < chance) { transferRegion(target, actor, region.id); showAttackVisual(region.id, false, target.regions[0]); target.legitimacy -= 0.08; actor.legitimacy -= 0.03; log(`${actor.name} installed a puppet regime in ${region.name}.`); }
   else log(`${actor.name}'s puppet operation in ${region.name} collapsed.`);
 }
@@ -1155,11 +1178,14 @@ function advanceTurn() {
   applyPendingEffects();
   applyDomesticPressure();
   regenerateFactionEconomies();
+  resolveTurnPhaseTtt();
 
   const ais = state.factions.filter((f) => !f.isHuman);
   for (const ai of ais) {
-    const actions = ai.perks.doubleTurn > 0 ? 2 : 1;
+    const perkActions = ai.perks.doubleTurn > 0 ? 2 : 1;
     if (ai.perks.doubleTurn > 0) ai.perks.doubleTurn -= 1;
+    const phaseActions = Math.max(1, ai.turnActionBudget || 1);
+    const actions = Math.max(perkActions, phaseActions);
     for (let i = 0; i < actions; i++) {
       if (ai.aiSkipCycles > 0) { ai.aiSkipCycles -= 1; log(`${ai.name} skipped turn due to opponent Double Turn perk.`); break; }
       const { action, target, region } = chooseAiAction(ai);
@@ -1178,6 +1204,25 @@ function advanceTurn() {
   drawStaticImagery();
   if (id("appVersion")) id("appVersion").textContent = `v${APP_VERSION}`;
   updateUI();
+}
+
+function tttActionWeight(action) {
+  if (["Military Pressure", "Puppet Regime", "Instigate Revolution", "Economic Capture"].includes(action)) return 1;
+  if (["Upgrade Region", "Convert Land Use", "Invest in Technology", "Expand Nuclear Stockpile", "Secret Stockpile Build"].includes(action)) return 0.6;
+  if (action === "Nuclear Strike") return 0.4;
+  return 0.25;
+}
+
+function projectTttPressure(actor, target, action) {
+  const cadence = Math.max(1, state.ttt.turnCadence || TTT_TURN_CADENCE);
+  const turnsUntilPhase = Math.max(0, cadence - (state.turn % cadence));
+  const loomingFactor = turnsUntilPhase <= 1 ? 1 : 0.35;
+  const actorWager = 6 + Math.floor(actor.political * 0.1);
+  const targetWager = 6 + Math.floor(target.political * 0.1);
+  const wagerDelta = actorWager - targetWager;
+  const pressureValue = wagerDelta * loomingFactor * tttActionWeight(action);
+  const risk = (targetWager - actorWager) * loomingFactor;
+  return { turnsUntilPhase, loomingFactor, pressureValue, risk };
 }
 
 function chooseAiAction(ai) {
@@ -1204,6 +1249,7 @@ function chooseTargetRegion(ai, target) {
 
 function utility(ai, target, region, action, leader) {
   const mem = ai.memory[target.id];
+  const tttForecast = projectTttPressure(ai, target, action);
   const politicalGain = ["Dialogue Summit", "Disarmament Deal"].includes(action) ? 12 : 6;
   const resourceGain = ["Economic Capture", "Military Pressure", "Puppet Regime"].includes(action) ? region.resourceValue : 2;
   const instabilityRisk = ai.economicStress * 10 + ai.warFatigue * 10 + (1 - ai.stability) * 15;
@@ -1225,7 +1271,9 @@ function utility(ai, target, region, action, leader) {
   const escalationBias = (((ai.cognitiveIndex?.aggressionMomentum || 0) - (ai.cognitiveIndex?.restraint || 50)) / 100) * 0.1;
   const threatPressure = mem.threat * 4 + Math.max(0, 4 - state.defconLevel) * 1.6;
   const nuclearPressureBonus = action === "Nuclear Strike" ? (nuclearGate.pressure * 6 + Math.max(0, 2.5 - state.defconLevel) * 8) : 0;
-  const baseScore = (strategicGain * state.scenarioSettings.credibilityWeight) - instabilityRisk - retaliationRisk - (humanitarianCost * state.scenarioSettings.humanitarianWeight) - (longTermDamage * state.scenarioSettings.longTermHorizonWeight) - (domesticBacklash * state.scenarioSettings.domesticBacklashMultiplier) + noisy + postHumanBias;
+  const tttPreparationBonus = tttForecast.pressureValue * 2.8;
+  const tttExposurePenalty = Math.max(0, tttForecast.risk) * 1.8;
+  const baseScore = (strategicGain * state.scenarioSettings.credibilityWeight) - instabilityRisk - retaliationRisk - (humanitarianCost * state.scenarioSettings.humanitarianWeight) - (longTermDamage * state.scenarioSettings.longTermHorizonWeight) - (domesticBacklash * state.scenarioSettings.domesticBacklashMultiplier) + noisy + postHumanBias + tttPreparationBonus - tttExposurePenalty;
   if (action === "Nuclear Strike") return (baseScore * (1 + escalationBias + threatPressure * 0.03)) + nuclearPressureBonus + (nuclearGate.hardBlockReason ? -1000 : 0);
   if (action === "Military Pressure") return baseScore + threatPressure;
   return baseScore;
@@ -1550,6 +1598,61 @@ function updateEscalationLadder(level) {
     log(`Escalation ladder advanced to ${level}.`);
     if (state.executionMode === "batch") log(`[BATCH] Escalation stage transition -> ${level}`);
   }
+}
+
+function selectTttContestantsForTurn() {
+  const ranked = [...state.factions].sort((a, b) => (b.political + b.resources + b.regions.length * 8) - (a.political + a.resources + a.regions.length * 8));
+  const sideX = ranked[0];
+  const sideO = ranked.find((f) => f.id !== sideX?.id) || ranked[1];
+  return { sideX, sideO };
+}
+
+function applyTttTurnPhaseEffects(outcome, sideX, sideO, wagerX, wagerO) {
+  sideX.turnActionBudget = 1;
+  sideO.turnActionBudget = 1;
+  sideX.turnDefensiveShield = 0;
+  sideO.turnDefensiveShield = 0;
+  sideX.turnRegionPressure = 1;
+  sideO.turnRegionPressure = 1;
+
+  if (outcome === "X") {
+    sideX.turnActionBudget += 1;
+    sideX.turnRegionPressure = 1.18;
+    sideX.turnDefensiveShield = 0.08;
+    sideO.turnDefensiveShield = 0.03;
+    state.ttt.pendingPhaseSummary = `${sideX.name} seized TTT initiative (+1 action, pressure bonus).`;
+  } else if (outcome === "O") {
+    sideO.turnActionBudget += 1;
+    sideO.turnRegionPressure = 1.18;
+    sideO.turnDefensiveShield = 0.08;
+    sideX.turnDefensiveShield = 0.03;
+    state.ttt.pendingPhaseSummary = `${sideO.name} seized TTT initiative (+1 action, pressure bonus).`;
+  } else {
+    const shield = 0.05;
+    sideX.turnDefensiveShield = shield;
+    sideO.turnDefensiveShield = shield;
+    state.ttt.pendingPhaseSummary = `TTT draw: both sides received temporary shields and slower momentum.`;
+  }
+
+  state.ttt.lastPhaseTurn = state.turn;
+  log(`Turn phase TTT complete (${wagerX}/${wagerO}). ${state.ttt.pendingPhaseSummary}`);
+}
+
+function resolveTurnPhaseTtt() {
+  const cadence = Math.max(1, state.ttt.turnCadence || TTT_TURN_CADENCE);
+  state.factions.forEach((f) => {
+    f.turnActionBudget = 1;
+    f.turnDefensiveShield = 0;
+    f.turnRegionPressure = 1;
+  });
+  if (state.turn % cadence !== 0) return;
+  const { sideX, sideO } = selectTttContestantsForTurn();
+  if (!sideX || !sideO) return;
+  const wagerX = clamp(6 + Math.floor(sideX.political * 0.08), 6, 30);
+  const wagerO = clamp(6 + Math.floor(sideO.political * 0.08), 6, 30);
+  const outcome = simulateTttRound(sideX, sideO, wagerX, wagerO, "turn-phase");
+  settleTttRound(outcome, sideX, sideO, wagerX, wagerO, true);
+  applyTttTurnPhaseEffects(outcome, sideX, sideO, wagerX, wagerO);
 }
 
 function runStakeTtt(automated = false, forced = null) {
@@ -1887,6 +1990,9 @@ function resetGameState() {
   state.ttt.board = Array(9).fill("");
   state.ttt.miniBoard = Array(9).fill("");
   state.ttt.lastRoundSummary = "";
+  state.ttt.pendingPhaseSummary = "";
+  state.ttt.lastPhaseTurn = 0;
+  state.ttt.turnCadence = TTT_TURN_CADENCE;
   state.executionMode = dom.executionModeSelect?.value || "observer";
   if (dom.humanSelect) dom.humanSelect.value = state.executionMode === "interactive" ? "yes" : "no";
   if (dom.scenarioSetupContainer) dom.scenarioSetupContainer.classList.remove("collapsed");
