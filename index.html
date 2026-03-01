@@ -37,8 +37,22 @@
             <select id="gameModeSelect">
               <option value="standard">Standard Game</option>
               <option value="simulation">Simulation</option>
+              <option value="postHuman">Post-Human Emergence</option>
               <option value="payne">Payne Escalation Model</option>
             </select>
+          </label>
+          <label>
+            Conflict Pace
+            <select id="conflictPaceSelect">
+              <option value="short">Short (2 contested turns)</option>
+              <option value="standard" selected>Standard (4 contested turns)</option>
+              <option value="long">Long (6 contested turns)</option>
+              <option value="custom">Custom</option>
+            </select>
+          </label>
+          <label>
+            Custom Contested Turn Limit
+            <input id="customPaceTurns" type="number" min="1" value="4" />
           </label>
         </div>
 
@@ -103,6 +117,14 @@
             Escalation Reciprocity
             <input id="settingEscalationReciprocity" type="range" min="0" max="1.5" step="0.05" value="1" />
           </label>
+          <label>
+            Continent Showdown Threshold
+            <input id="settingContinentShowdownThreshold" type="range" min="0.45" max="0.55" step="0.01" value="0.5" />
+          </label>
+          <label>
+            Continent Secure Threshold
+            <input id="settingContinentSecureThreshold" type="range" min="0.55" max="0.75" step="0.01" value="0.6" />
+          </label>
         </div>
 
         <div class="setup-toggles">
@@ -139,8 +161,8 @@
       <div id="mapLogRow">
         <section id="mapContainer" class="panel map-panel">
           <h2>World Map (Era-Specific Regions)</h2>
-          <svg id="worldMap" viewBox="0 0 920 470" aria-label="Era-specific world map regions"></svg>
-          <p class="caption">Square-block aesthetic with era-shaped region clusters. Contested and neutral zones are highlighted.</p>
+          <div id="worldMap" aria-label="Era-specific world map regions"></div>
+          <p class="caption">Square-block continents now use fixed land masks over a CSS grid. Contested and neutral zones are highlighted.</p>
         </section>
 
         <section id="logContainer" class="panel log-panel">
