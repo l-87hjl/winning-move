@@ -10,7 +10,7 @@
   <header>
     <h1>World Strategy Sandbox</h1>
     <p>Observe how AI (and optional humans) handle deterrence, revolutions, diplomacy, and escalation across historical eras.</p>
-    <p class="caption">Build <span id="appVersion">v1.03</span></p>
+    <p class="caption">Build <span id="appVersion">v1.04</span></p>
   </header>
 
   <main>
@@ -310,9 +310,16 @@
     </div>
   </div>
 
+  <!-- Data modules: canonical era/resource/game-mode definitions -->
+  <script src="src/data/eras.js"></script>
+  <script src="src/data/resources.js"></script>
+  <script src="src/data/game-modes.js"></script>
+  <!-- Engine modules: stateless logic operating on the game state object -->
   <script src="src/engine/escalation.js"></script>
   <script src="src/engine/paradigm.js"></script>
   <script src="src/engine/victory.js"></script>
+  <script src="src/engine/economy.js"></script>
+  <!-- Main game loop and UI orchestrator -->
   <script src="src/game.js"></script>
 </body>
 </html>
