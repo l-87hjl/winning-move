@@ -48,7 +48,7 @@
 
     // --- Paradigm endings — require minimum turns so a single early nuke
     //     or a brief stability dip cannot terminate the game in turns 1-9.
-    if (state.paradigmState !== "normal") {
+    if (state.scenarioSettings.paradigmShiftEnabled !== false && state.paradigmState !== "normal") {
       const isMaxTurns = state.turn >= constants.maxTurns;
       const isMutualCollapse =
         state.paradigmState === "mutualCollapse" && state.turn >= MIN_TURNS_MUTUAL_COLLAPSE;
