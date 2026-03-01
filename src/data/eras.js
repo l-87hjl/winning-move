@@ -6,29 +6,97 @@
   // Each era modifies game-wide multipliers and doctrine labels.
   // ---------------------------------------------------------------------------
   const ERA_PRESETS = {
+    // ── Modern ────────────────────────────────────────────────────────────────
     2026: {
       label:         "2026 — Multipolar, High Information",
       techBoost:     1.2,
       diplomacyBoost:1.2,
       warFriction:   1.0,
       nuclearNorm:   1.3,
-      doctrine:      "Multipolar Adaptive"
+      doctrine:      "Multipolar Adaptive",
+      timeScale:     1,   // 1 month per turn
+      startYear:     2026,
+      startMonth:    1
     },
+    // ── Cold War ──────────────────────────────────────────────────────────────
     1984: {
       label:         "1984 — Cold War Bloc Logic",
       techBoost:     1.0,
       diplomacyBoost:0.82,
       warFriction:   1.1,
       nuclearNorm:   1.45,
-      doctrine:      "Cold War Deterrence"
+      doctrine:      "Cold War Deterrence",
+      timeScale:     3,   // 1 quarter (3 months) per turn
+      startYear:     1984,
+      startMonth:    1
+    },
+    1950: {
+      label:         "1950 — Korean War / Cold War Onset",
+      techBoost:     0.86,
+      diplomacyBoost:0.70,
+      warFriction:   1.25,
+      nuclearNorm:   0.90,
+      doctrine:      "Cold War Proxy",
+      timeScale:     1,
+      startYear:     1950,
+      startMonth:    6
+    },
+    // ── World War II ──────────────────────────────────────────────────────────
+    "1944": {
+      label:         "1944 — Late WW2: Liberation Drives",
+      techBoost:     0.80,
+      diplomacyBoost:0.60,
+      warFriction:   1.40,
+      nuclearNorm:   0.30,
+      doctrine:      "Late Industrial War",
+      timeScale:     1,
+      startYear:     1944,
+      startMonth:    1
+    },
+    "1942": {
+      label:         "1942 — Middle WW2: Global Turning Point",
+      techBoost:     0.78,
+      diplomacyBoost:0.62,
+      warFriction:   1.42,
+      nuclearNorm:   0.20,
+      doctrine:      "Industrial Attrition",
+      timeScale:     1,
+      startYear:     1942,
+      startMonth:    1
     },
     1939: {
-      label:         "1939 — Industrial Mass-War",
+      label:         "1939 — Early WW2: Blitzkrieg & Fall of France",
       techBoost:     0.76,
       diplomacyBoost:0.70,
       warFriction:   1.35,
       nuclearNorm:   0.55,
-      doctrine:      "Industrial Total War"
+      doctrine:      "Industrial Total War",
+      timeScale:     1,
+      startYear:     1939,
+      startMonth:    9
+    },
+    1936: {
+      label:         "1936 — Pre-WW2: Rearmament & Appeasement",
+      techBoost:     0.72,
+      diplomacyBoost:0.78,
+      warFriction:   1.20,
+      nuclearNorm:   0.10,
+      doctrine:      "Interwar Rearmament",
+      timeScale:     3,   // quarterly — slow build-up
+      startYear:     1936,
+      startMonth:    1
+    },
+    // ── Post-war / Reconstruction ─────────────────────────────────────────────
+    1946: {
+      label:         "1946 — Post-War Reconstruction",
+      techBoost:     0.82,
+      diplomacyBoost:0.90,
+      warFriction:   0.85,
+      nuclearNorm:   0.40,
+      doctrine:      "Reconstruction Diplomacy",
+      timeScale:     3,
+      startYear:     1946,
+      startMonth:    1
     }
   };
 
@@ -47,7 +115,12 @@
   };
 
   const ERA_TECH_UNLOCKS = {
+    1936: [],
     1939: ["submarine"],
+    "1942": ["submarine"],
+    "1944": ["submarine"],
+    1946: ["submarine"],
+    1950: ["nuclear", "submarine"],
     1984: ["nuclear", "icbm", "submarine", "stealthBomber", "satellite"],
     2026: ["nuclear", "icbm", "stealthBomber", "submarine", "hypersonic", "satellite", "cyberHybrid"]
   };
@@ -58,7 +131,12 @@
   const ERA_DOCTRINES = {
     2026: ["Techno-Realist", "Market Coercion", "Alliance Balancer", "Stability First", "Hybrid Opportunist"],
     1984: ["MAD Hawk", "Deterrence Dove", "Proxy Gambler", "Bloc Stabilizer", "Shadow Escalator"],
-    1939: ["Industrial Expansion", "Authoritarian Blitz", "Defensive Mobilizer", "Colonial Attrition", "Mass-Front Doctrine"]
+    1950: ["Containment Hawk", "Proxy Champion", "Neutral Path", "Ideological Crusader", "Economic Stabilizer"],
+    "1944": ["Liberation Crusade", "Total Mobilization", "Defensive Core", "Attrition Grinder", "Strategic Bomber"],
+    "1942": ["Total War Expansion", "Eastern Front Grind", "Pacific Island-Hop", "Allied Coalition", "Colonial Resource Hold"],
+    1939: ["Industrial Expansion", "Authoritarian Blitz", "Defensive Mobilizer", "Colonial Attrition", "Mass-Front Doctrine"],
+    1936: ["Appeasement Broker", "Fascist Rearmer", "Popular Front", "Imperial Holdout", "Revisionist Power"],
+    1946: ["Marshall Plan Liberal", "Soviet Sphere", "Decolonial Movement", "Reconstruction Neutral", "Emerging Nationalist"]
   };
 
   // ---------------------------------------------------------------------------
@@ -195,7 +273,11 @@
     ]
   };
 
-  // Derive 1984 and 1939 maps from 2026 with era-appropriate adjustments.
+  // ---------------------------------------------------------------------------
+  // Derive era maps from the canonical 2026 layout.
+  // ---------------------------------------------------------------------------
+
+  // 1984 — Cold War
   ERA_REGION_MAPS[1984] = ERA_REGION_MAPS[2026].map((x) => ({
     ...x,
     id:          `84_${x.id}`,
@@ -207,6 +289,72 @@
       .replace("E. Europe","Warsaw Sphere")
   }));
 
+  // 1950 — Korean War / Cold War Onset
+  ERA_REGION_MAPS[1950] = ERA_REGION_MAPS[2026].map((x) => ({
+    ...x,
+    id:          `50_${x.id}`,
+    instability: clamp(x.instability + 0.10, 0, 1),
+    ideologyLean:clamp(x.ideologyLean - 0.12, 0, 1),
+    name:        x.name
+      .replace("SEATO",    "Far East")
+      .replace("Japan/Korea","Korea/Japan")
+      .replace("W. Europe","W. Europe Recovery")
+      .replace("E. Europe","Soviet Satellites")
+  }));
+
+  // 1946 — Post-War Reconstruction
+  ERA_REGION_MAPS[1946] = ERA_REGION_MAPS[2026].map((x) => ({
+    ...x,
+    id:          `46_${x.id}`,
+    instability: clamp(x.instability + 0.12, 0, 1),
+    ideologyLean:clamp(x.ideologyLean - 0.15, 0, 1),
+    resourceValue: Math.max(3, Math.round(x.resourceValue * 0.75)),
+    maxResourceValue: Math.max(3, Math.round(x.resourceValue * 0.75)),
+    name:        x.name
+      .replace("W. Europe","W. Europe Ruins")
+      .replace("E. Europe","E. Europe Occupied")
+      .replace("Japan/Korea","Occupied Japan")
+      .replace("Russia",   "Soviet Union")
+  }));
+
+  // 1944 — Late WW2
+  ERA_REGION_MAPS["1944"] = ERA_REGION_MAPS[2026].map((x) => ({
+    ...x,
+    id:          `44_${x.id}`,
+    instability: clamp(x.instability + 0.16, 0, 1),
+    ideologyLean:clamp(x.ideologyLean - 0.20, 0, 1),
+    resourceValue: Math.max(3, Math.round(x.resourceValue * 0.80)),
+    maxResourceValue: Math.max(3, Math.round(x.resourceValue * 0.80)),
+    name:        x.name
+      .replace("W. Europe","Western Front")
+      .replace("E. Europe","Eastern Front")
+      .replace("Levant",   "Levant Mandate")
+      .replace("Gulf",     "Arabian Theater")
+      .replace("Russia",   "Soviet Union")
+      .replace("Japan/Korea","Imperial Japan/Korea")
+      .replace("SEATO",   "Imperial Pacific")
+  }));
+
+  // 1942 — Middle WW2
+  ERA_REGION_MAPS["1942"] = ERA_REGION_MAPS[2026].map((x) => ({
+    ...x,
+    id:          `42_${x.id}`,
+    instability: clamp(x.instability + 0.18, 0, 1),
+    ideologyLean:clamp(x.ideologyLean - 0.22, 0, 1),
+    resourceValue: Math.max(3, Math.round(x.resourceValue * 0.78)),
+    maxResourceValue: Math.max(3, Math.round(x.resourceValue * 0.78)),
+    name:        x.name
+      .replace("W. Europe","Fortress Europe")
+      .replace("E. Europe","Eastern Front")
+      .replace("Levant",   "Levant Mandate")
+      .replace("Gulf",     "Arabian Theater")
+      .replace("Russia",   "Soviet Union")
+      .replace("Japan/Korea","Imperial Japan")
+      .replace("SEATO",   "Imperial Pacific")
+      .replace("North Africa","N. Africa Campaign")
+  }));
+
+  // 1939 — Early WW2
   ERA_REGION_MAPS[1939] = ERA_REGION_MAPS[2026].map((x) => ({
     ...x,
     id:          `39_${x.id}`,
@@ -217,6 +365,20 @@
       .replace("E. Europe","Eastern Front")
       .replace("Levant",   "Levant Mandates")
       .replace("Gulf",     "Arabian Theater")
+  }));
+
+  // 1936 — Pre-WW2 / Rearmament
+  ERA_REGION_MAPS[1936] = ERA_REGION_MAPS[2026].map((x) => ({
+    ...x,
+    id:          `36_${x.id}`,
+    instability: clamp(x.instability + 0.10, 0, 1),
+    ideologyLean:clamp(x.ideologyLean - 0.14, 0, 1),
+    name:        x.name
+      .replace("W. Europe","W. Europe")
+      .replace("E. Europe","Central Europe")
+      .replace("Levant",   "Levant Mandate")
+      .replace("Gulf",     "Arabian Protectorate")
+      .replace("Russia",   "Soviet Union")
   }));
 
   // ---------------------------------------------------------------------------

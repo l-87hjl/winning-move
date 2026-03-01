@@ -10,7 +10,7 @@
   <header>
     <h1>World Strategy Sandbox</h1>
     <p>Observe how AI (and optional humans) handle deterrence, revolutions, diplomacy, and escalation across historical eras.</p>
-    <p class="caption">Build <span id="appVersion">v1.04</span></p>
+    <p class="caption">Build <span id="appVersion">v1.05</span></p>
   </header>
 
   <main>
@@ -19,11 +19,24 @@
         <h2>Scenario Setup</h2>
         <div class="grid-2">
           <label>
-            World Condition
+            World Condition / Era
             <select id="eraSelect">
-              <option value="2026">2026 (Multipolar, high information)</option>
-              <option value="1984">1984 (Cold War bloc logic)</option>
-              <option value="1939">1939 (Industrial mass-war logic)</option>
+              <optgroup label="Modern">
+                <option value="2026">2026 — Multipolar, High Information</option>
+              </optgroup>
+              <optgroup label="Cold War">
+                <option value="1984">1984 — Cold War Bloc Logic</option>
+                <option value="1950">1950 — Korean War / Cold War Onset</option>
+              </optgroup>
+              <optgroup label="World War II">
+                <option value="1944">1944 — Late WW2: Liberation Drives</option>
+                <option value="1942">1942 — Middle WW2: Global Turning Point</option>
+                <option value="1939">1939 — Early WW2: Blitzkrieg</option>
+                <option value="1936">1936 — Pre-WW2: Rearmament &amp; Appeasement</option>
+              </optgroup>
+              <optgroup label="Post-War">
+                <option value="1946">1946 — Post-War Reconstruction</option>
+              </optgroup>
             </select>
           </label>
           <label>
@@ -59,6 +72,10 @@
               <option value="standard" selected>Standard</option>
               <option value="long">Long</option>
             </select>
+          </label>
+          <label>
+            Max Turns
+            <input id="maxTurnsInput" type="number" min="20" max="300" step="5" value="60" />
           </label>
         </div>
 

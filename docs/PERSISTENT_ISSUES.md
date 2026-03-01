@@ -107,3 +107,69 @@ the spread `{ ...r }` in `startGame` correctly resets it from the template.
 **Resolution path:** Add a guard in `startGame` to verify
 `region.resourceValue === region.maxResourceValue` for all regions after
 initialisation and log a warning if not.
+
+---
+
+## [2026-03-01] Premature game endings at turns 18–25 (detectDeadlock)
+
+**Symptom:** Under aggressive revolution or puppet strategies, regions rapidly
+transition to neutral/contested, triggering `detectDeadlock` at turn 18 with
+only 40% ungoverned regions — ending games well before the 60-turn limit.
+
+**Root cause:** `detectDeadlock()` used turn > 18 and fraction > 0.40, which
+was reachable in normal play through `instigateRevolution` chains.
+
+**Fix applied (PR #5):** Threshold raised to turn ≥ 30 and fraction > 0.65.
+Added a governance warning at turn ≥ 20 / fraction > 0.50 without ending the
+game. This prevents premature termination while still logging a visible warning.
+
+**Residual risk:** Very aggressive AI or human play in fast-paced WW2 eras
+(high instability, low stability starting values) could still hit 65% by turn
+30. If this occurs, consider making the deadlock trigger configurable or tying
+it to the era's characteristic instability level.
+
+---
+
+## [2026-03-01] convertLandUse resource override not reflected in data module
+
+**Symptom:** `convertLandUse()` sets `region.resourceTypeOverride.primary` to
+a new resource type, but `window.GameData.computeRegionYieldMult(regionId)` only
+reads from the canonical `REGION_RESOURCES` table and ignores the override.
+
+**Root cause:** `computeRegionYieldMult` in `src/data/resources.js` does not
+accept a second argument for the override; the override is only used in the
+inline `regenerateFactionEconomies` in `game.js`.
+
+**Steps to reproduce:** Start a game, select a region, execute "Convert Land
+Use", observe that the tooltip still shows the old resource type.
+
+**Suggested fix:** Modify `computeRegionYieldMult(regionId, overrideType)` in
+`src/data/resources.js` to use `overrideType` when provided:
+```javascript
+function computeRegionYieldMult(regionId, overrideType) {
+  const primary = overrideType || getPrimaryResource(regionId);
+  return RESOURCE_TYPES[primary]?.yieldMult ?? 1.0;
+}
+```
+
+---
+
+## [2026-03-01] AI does not optimally value Upgrade Region / Convert Land Use
+
+**Symptom:** AI rarely selects "Upgrade Region" or "Convert Land Use" because
+the `utility()` function only adds a flat ideology-bias score for these actions
+(8–10 points), which is consistently outweighed by military/economic actions.
+
+**Root cause:** AI utility scoring is single-turn; it does not model the
+compounding benefit of higher development yield over future turns (ROI).
+
+**Suggested fix:** Add a long-term development bonus to the utility score for
+regions the AI already owns, weighted by `state.scenarioSettings.futureWeighting`:
+```javascript
+if (action === "Upgrade Region") {
+  const ownedDev = ai.regions.map(id => state.regions.find(r => r.id === id))
+    .filter(Boolean)
+    .reduce((acc, r) => acc + (3 - (r.development || 0)), 0);
+  return baseScore + ownedDev * 2.5 * state.scenarioSettings.futureWeighting;
+}
+```
