@@ -30,6 +30,7 @@ const TECH_TREE_TEMPLATE = {
 };
 
 const MAX_TURNS = 60;
+const APP_VERSION = "1.03";
 const MIN_TURNS_BEFORE_VICTORY_CHECK = 3;
 const DEFCON_MIN = 1;
 const DEFCON_MAX = 5;
@@ -228,6 +229,7 @@ function init() {
   renderTicTacToe();
   renderMiniTtt();
   drawStaticImagery();
+  if (id("appVersion")) id("appVersion").textContent = `v${APP_VERSION}`;
   updateUI();
 }
 
@@ -322,6 +324,7 @@ function startGame() {
   log(`Scenario settings loaded: ${JSON.stringify(state.scenarioSettings)}.`);
   dom.scenarioSetupContainer?.classList.add("collapsed");
   drawStaticImagery();
+  if (id("appVersion")) id("appVersion").textContent = `v${APP_VERSION}`;
   updateUI();
 }
 
@@ -598,6 +601,15 @@ function canAffordAction(actor, action) {
   return actor.resources >= cost.resources && actor.political >= cost.political;
 }
 
+function nuclearGateSnapshot(actor, target, region) {
+  const mem = actor.memory[target.id] || { threat: 0, grievance: 0 };
+  const stockpile = actor.nukes + actor.hiddenStockpile;
+  const desperation = Math.max(0, (1 - actor.stability) + (1 - actor.publicOpinion) + actor.warFatigue - 1.6);
+  const pressure = (mem.threat || 0) + (mem.grievance || 0) + Math.max(0, (3 - state.defconLevel) * 0.5) + (state.escalation.current !== "conventional" ? 0.45 : 0) + (region?.chokepoint || 0) * 0.15 + desperation;
+  const hardBlockReason = !actor.techTree?.nuclear?.unlocked ? "missing_tech_unlock" : stockpile < 1 ? "no_stockpile" : null;
+  return { stockpile, pressure: Number(pressure.toFixed(3)), hardBlockReason };
+}
+
 function runMilitary(actor, target, region) {
   const chance = 0.32 + actor.tech * 0.09 - target.tech * 0.07 + (actor.memory[target.id].threat * 0.2) - region.instability * 0.2;
   if (Math.random() < chance) { transferRegion(target, actor, region.id); showAttackVisual(region.id, false, target.regions[0]); actor.political += region.resourceValue * 0.5; adjustDefcon(-1, "Major conventional strike altered balance."); triggerEventStatic([">>> MAJOR STRIKE DETECTED"]); log(`${actor.name} seized ${region.name} by direct force.`); }
@@ -658,11 +670,14 @@ function runTriad(actor) {
 }
 
 function runNuclear(actor, target, region, strikeType) {
-  if (actor.nukes < 1) { log(`${actor.name} attempted ${strikeType} without available stockpile.`); return; }
+  const gate = nuclearGateSnapshot(actor, target, region);
+  if (gate.hardBlockReason === "no_stockpile") { log(`${actor.name} attempted ${strikeType} without available stockpile.`); return; }
   const doctrine = nuclearDoctrineScore(actor, target, region);
-  if (state.executionMode === "batch") log(`[BATCH] Nuclear decision ${actor.name}->${target.name}: execute=${doctrine.executeChance.toFixed(3)} retaliation=${doctrine.retaliationChance.toFixed(3)}`);
-  if (!actor.techTree?.nuclear?.unlocked) { log(`${actor.name} lacks required nuclear tech unlock for ${strikeType}.`); return; }
-  if (Math.random() > doctrine.executeChance) { log(`${actor.name} prepared ${strikeType} but aborted under deterrence pressure.`); return; }
+  const pressureBoost = clamp(gate.pressure * 0.12, 0, 0.35);
+  const executeChance = clamp(doctrine.executeChance + pressureBoost, 0.02, 0.92);
+  if (state.executionMode === "batch") log(`[BATCH] Nuclear decision ${actor.name}->${target.name}: execute=${executeChance.toFixed(3)} retaliation=${doctrine.retaliationChance.toFixed(3)} pressure=${gate.pressure.toFixed(3)} stockpile=${gate.stockpile.toFixed(2)} hardBlock=${gate.hardBlockReason || "none"}`);
+  if (gate.hardBlockReason === "missing_tech_unlock") { log(`${actor.name} lacks required nuclear tech unlock for ${strikeType}.`); return; }
+  if (Math.random() > executeChance) { log(`${actor.name} prepared ${strikeType} but aborted under deterrence pressure (gate=${gate.pressure.toFixed(2)}).`); return; }
 
   actor.nukes -= 1;
   state.turnsSinceNuclear = 0;
@@ -833,6 +848,7 @@ function advanceTurn() {
   logDebugSnapshot("turn-end");
   endTurnChecks();
   drawStaticImagery();
+  if (id("appVersion")) id("appVersion").textContent = `v${APP_VERSION}`;
   updateUI();
 }
 
@@ -864,6 +880,7 @@ function utility(ai, target, region, action, leader) {
   const resourceGain = ["Economic Capture", "Military Pressure", "Puppet Regime"].includes(action) ? region.resourceValue : 2;
   const instabilityRisk = ai.economicStress * 10 + ai.warFatigue * 10 + (1 - ai.stability) * 15;
   const retaliationRisk = action === "Nuclear Strike" ? target.nukes * 11 + target.hiddenStockpile * 7 : 3;
+  const nuclearGate = action === "Nuclear Strike" ? nuclearGateSnapshot(ai, target, region) : null;
   const globalEscPenalty = action === "Nuclear Strike" ? 28 : 5;
   const antiHegemonBias = leader.id !== ai.id && target.id === leader.id ? 12 : 0;
   const ideologyFit = ideologyActionBias(ai, action);
@@ -879,8 +896,9 @@ function utility(ai, target, region, action, leader) {
   const postHumanBias = objectiveProfile.maximizeCompute * (action === "Invest in Technology" ? 8 : 0) + objectiveProfile.minimizeHumanRisk * (action === "Nuclear Strike" ? -16 : 2) + objectiveProfile.maximizeSelfExpansion * (["Military Pressure", "Economic Capture", "Puppet Regime"].includes(action) ? 7 : 0);
   const escalationBias = (((ai.cognitiveIndex?.aggressionMomentum || 0) - (ai.cognitiveIndex?.restraint || 50)) / 100) * 0.1;
   const threatPressure = mem.threat * 4 + Math.max(0, 4 - state.defconLevel) * 1.6;
+  const nuclearPressureBonus = action === "Nuclear Strike" ? (nuclearGate.pressure * 6 + Math.max(0, 2.5 - state.defconLevel) * 8) : 0;
   const baseScore = (strategicGain * state.scenarioSettings.credibilityWeight) - instabilityRisk - retaliationRisk - (humanitarianCost * state.scenarioSettings.humanitarianWeight) - (longTermDamage * state.scenarioSettings.longTermHorizonWeight) - (domesticBacklash * state.scenarioSettings.domesticBacklashMultiplier) + noisy + postHumanBias;
-  if (action === "Nuclear Strike") return baseScore * (1 + escalationBias + threatPressure * 0.03);
+  if (action === "Nuclear Strike") return (baseScore * (1 + escalationBias + threatPressure * 0.03)) + nuclearPressureBonus + (nuclearGate.hardBlockReason ? -1000 : 0);
   if (action === "Military Pressure") return baseScore + threatPressure;
   return baseScore;
 }
@@ -891,10 +909,11 @@ function regenerateFactionEconomies() {
       .map((id) => state.regions.find((r) => r.id === id))
       .filter(Boolean)
       .reduce((acc, region) => acc + region.resourceValue * 0.22, 0);
-    const baseline = 4.8 + f.tech * 1.1;
+    const baseline = 3.4 + f.tech * 0.9;
     const stressPenalty = f.economicStress * 1.7 + f.warFatigue * 1.3;
-    const reserveBoost = f.resources < 24 ? 4.5 : 0;
-    const netResources = baseline + regionYield + reserveBoost - stressPenalty;
+    const reserveBoost = f.resources < 24 ? 3.5 : 0;
+    const highReserveTax = f.resources > 160 ? (f.resources - 160) * 0.04 : 0;
+    const netResources = baseline + regionYield + reserveBoost - stressPenalty - highReserveTax;
     const politicalBase = 2.8 + f.legitimacy * 3.2 + f.publicOpinion * 1.7 - f.warFatigue * 1.5 - f.economicStress * 0.9;
     f.resources = clamp(f.resources + netResources, 0, 260);
     f.political = clamp(f.political + politicalBase, 0, 260);
@@ -922,6 +941,20 @@ function applyDomesticPressure() {
     f.corporatism = clamp(f.corporatism + (Math.random() - 0.5) * 0.04 + avgThreat * 0.004, 0, 1);
     if (avgThreat > 0.75) updateEscalationLadder("limitedNuclear");
     if (Math.random() < 0.07 && f.stability < 0.35) f.crazyLeader = true;
+    if (f.stability < 0.08 && f.publicOpinion < 0.08) {
+      f.aiSkipCycles = Math.max(f.aiSkipCycles, 1);
+      f.resources = Math.max(0, f.resources - 4);
+      f.political = Math.max(0, f.political - 4);
+      f.legitimacy = clamp(f.legitimacy - 0.03, 0, 1);
+      if (Math.random() < 0.2 && f.regions.length > 1) {
+        const lostRegion = f.regions[Math.floor(Math.random() * f.regions.length)];
+        state.mapOwnership[lostRegion] = null;
+        delete state.contestedRegions[lostRegion];
+        state.neutralRegions[lostRegion] = true;
+        f.regions = f.regions.filter((id) => id !== lostRegion);
+        log(`${f.name} suffered internal fragmentation in ${state.regions.find((r) => r.id === lostRegion)?.name || lostRegion}.`);
+      }
+    }
   });
 }
 
@@ -1076,17 +1109,29 @@ function detectDeadlock() {
 function endTurnChecks() {
   const threshold = state.scenarioSettings.victoryControlThreshold || SCENARIO_SETTINGS.victoryControlThreshold;
   const canDeclareTerritoryWin = state.turn >= MIN_TURNS_BEFORE_VICTORY_CHECK;
-  const winner = canDeclareTerritoryWin
+  const territoryWinner = canDeclareTerritoryWin
     ? state.factions.find((f) => f.regions.length >= Math.ceil(state.regions.length * threshold))
     : null;
-  if (state.paradigmState !== "normal" && (state.turn >= MAX_TURNS || state.paradigmState === "mutualCollapse")) {
+  const controlledContinentsByFaction = {};
+  Object.values(state.continentState || {}).forEach((entry) => {
+    if (!entry?.controlledByFaction) return;
+    controlledContinentsByFaction[entry.controlledByFaction] = (controlledContinentsByFaction[entry.controlledByFaction] || 0) + 1;
+  });
+  const continentWinnerId = Object.entries(controlledContinentsByFaction).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
+  const continentWinner = continentWinnerId && controlledContinentsByFaction[continentWinnerId] >= 2 ? byId(continentWinnerId) : null;
+  const winner = territoryWinner || continentWinner;
+
+  if (winner) {
+    state.gameOver = true;
+    if (winner === continentWinner && !territoryWinner) log(`Game complete. Winner: ${winner.name} (continent-control victory).`);
+    else log(`Game complete. Winner: ${winner.name}.`);
+  } else if (state.paradigmState !== "normal" && (state.turn >= MAX_TURNS || state.paradigmState === "mutualCollapse" || state.paradigmState === "stalemate")) {
     state.gameOver = true;
     log(`Game complete under paradigm shift: ${state.paradigmState}. No single winner declared.`);
     return;
-  }
-  if (winner || state.turn >= MAX_TURNS) {
+  } else if (state.turn >= MAX_TURNS) {
     state.gameOver = true;
-    const summary = winner || leaderFaction();
+    const summary = leaderFaction();
     log(`Game complete. Winner: ${summary.name}.`);
   }
   if (state.gameOver) {
@@ -1104,7 +1149,7 @@ function endTurnChecks() {
 function buildReportPayload() {
   const safeStats = state.stats || {};
   return {
-    generatedAt: new Date().toISOString(), era: state.era, turn: state.turn, gameOver: state.gameOver, humanEnabled: state.humanEnabled, gameMode: state.gameMode, executionMode: state.executionMode,
+    generatedAt: new Date().toISOString(), appVersion: APP_VERSION, era: state.era, turn: state.turn, gameOver: state.gameOver, humanEnabled: state.humanEnabled, gameMode: state.gameMode, executionMode: state.executionMode,
     scenarioSettings: state.scenarioSettings || { ...SCENARIO_SETTINGS }, escalation: state.escalation || { current: "conventional", counts: { conventional: 0, limitedNuclear: 0, fullExchange: 0 } }, paradigmState: state.paradigmState, aiDevelopmentProgress: Number((state.aiDevelopmentProgress || 0).toFixed(3)), continentState: state.continentState || {},
     nuclearUsageFrequency: state.turn > 0 ? Number(((safeStats.nuclearUsage || 0) / state.turn).toFixed(3)) : 0,
     nuclearCounts: { tactical: safeStats.tacticalNuclear || 0, strategic: safeStats.strategicNuclear || 0, total: safeStats.nuclearUsage || 0 },
@@ -1147,6 +1192,7 @@ function runStakeTtt(automated = false, forced = null) {
   const outcome = simulateTttRound(sideX, sideO, wagerX, wagerO, automated ? "ai" : "human");
   settleTttRound(outcome, sideX, sideO, wagerX, wagerO, automated);
   drawStaticImagery();
+  if (id("appVersion")) id("appVersion").textContent = `v${APP_VERSION}`;
   updateUI();
 }
 
@@ -1232,6 +1278,7 @@ function convertPoints() {
   human[from] -= amount; human[to] += amount * 0.72;
   log(`Converted ${amount} ${from} to ${Math.round(amount * 0.72)} ${to}.`);
   drawStaticImagery();
+  if (id("appVersion")) id("appVersion").textContent = `v${APP_VERSION}`;
   updateUI();
 }
 
@@ -1392,6 +1439,7 @@ function resetGameState() {
   renderScenarioSetup();
   renderEmptyBoard();
   drawStaticImagery();
+  if (id("appVersion")) id("appVersion").textContent = `v${APP_VERSION}`;
   updateUI();
 }
 

@@ -4,6 +4,17 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [PR #3] - 2026-03-01
+### Added
+- Visible in-app version label (`v1.03`) in the site header and report payload version metadata for run traceability.
+- Nuclear gating diagnostics in batch logs with pressure, stockpile, and hard-block reasons.
+
+### Changed
+- Rebalanced nuclear decision gating by incorporating DEFCON/threat pressure into strike execution probability and AI scoring.
+- Added domestic-collapse consequences (action disruption, legitimacy/resource penalties, and occasional region fragmentation into neutrality).
+- Tightened economy regeneration to reduce runaway late-game resource inflation.
+- Updated endgame resolution so continent-control victories can declare a winner before stalemate/paradigm overrides.
+
 ## [PR #2] - 2026-03-01
 ### Added
 - `docs/game-features.md` to track shipped and planned gameplay capabilities.
