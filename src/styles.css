@@ -79,18 +79,18 @@ main { padding: 1rem; }
 
 #mapLogRow {
   display: grid;
-  grid-template-columns: 60% 40%;
+  grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
   gap: 20px;
-  min-height: 450px;
+  align-items: start;
 }
 
 #mapContainer {
   min-height: 450px;
-  max-height: 600px;
+  overflow: visible;
 }
 
 #logContainer {
-  max-height: 450px;
+  max-height: 620px;
   overflow-y: auto;
 }
 
@@ -151,7 +151,7 @@ button:hover { border-color: var(--accent); }
 
 #worldMap {
   width: 100%;
-  min-height: 450px;
+  min-height: 460px;
   background: radial-gradient(circle at center, #0f2444, #0a1b34);
   border-radius: 10px;
   border: 1px solid #475569;
@@ -161,8 +161,9 @@ button:hover { border-color: var(--accent); }
   gap: 4px;
   justify-content: center;
   align-content: start;
-  padding: 8px;
+  padding: 12px;
   position: relative;
+  overflow: hidden;
 }
 
 .map-overlay {

@@ -15,7 +15,10 @@
     });
 
     const continentWinnerId = Object.entries(controlledContinentsByFaction).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
-    const continentWinner = continentWinnerId && controlledContinentsByFaction[continentWinnerId] >= 2 ? byId(continentWinnerId) : null;
+    const canDeclareContinentWin = state.turn >= constants.minTurnsBeforeVictoryCheck;
+    const continentWinner = canDeclareContinentWin && continentWinnerId && controlledContinentsByFaction[continentWinnerId] >= 2
+      ? byId(continentWinnerId)
+      : null;
     const winner = territoryWinner || continentWinner;
 
     if (winner) {
