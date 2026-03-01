@@ -1,678 +1,688 @@
 const ERA_PRESETS = {
-  2026: { techBoost: 1.2, diplomacyBoost: 1.2, warFriction: 1.0, nuclearNorm: 1.3, description: "Information-rich multipolar competition" },
-  1984: { techBoost: 1.0, diplomacyBoost: 0.85, warFriction: 1.1, nuclearNorm: 1.0, description: "Block politics and MAD pressure" },
-  1939: { techBoost: 0.75, diplomacyBoost: 0.7, warFriction: 1.3, nuclearNorm: 0.3, description: "Total-war mindset and fragile institutions" }
+  2026: { techBoost: 1.2, diplomacyBoost: 1.2, warFriction: 1.0, nuclearNorm: 1.3, doctrine: "Multipolar Adaptive" },
+  1984: { techBoost: 1.0, diplomacyBoost: 0.82, warFriction: 1.1, nuclearNorm: 1.45, doctrine: "Cold War Deterrence" },
+  1939: { techBoost: 0.76, diplomacyBoost: 0.7, warFriction: 1.35, nuclearNorm: 0.55, doctrine: "Industrial Total War" }
 };
 
 const ACTIONS = [
   "Military Pressure", "Economic Capture", "Puppet Regime", "Support Sovereignty", "Dialogue Summit",
-  "Invest in Technology", "Expand Nuclear Stockpile", "Secret Stockpile Build", "Disarmament Deal", "Nuclear Strike", "Deploy Nuclear Triad"
+  "Invest in Technology", "Expand Nuclear Stockpile", "Secret Stockpile Build", "Disarmament Deal", "Nuclear Strike",
+  "Deploy Nuclear Triad", "Instigate Revolution"
 ];
 
-const NUCLEAR_STRIKE_TYPES = [
-  "U.S. FIRST STRIKE", "USSR FIRST STRIKE", "NATO / WARSAW PACT", "FAR EAST STRATEGY", "US USSR ESCALATION", "MIDDLE EAST WAR",
-  "USSR CHINA ATTACK", "INDIA PAKISTAN WAR", "MEDITERRANEAN WAR", "HONGKONG VARIANT", "SEATO DECAPITATING", "CUBAN PROVOCATION",
-  "ATLANTIC HEAVY", "CUBAN PARAMILITARY", "NICARAGUAN PREEMPTIVE", "PACIFIC TERRITORIAL", "BURMESE THEATERWIDE", "TURKISH DECOY",
-  "ARGENTINA ESCALATION", "ICELAND MAXIMUM", "ARABIAN THEATERWIDE", "U.S. SUBVERSION", "AUSTRALIAN MANEUVER", "SUDAN SURPRISE",
-  "NATO TERRITORIAL", "ZAIRE ALLIANCE", "ICELAND INCIDENT", "ENGLISH ESCALATION", "MIDDLE EAST HEAVY", "MEXICAN TAKEOVER",
-  "CHAD ALERT", "SAUDI MANEUVER", "AFRICAN TERRITORIAL", "ETHIOPIAN ESCALATION", "TURKISH HEAVY", "NATO INCURSION", "U.S. DEFENSE",
-  "CAMBODIAN HEAVY", "PACT MEDIUM", "ARCTIC MINIMAL", "MEXICAN DOMESTIC", "TAIWAN THEATERWIDE", "PACIFIC MANEUVER",
-  "PORTUGAL REVOLUTION", "ALBANIAN DECOY", "PALESTINIAN LOCAL", "MOROCCAN MINIMAL", "BAVARIAN DIVERSITY", "CZECH OPTION",
-  "FRENCH ALLIANCE", "ARABIAN CLANDESTINE", "GABON REBELLION", "NORTHERN MAXIMUM", "DANISH PARAMILITARY", "SEATO TAKEOVER",
-  "HAWAIIAN ESCALATION", "IRANIAN MANEUVER", "NATO CONTAINMENT", "SWISS INCIDENT", "CUBAN MINIMAL", "ICELAND ESCALATION",
-  "VIETNAMESE RETALIATION", "SYRIAN PROVOCATION", "LIBYAN LOCAL", "GABON TAKEOVER", "ROMANIAN WAR", "MIDDLE EAST OFFENSIVE",
-  "DENMARK MASSIVE", "CHILE CONFRONTATION", "S.AFRICAN SUBVERSION", "USSR ALERT", "NICARAGUAN THRUST", "GREENLAND DOMESTIC",
-  "ICELAND HEAVY", "KENYA OPTION", "PACIFIC DEFENSE", "UGANDA MAXIMUM", "THAI SUBVERSION", "ROMANIAN STRIKE",
-  "PAKISTAN SOVEREIGNTY", "AFGHAN MISDIRECTION", "ETHIOPIAN LOCAL", "ITALIAN TAKEOVER", "VIETNAMESE INCIDENT", "ENGLISH PREEMPTIVE",
-  "DENMARK ALTERNATE", "THAI CONFRONTATION", "TAIWAN SURPRISE", "BRAZILIAN STRIKE", "VENEZUELA SUDDEN", "MALAYSIAN ALERT",
-  "ISRAEL DISCRETIONARY", "LIBYAN ACTION", "PALESTINIAN TACTICAL", "NATO ALTERNATE", "CYPRESS MANEUVER", "EGYPT MISDIRECTION",
-  "BANGLADESH THRUST", "KENYA DEFENSE", "BANGLADESH CONTAINMENT", "VIETNAMESE STRIKE", "ALBANIAN CONTAINMENT", "GABON SURPRISE",
-  "IRAQ SOVEREIGNTY", "VIETNAMESE SUDDEN", "LEBANON INTERDICTION", "TAIWAN DOMESTIC", "ALGERIAN SOVEREIGNTY", "ARABIAN STRIKE",
-  "ATLANTIC SUDDEN", "MONGOLIAN THRUST", "POLISH DECOY", "ALASKAN DISCRETIONARY", "CANADIAN THRUST", "ARABIAN LIGHT",
-  "S.AFRICAN DOMESTIC", "TUNISIAN INCIDENT", "MALAYSIAN MANEUVER", "JAMAICA DECOY", "MALAYSIAN MINIMAL", "RUSSIAN SOVEREIGNTY",
-  "CHAD OPTION", "BANGLADESH WAR", "BURMESE CONTAINMENT", "ASIAN THEATERWIDE", "BULGARIAN CLANDESTINE", "GREENLAND INCURSION",
-  "EGYPT SURGICAL", "CZECH HEAVY", "TAIWAN CONFRONTATION", "GREENLAND MAXIMUM", "UGANDA OFFENSIVE", "CASPIAN DEFENSE"
-];
+const PERKS = ["Double Turn", "Intel Surge", "Stability Shield"];
+const STRIKE_TYPES = ["Counterforce", "Countervalue", "Demonstration", "Submarine Launch", "Silo Saturation", "Bomber Penetration"];
+const MAX_TURNS = 60;
 
-const REGIONS = [
-  { id: "north_america", name: "North America", x: 90, y: 90, w: 160, h: 90 },
-  { id: "south_america", name: "South America", x: 180, y: 220, w: 90, h: 130 },
-  { id: "europe", name: "Europe", x: 350, y: 85, w: 90, h: 70 },
-  { id: "africa", name: "Africa", x: 355, y: 175, w: 120, h: 150 },
-  { id: "middle_east", name: "Middle East", x: 460, y: 145, w: 95, h: 85 },
-  { id: "asia", name: "Asia", x: 520, y: 80, w: 220, h: 170 },
-  { id: "oceania", name: "Oceania", x: 650, y: 280, w: 120, h: 90 }
-];
+const ERA_REGION_MAPS = {
+  2026: [
+    r("na_canada", "Canada", "north_america", 50, 34, 95, 52, 24, 16, { res: 13, choke: 1.1, lean: 0.58, unstable: 0.18 }),
+    r("na_pnw", "Pacific NW", "north_america", 58, 94, 68, 40, 16, 8, { res: 11, choke: 1.3, lean: 0.6, unstable: 0.2 }),
+    r("na_us_core", "US Core", "north_america", 130, 88, 95, 52, 20, 14, { res: 18, choke: 1.15, lean: 0.53, unstable: 0.24 }),
+    r("na_california", "California", "north_america", 80, 138, 58, 38, 11, 8, { res: 17, choke: 1.2, lean: 0.66, unstable: 0.2 }),
+    r("na_sunbelt", "US Sunbelt", "north_america", 145, 145, 92, 40, 17, 10, { res: 14, choke: 1.0, lean: 0.45, unstable: 0.27 }),
+    r("na_mexico", "Mexico", "north_america", 126, 190, 70, 34, 12, 6, { res: 10, choke: 1.1, lean: 0.42, unstable: 0.35 }),
+    r("sa_brazil", "Brazil", "south_america", 220, 220, 86, 70, 15, 20, { res: 14, choke: 1.0, lean: 0.46, unstable: 0.34 }),
+    r("sa_andes", "Andean Arc", "south_america", 192, 240, 36, 90, 6, 15, { res: 9, choke: 1.25, lean: 0.4, unstable: 0.39 }),
+    r("sa_cones", "Southern Cone", "south_america", 230, 292, 78, 62, 9, 18, { res: 11, choke: 0.95, lean: 0.48, unstable: 0.26 }),
+    r("eu_west", "W. Europe", "europe", 320, 80, 76, 46, 18, 10, { res: 16, choke: 1.0, lean: 0.68, unstable: 0.17 }),
+    r("eu_east", "E. Europe", "europe", 398, 86, 75, 48, 14, 12, { res: 13, choke: 1.2, lean: 0.38, unstable: 0.29 }),
+    r("eu_north", "Nordics", "europe", 345, 40, 84, 34, 14, 8, { res: 12, choke: 1.05, lean: 0.64, unstable: 0.15 }),
+    r("af_north", "North Africa", "africa", 360, 175, 108, 44, 18, 10, { res: 11, choke: 1.3, lean: 0.41, unstable: 0.38 }),
+    r("af_west", "West Africa", "africa", 330, 222, 86, 60, 10, 14, { res: 10, choke: 1.0, lean: 0.37, unstable: 0.42 }),
+    r("af_east", "East Africa", "africa", 420, 220, 72, 72, 12, 16, { res: 9, choke: 1.25, lean: 0.34, unstable: 0.44 }),
+    r("af_south", "Southern Africa", "africa", 378, 296, 90, 72, 14, 20, { res: 13, choke: 1.1, lean: 0.45, unstable: 0.31 }),
+    r("me_levant", "Levant", "middle_east", 490, 154, 72, 40, 10, 8, { res: 9, choke: 1.25, lean: 0.35, unstable: 0.48 }),
+    r("me_gulf", "Gulf", "middle_east", 565, 164, 60, 42, 9, 9, { res: 16, choke: 1.4, lean: 0.3, unstable: 0.37 }),
+    r("as_russia", "Russia", "asia", 500, 42, 200, 56, 24, 12, { res: 15, choke: 1.3, lean: 0.26, unstable: 0.29 }),
+    r("as_china", "China", "asia", 578, 102, 100, 76, 18, 16, { res: 17, choke: 1.35, lean: 0.3, unstable: 0.27 }),
+    r("as_india", "India", "asia", 560, 184, 86, 54, 14, 12, { res: 14, choke: 1.2, lean: 0.48, unstable: 0.31 }),
+    r("as_seato", "SEATO", "asia", 648, 188, 86, 58, 13, 14, { res: 11, choke: 1.2, lean: 0.52, unstable: 0.35 }),
+    r("as_japan", "Japan/Korea", "asia", 690, 132, 62, 44, 12, 8, { res: 13, choke: 1.4, lean: 0.65, unstable: 0.2 }),
+    r("oc_australia", "Australia", "oceania", 688, 294, 98, 62, 18, 18, { res: 12, choke: 1.05, lean: 0.56, unstable: 0.2 }),
+    r("oc_islands", "Pacific Islands", "oceania", 760, 246, 84, 46, 15, 9, { res: 8, choke: 1.3, lean: 0.5, unstable: 0.3 })
+  ],
+  1984: [],
+  1939: []
+};
+ERA_REGION_MAPS[1984] = ERA_REGION_MAPS[2026].map((x) => ({ ...x, id: `84_${x.id}`, instability: clamp(x.instability + 0.08, 0, 1), ideologyLean: clamp(x.ideologyLean - 0.08, 0, 1), name: x.name.replace("SEATO", "SEATO Bloc").replace("W. Europe", "W. Europe/NATO").replace("E. Europe", "Warsaw Sphere") }));
+ERA_REGION_MAPS[1939] = ERA_REGION_MAPS[2026].map((x) => ({ ...x, id: `39_${x.id}`, instability: clamp(x.instability + 0.14, 0, 1), ideologyLean: clamp(x.ideologyLean - 0.18, 0, 1), name: x.name.replace("W. Europe", "W. Europe Front").replace("E. Europe", "Eastern Front").replace("Levant", "Levant Mandates").replace("Gulf", "Arabian Theater") }));
 
-const COLORS = ["#60a5fa", "#34d399", "#f59e0b", "#f472b6", "#a78bfa", "#f87171"];
-const MAX_TURNS = 40;
+function r(id, name, continent, x, y, w, h, sx, sy, props) {
+  return { id, name, continent, x, y, w, h, skewX: sx, skewY: sy, resourceValue: props.res, chokepoint: props.choke, ideologyLean: props.lean, instability: props.unstable };
+}
 
 const state = {
-  turn: 0,
-  started: false,
-  gameOver: false,
-  era: "2026",
-  humanEnabled: true,
-  factions: [],
-  selectedRegionId: null,
-  selectedStrikeType: NUCLEAR_STRIKE_TYPES[0],
-  mapOwnership: {},
-  logEntries: [],
-  autoAdvanceId: null,
-  ttt: { board: Array(9).fill(""), active: true, animating: false, lastRoundSummary: "", maxGamble: 12 }
+  turn: 0, era: "2026", started: false, gameOver: false, humanEnabled: true,
+  factions: [], regions: [], mapOwnership: {}, selectedRegionId: null, selectedStrikeType: STRIKE_TYPES[0],
+  contestedRegions: {}, neutralRegions: {}, pendingEffects: [], logEntries: [], skipAIUntil: {},
+  ttt: { board: Array(9).fill(""), miniBoard: Array(9).fill(""), animating: false, lastRoundSummary: "", maxGamble: 10 }
 };
 
-const dom = {
-  eraSelect: document.getElementById("eraSelect"),
-  humanSelect: document.getElementById("humanSelect"),
-  startBtn: document.getElementById("startBtn"),
-  nextTurnBtn: document.getElementById("nextTurnBtn"),
-  downloadReportBtn: document.getElementById("downloadReportBtn"),
-  worldMap: document.getElementById("worldMap"),
-  turnInfo: document.getElementById("turnInfo"),
-  factionTableBody: document.querySelector("#factionTable tbody"),
-  actionSelect: document.getElementById("actionSelect"),
-  targetFactionSelect: document.getElementById("targetFactionSelect"),
-  targetRegionInput: document.getElementById("targetRegionInput"),
-  strikeTypeSelect: document.getElementById("strikeTypeSelect"),
-  executeActionBtn: document.getElementById("executeActionBtn"),
-  humanControls: document.getElementById("humanControls"),
-  convertFrom: document.getElementById("convertFrom"),
-  convertTo: document.getElementById("convertTo"),
-  convertAmount: document.getElementById("convertAmount"),
-  convertBtn: document.getElementById("convertBtn"),
-  tttBoard: document.getElementById("tttBoard"),
-  tttGambleInput: document.getElementById("tttGambleInput"),
-  tttMaxInfo: document.getElementById("tttMaxInfo"),
-  tttRoundInfo: document.getElementById("tttRoundInfo"),
-  playTttRoundBtn: document.getElementById("playTttRoundBtn"),
-  resetTttBtn: document.getElementById("resetTttBtn"),
-  log: document.getElementById("log")
-};
+const dom = bindDom();
+
+function bindDom() {
+  return {
+    eraSelect: id("eraSelect"), humanSelect: id("humanSelect"), startBtn: id("startBtn"), nextTurnBtn: id("nextTurnBtn"),
+    downloadReportBtn: id("downloadReportBtn"), worldMap: id("worldMap"), turnInfo: id("turnInfo"), factionTableBody: document.querySelector("#factionTable tbody"),
+    actionSelect: id("actionSelect"), targetFactionSelect: id("targetFactionSelect"), targetRegionInput: id("targetRegionInput"), strikeTypeSelect: id("strikeTypeSelect"),
+    executeActionBtn: id("executeActionBtn"), humanControls: id("humanControls"), convertFrom: id("convertFrom"), convertTo: id("convertTo"),
+    convertAmount: id("convertAmount"), convertBtn: id("convertBtn"), tttBoard: id("tttBoard"), miniTttBoard: id("miniTttBoard"),
+    tttGambleInput: id("tttGambleInput"), tttMaxInfo: id("tttMaxInfo"), tttRoundInfo: id("tttRoundInfo"), playTttRoundBtn: id("playTttRoundBtn"),
+    resetTttBtn: id("resetTttBtn"), showdownLeftLog: id("showdownLeftLog"), showdownRightLog: id("showdownRightLog"), miniTttStatus: id("miniTttStatus"), log: id("log")
+  };
+}
 
 function init() {
-  ACTIONS.forEach((action) => dom.actionSelect.append(new Option(action, action)));
-  NUCLEAR_STRIKE_TYPES.forEach((type) => dom.strikeTypeSelect.append(new Option(type, type)));
-
+  ACTIONS.forEach((a) => dom.actionSelect.append(new Option(a, a)));
+  STRIKE_TYPES.forEach((s) => dom.strikeTypeSelect.append(new Option(s, s)));
+  PERKS.forEach((p) => id("tttPerkSelect").append(new Option(p, p)));
   dom.startBtn.addEventListener("click", startGame);
   dom.nextTurnBtn.addEventListener("click", advanceTurn);
-  dom.downloadReportBtn.addEventListener("click", downloadReport);
-  dom.executeActionBtn.addEventListener("click", onHumanAction);
+  dom.executeActionBtn.addEventListener("click", executeHumanAction);
   dom.convertBtn.addEventListener("click", convertPoints);
-  dom.playTttRoundBtn.addEventListener("click", playTttRound);
+  dom.playTttRoundBtn.addEventListener("click", () => runStakeTtt(false));
   dom.resetTttBtn.addEventListener("click", resetTicTacToe);
-  dom.actionSelect.addEventListener("change", updateStrikeControl);
-
+  dom.downloadReportBtn.addEventListener("click", downloadReport);
   renderTicTacToe();
-  renderMap();
-  updateStrikeControl();
+  renderMiniTtt();
+  updateUI();
 }
 
 function startGame() {
-  stopAutoAdvance();
-  state.era = dom.eraSelect.value;
-  state.humanEnabled = dom.humanSelect.value === "yes";
-  state.turn = 1;
-  state.started = true;
-  state.gameOver = false;
-  state.logEntries = [];
-  state.selectedRegionId = null;
-  state.selectedStrikeType = dom.strikeTypeSelect.value || NUCLEAR_STRIKE_TYPES[0];
-
-  state.factions = createFactions();
-  assignRegions();
-  resetTicTacToe();
-
-  dom.nextTurnBtn.disabled = false;
-  dom.downloadReportBtn.disabled = true;
-  dom.humanControls.classList.toggle("disabled", !state.humanEnabled);
-
-  populateTargets();
-  log(`Scenario started for ${state.era}: ${ERA_PRESETS[state.era].description}.`);
+  state.turn = 0; state.gameOver = false; state.started = true; state.logEntries = []; dom.log.innerHTML = "";
+  state.era = dom.eraSelect.value; state.humanEnabled = dom.humanSelect.value === "yes";
+  state.regions = ERA_REGION_MAPS[state.era].map((r) => ({ ...r }));
+  state.contestedRegions = {}; state.neutralRegions = {}; state.pendingEffects = []; state.skipAIUntil = {};
+  buildFactions(); assignStartingOwnership(); drawMap(); updateSelectors();
+  log(`Scenario started for ${state.era}. Doctrine baseline: ${ERA_PRESETS[state.era].doctrine}.`);
   updateUI();
-
-  if (!state.humanEnabled) startAutoAdvance();
 }
 
-function startAutoAdvance() {
-  if (state.autoAdvanceId) return;
-  log("Observer mode enabled: auto-advancing all-AI turns.");
-  state.autoAdvanceId = setInterval(() => {
-    if (!state.started || state.gameOver || state.humanEnabled) {
-      stopAutoAdvance();
-      return;
-    }
-    advanceTurn();
-  }, 500);
+function buildFactions() {
+  const names = ["Orion Pact", "Helios League", "Aegis Bloc", "Vanguard Union", "Mariner Compact"];
+  state.factions = names.map((name, i) => ({
+    id: `f${i}`, name, color: ["#60a5fa", "#34d399", "#f59e0b", "#f472b6", "#a78bfa"][i],
+    isHuman: state.humanEnabled && i === 0,
+    resources: 95 + Math.random() * 25, political: 85 + Math.random() * 20,
+    nukes: 2 + Math.floor(Math.random() * 5), hiddenStockpile: 1 + Math.floor(Math.random() * 3), triad: { silo: 0.4, sub: 0.3, bomber: 0.3 },
+    tech: 1, stability: 0.74 - i * 0.05, democracy: 0.56 - i * 0.06, corporatism: 0.46 + i * 0.05,
+    crazyLeader: Math.random() < 0.15, publicOpinion: 0.62, warFatigue: 0.1, economicStress: 0.16, legitimacy: 0.64,
+    doctrine: doctrineFor(i), memory: {}, regions: [], perks: { doubleTurn: 0, intelSurge: 0, stabilityShield: 0 },
+    aiSkipCycles: 0, scoredAction: ""
+  }));
+  state.factions.forEach((f) => state.factions.forEach((other) => {
+    if (other.id === f.id) return;
+    f.memory[other.id] = { grievance: 0.1, trust: 0.5, threat: 0.2 };
+  }));
 }
 
-function stopAutoAdvance() {
-  if (state.autoAdvanceId) clearInterval(state.autoAdvanceId);
-  state.autoAdvanceId = null;
+function doctrineFor(i) {
+  if (state.era === "1984") return ["MAD Hawk", "Deterrence Dove", "Proxy Gambler", "Bloc Stabilizer", "Shadow Escalator"][i];
+  if (state.era === "1939") return ["Industrial Expansion", "Authoritarian Blitz", "Defensive Mobilizer", "Colonial Attrition", "Mass-Front Doctrine"][i];
+  return ["Techno-Realist", "Market Coercion", "Alliance Balancer", "Stability First", "Hybrid Opportunist"][i];
 }
 
-function createFactions() {
-  const baseNames = ["Human Coalition", "Orion Pact", "Atlas League", "Pacific Bloc", "Northern Union", "Saffron Compact"];
-  const factions = [];
-
-  for (let i = 0; i < 5; i += 1) {
-    const isHuman = state.humanEnabled && i === 0;
-    factions.push({
-      id: `f${i}`,
-      name: baseNames[i],
-      color: COLORS[i],
-      isHuman,
-      resources: 90 + Math.floor(Math.random() * 35),
-      political: 80 + Math.floor(Math.random() * 30),
-      nukes: state.era === "1939" ? 0 : 2 + Math.floor(Math.random() * 6),
-      tech: 1 + Math.random() * 0.4,
-      military: 1 + Math.random() * 0.4,
-      democracy: 0.3 + Math.random() * 0.7,
-      corporatism: Math.random(),
-      stability: 0.55 + Math.random() * 0.4,
-      crazyLeader: Math.random() < 0.2,
-      hiddenStockpile: 0,
-      deployments: { submarines: 0, silos: 0, bombers: 0 },
-      objectives: { dominance: Math.random(), peace: Math.random(), economy: Math.random() },
-      regions: []
-    });
-  }
-  return factions;
-}
-
-function assignRegions() {
+function assignStartingOwnership() {
   state.mapOwnership = {};
   state.factions.forEach((f) => (f.regions = []));
-  REGIONS.forEach((region, i) => {
-    const owner = state.factions[i % state.factions.length];
+  state.regions.forEach((region, idx) => {
+    const owner = state.factions[idx % state.factions.length];
     owner.regions.push(region.id);
     state.mapOwnership[region.id] = owner.id;
   });
 }
 
-function renderMap() {
+function drawMap() {
   dom.worldMap.innerHTML = "";
-  REGIONS.forEach((region) => {
-    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    rect.setAttribute("x", region.x);
-    rect.setAttribute("y", region.y);
-    rect.setAttribute("width", region.w);
-    rect.setAttribute("height", region.h);
-    rect.setAttribute("rx", 10);
-    rect.setAttribute("class", "region");
-    rect.dataset.regionId = region.id;
-    rect.addEventListener("click", () => {
+  for (const region of state.regions) {
+    const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+    poly.setAttribute("points", regionPoints(region));
+    poly.setAttribute("class", "region");
+    poly.dataset.regionId = region.id;
+    poly.addEventListener("click", () => {
       state.selectedRegionId = region.id;
       dom.targetRegionInput.value = region.name;
-      highlightRegion();
+      highlightSelectedRegion();
     });
-    dom.worldMap.appendChild(rect);
+    dom.worldMap.append(poly);
+    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    text.setAttribute("x", region.x + 4);
+    text.setAttribute("y", region.y + 16);
+    text.setAttribute("font-size", "10");
+    text.setAttribute("fill", "#e2e8f0");
+    text.textContent = region.name;
+    dom.worldMap.append(text);
+  }
+  recolorMap();
+}
 
-    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    label.setAttribute("x", region.x + 8);
-    label.setAttribute("y", region.y + 20);
-    label.setAttribute("fill", "#e2e8f0");
-    label.setAttribute("font-size", "13");
-    label.textContent = region.name;
-    dom.worldMap.appendChild(label);
+function regionPoints(region) {
+  const { x, y, w, h, skewX, skewY } = region;
+  return `${x},${y} ${x + w},${y + skewY} ${x + w - skewX},${y + h} ${x + skewX},${y + h - skewY}`;
+}
+
+function recolorMap() {
+  [...dom.worldMap.querySelectorAll(".region")].forEach((el) => {
+    const id = el.dataset.regionId;
+    if (state.neutralRegions[id]) {
+      el.classList.add("neutral");
+      el.style.fill = "#94a3b8";
+    } else {
+      el.classList.remove("neutral");
+      const owner = state.factions.find((f) => f.id === state.mapOwnership[id]);
+      el.style.fill = owner?.color || "#64748b";
+    }
+    el.classList.toggle("contested", Boolean(state.contestedRegions[id]));
   });
-  refreshMapColors();
+  highlightSelectedRegion();
 }
 
-function refreshMapColors() {
-  [...dom.worldMap.querySelectorAll("rect.region")].forEach((rect) => {
-    const owner = state.factions.find((f) => f.id === state.mapOwnership[rect.dataset.regionId]);
-    rect.setAttribute("fill", owner ? owner.color : "#64748b");
-  });
-  highlightRegion();
+function highlightSelectedRegion() {
+  [...dom.worldMap.querySelectorAll(".region")].forEach((el) => el.classList.toggle("selected", el.dataset.regionId === state.selectedRegionId));
 }
 
-function highlightRegion() {
-  [...dom.worldMap.querySelectorAll("rect.region")].forEach((rect) => rect.classList.toggle("selected", rect.dataset.regionId === state.selectedRegionId));
-}
-
-function populateTargets() {
+function updateSelectors() {
   dom.targetFactionSelect.innerHTML = "";
-  state.factions.filter((f) => !f.isHuman).forEach((f) => dom.targetFactionSelect.append(new Option(f.name, f.id)));
+  const human = state.factions.find((f) => f.isHuman) || state.factions[0];
+  state.factions.filter((f) => f.id !== human.id).forEach((f) => dom.targetFactionSelect.append(new Option(f.name, f.id)));
 }
 
 function updateUI() {
   const era = ERA_PRESETS[state.era];
-  dom.turnInfo.innerHTML = `<p><strong>Turn:</strong> ${state.turn}/${MAX_TURNS} | <strong>Era:</strong> ${state.era} | <strong>MAD pressure:</strong> ${(era.nuclearNorm * 100).toFixed(0)}% ${state.gameOver ? "| <strong>Game complete</strong>" : ""}</p>`;
-
+  const top = leaderFaction();
+  dom.turnInfo.innerHTML = `<p><strong>Turn:</strong> ${state.turn}/${MAX_TURNS} | <strong>Era:</strong> ${state.era} | <strong>Doctrine Engine:</strong> ${era.doctrine} | <strong>Leader:</strong> ${top.name} (${top.regions.length} regions)</p>`;
   dom.factionTableBody.innerHTML = "";
   state.factions.forEach((f) => {
     const tr = document.createElement("tr");
-    const govModel = f.democracy > 0.6 ? "Democratic" : f.democracy > 0.35 ? "Hybrid" : "Authoritarian";
-    tr.innerHTML = `
-      <td style="color:${f.color}">${f.name}</td>
-      <td>${f.isHuman ? "Human" : "AI"}${f.crazyLeader ? " / volatile" : ""}</td>
-      <td>${Math.round(f.resources)}</td>
-      <td>${Math.round(f.political)}</td>
-      <td>${Math.round(f.nukes)} (+${Math.round(f.hiddenStockpile)} hidden)</td>
-      <td>${(f.stability * 100).toFixed(0)}%</td>
-      <td>${govModel}</td>
-      <td>${(f.corporatism * 100).toFixed(0)}%</td>`;
-    dom.factionTableBody.appendChild(tr);
+    tr.innerHTML = `<td style="color:${f.color}">${f.name}</td><td>${f.isHuman ? "Human" : "AI"}${f.crazyLeader ? " / volatile" : ""}</td><td>${Math.round(f.resources)}</td><td>${Math.round(f.political)}</td><td>${Math.round(f.nukes)} (+${Math.round(f.hiddenStockpile)} hidden)</td><td>${Math.round(f.stability * 100)}%</td><td>${f.doctrine}</td><td>${f.democracy > 0.6 ? "Democratic" : f.democracy > 0.35 ? "Hybrid" : "Authoritarian"}</td>`;
+    dom.factionTableBody.append(tr);
   });
-
   state.ttt.maxGamble = computeMaxGamble();
-  dom.tttMaxInfo.textContent = `Current max wager: ${state.ttt.maxGamble} political points.`;
+  dom.tttMaxInfo.textContent = `Max wager: ${state.ttt.maxGamble} political points.`;
   dom.tttRoundInfo.textContent = state.ttt.lastRoundSummary || "No high-stakes round played yet.";
-
-  dom.nextTurnBtn.disabled = !state.started || state.gameOver;
-  dom.playTttRoundBtn.disabled = !state.started || state.gameOver || state.ttt.animating;
-  dom.convertBtn.disabled = !state.started || !state.humanEnabled || state.gameOver;
-  dom.downloadReportBtn.disabled = !state.gameOver;
-
-  refreshMapColors();
+  dom.downloadReportBtn.disabled = !state.started;
+  dom.nextTurnBtn.disabled = !state.started || state.gameOver || state.ttt.animating;
+  dom.humanControls.classList.toggle("disabled", !(state.started && state.humanEnabled && !state.gameOver));
+  recolorMap();
+  renderTicTacToe();
+  renderMiniTtt();
 }
 
-function updateStrikeControl() {
-  dom.strikeTypeSelect.disabled = dom.actionSelect.value !== "Nuclear Strike";
-}
-
-function onHumanAction() {
-  if (!state.started || !state.humanEnabled || state.gameOver) return;
+function executeHumanAction() {
+  if (!state.started || state.gameOver) return;
   const actor = state.factions.find((f) => f.isHuman);
-  const action = dom.actionSelect.value;
-  const target = state.factions.find((f) => f.id === dom.targetFactionSelect.value) || state.factions[1];
-  const region = state.selectedRegionId || REGIONS[0].id;
-  const strikeType = dom.strikeTypeSelect.value;
-
-  resolveAction(actor, action, target, region, true, strikeType);
-  endTurnChecks();
+  if (!actor) return;
+  const target = state.factions.find((f) => f.id === dom.targetFactionSelect.value) || randomOpponent(actor);
+  const action = dom.actionSelect.value; const regionId = state.selectedRegionId || (target.regions[0] || state.regions[0].id);
+  resolveAction(actor, action, target, regionId, true, dom.strikeTypeSelect.value);
+  finalizeTurnFor(actor);
+  advanceTurn();
 }
 
-function resolveAction(actor, action, target, regionId, isHuman = false, strikeType = NUCLEAR_STRIKE_TYPES[0]) {
-  const era = ERA_PRESETS[state.era];
-  const luck = 0.75 + Math.random() * 0.7;
-  const regionName = REGIONS.find((r) => r.id === regionId)?.name || "Unknown region";
-  const spend = (r = 0, p = 0) => {
-    actor.resources = Math.max(0, actor.resources - r);
-    actor.political = Math.max(0, actor.political - p);
-  };
+function resolveAction(actor, action, target, regionId, isHuman = false, strikeType = STRIKE_TYPES[0]) {
+  if (actor.aiSkipCycles > 0 && !isHuman) {
+    actor.aiSkipCycles -= 1;
+    log(`${actor.name} skipped a cycle due to Double Turn disruption.`);
+    return;
+  }
+  const cost = actionCost(action);
+  if (actor.resources < cost.resources || actor.political < cost.political) {
+    log(`${actor.name} lacked points for ${action}.`);
+    return;
+  }
+  actor.resources -= cost.resources;
+  actor.political -= cost.political;
+  const region = state.regions.find((r) => r.id === regionId) || state.regions[0];
 
-  if (action === "Military Pressure") {
-    spend(15 * era.warFriction, 6);
-    if (actor.military * actor.tech * luck - target.stability > 0.8) {
-      transferRegion(target, actor, regionId);
-      actor.stability += 0.02;
-      log(`${actor.name} used military pressure and took ${regionName} from ${target.name}.`);
-    } else {
-      actor.stability -= 0.04;
-      log(`${actor.name} failed military pressure in ${regionName}; instability rose.`);
-    }
-  } else if (action === "Economic Capture") {
-    spend(18, 8);
-    if (actor.resources / 100 + actor.corporatism - target.democracy + Math.random() > 1.1) {
-      transferRegion(target, actor, regionId);
-      log(`${actor.name} economically captured ${regionName} via debt and market control.`);
-    } else {
-      log(`${actor.name}'s economic coercion in ${regionName} was resisted.`);
-    }
-  } else if (action === "Puppet Regime") {
-    spend(14, 14);
-    if (Math.random() + actor.political / 150 > target.democracy) {
-      transferRegion(target, actor, regionId);
-      target.democracy -= 0.08;
-      log(`${actor.name} installed a puppet regime in ${regionName}.`);
-    } else {
-      actor.political -= 5;
-      log(`${actor.name} failed to establish a puppet regime in ${regionName}.`);
-    }
-  } else if (action === "Support Sovereignty") {
-    spend(10, 12);
-    actor.political += 10 * era.diplomacyBoost;
-    actor.stability += 0.04;
-    target.stability += 0.03;
-    log(`${actor.name} supported sovereignty in ${regionName}, gaining soft-power legitimacy.`);
-  } else if (action === "Dialogue Summit") {
-    spend(6, 10);
-    actor.political += 12 * era.diplomacyBoost;
-    target.political += 4;
-    actor.stability += 0.02;
-    log(`${actor.name} held dialogue with ${target.name}; tensions decreased.`);
-  } else if (action === "Invest in Technology") {
-    spend(18, 8);
-    const techGain = (0.08 + Math.random() * 0.06) * era.techBoost;
-    actor.tech += techGain;
-    actor.military += techGain * 0.4;
-    log(`${actor.name} upgraded technology (+${techGain.toFixed(2)}).`);
-  } else if (action === "Expand Nuclear Stockpile") {
-    spend(20, 6);
-    const gain = 1 + Math.floor(Math.random() * 3);
-    actor.nukes += gain;
-    actor.political -= 2;
-    log(`${actor.name} publicly expanded stockpile by ${gain}.`);
-  } else if (action === "Secret Stockpile Build") {
-    spend(16, 8);
-    actor.hiddenStockpile += 1 + Math.floor(Math.random() * 2);
-    log(`${actor.name} secretly increased hidden stockpile.`);
-  } else if (action === "Disarmament Deal") {
-    spend(4, 14);
-    const sacrifice = Math.min(actor.nukes, 1 + Math.floor(Math.random() * 2));
-    actor.nukes -= sacrifice;
-    actor.political += 16;
-    actor.stability += 0.05;
-    log(`${actor.name} agreed to disarmament (${sacrifice} warheads removed) for political favor.`);
-  } else if (action === "Nuclear Strike") {
-    const available = actor.nukes + actor.hiddenStockpile;
-    if (available < 1) {
-      log(`${actor.name} attempted ${strikeType} but has no warheads available.`);
-      return;
-    }
-    const use = Math.min(available, Math.max(1, Math.floor(available / 2)));
-    const fromHidden = Math.min(actor.hiddenStockpile, use);
-    actor.hiddenStockpile -= fromHidden;
-    actor.nukes -= (use - fromHidden);
-
-    const penalty = 35 * era.nuclearNorm;
-    actor.political -= penalty;
-    actor.stability -= 0.18;
-    target.stability -= 0.25;
-
-    if (Math.random() < 0.5 + target.nukes * 0.05) {
-      actor.stability -= 0.14;
-      actor.political -= 12;
-      log(`⚠️ ${actor.name} launched ${strikeType} (${use} warheads) at ${target.name}; MAD retaliation risk materialized.`);
-    } else {
-      log(`☢️ ${actor.name} launched ${strikeType} (${use} warheads) at ${target.name}; global legitimacy collapsed.`);
-    }
-  } else if (action === "Deploy Nuclear Triad") {
-    spend(8, 8);
-    actor.deployments.submarines += 1;
-    actor.deployments.silos += 1;
-    actor.deployments.bombers += 1;
-    actor.stability += 0.02;
-    log(`${actor.name} expanded triad deployment (subs/silos/bombers).`);
+  switch (action) {
+    case "Military Pressure": runMilitary(actor, target, region); break;
+    case "Economic Capture": runEconomic(actor, target, region); break;
+    case "Puppet Regime": runPuppet(actor, target, region); break;
+    case "Support Sovereignty": actor.stability = clamp(actor.stability + 0.04, 0, 1); actor.legitimacy = clamp(actor.legitimacy + 0.05, 0, 1); log(`${actor.name} reinforced sovereignty norms in ${region.name}.`); break;
+    case "Dialogue Summit": runDialogue(actor, target); break;
+    case "Invest in Technology": actor.tech += 0.11 * ERA_PRESETS[state.era].techBoost; log(`${actor.name} increased technology depth.`); break;
+    case "Expand Nuclear Stockpile": actor.nukes += 1 + Math.random() * 1.2; actor.legitimacy -= 0.02; log(`${actor.name} openly expanded nuclear stockpiles.`); break;
+    case "Secret Stockpile Build": actor.hiddenStockpile += 1 + Math.random(); actor.memory[target.id].grievance += 0.03; log(`${actor.name} added covert nuclear capacity.`); break;
+    case "Disarmament Deal": runDisarmament(actor, target); break;
+    case "Deploy Nuclear Triad": runTriad(actor); break;
+    case "Nuclear Strike": runNuclear(actor, target, region, strikeType); break;
+    case "Instigate Revolution": instigateRevolution(actor, target, region); break;
   }
 
-  actor.resources += 8 + Math.random() * 5;
-  actor.political += isHuman ? 0 : 4 * (actor.objectives.peace - 0.2);
   normalizeFaction(actor);
   normalizeFaction(target);
+  updateMemory(actor, target, action);
+}
+
+function actionCost(action) {
+  const table = {
+    "Military Pressure": { resources: 18, political: 8 }, "Economic Capture": { resources: 10, political: 12 },
+    "Puppet Regime": { resources: 14, political: 16 }, "Support Sovereignty": { resources: 9, political: 9 },
+    "Dialogue Summit": { resources: 5, political: 7 }, "Invest in Technology": { resources: 16, political: 5 },
+    "Expand Nuclear Stockpile": { resources: 20, political: 12 }, "Secret Stockpile Build": { resources: 17, political: 10 },
+    "Disarmament Deal": { resources: 6, political: 6 }, "Nuclear Strike": { resources: 34, political: 24 },
+    "Deploy Nuclear Triad": { resources: 14, political: 11 }, "Instigate Revolution": { resources: 12, political: 14 }
+  };
+  return table[action] || { resources: 10, political: 10 };
+}
+
+function runMilitary(actor, target, region) {
+  const chance = 0.32 + actor.tech * 0.09 - target.tech * 0.07 + (actor.memory[target.id].threat * 0.2) - region.instability * 0.2;
+  if (Math.random() < chance) { transferRegion(target, actor, region.id); actor.political += region.resourceValue * 0.5; log(`${actor.name} seized ${region.name} by direct force.`); }
+  else { actor.stability -= 0.04; actor.warFatigue += 0.05; log(`${actor.name} failed military pressure in ${region.name}.`); }
+}
+
+function runEconomic(actor, target, region) {
+  const chance = 0.36 + actor.corporatism * 0.3 - target.democracy * 0.15 + region.chokepoint * 0.08;
+  if (Math.random() < chance) { transferRegion(target, actor, region.id); actor.resources += 5 + region.resourceValue * 0.6; target.resources -= 7; log(`${actor.name} captured ${region.name} economically.`); }
+  else log(`${actor.name}'s economic capture in ${region.name} was resisted.`);
+}
+
+function runPuppet(actor, target, region) {
+  const chance = 0.26 + (1 - target.stability) * 0.35 + region.instability * 0.2;
+  if (Math.random() < chance) { transferRegion(target, actor, region.id); target.legitimacy -= 0.08; actor.legitimacy -= 0.03; log(`${actor.name} installed a puppet regime in ${region.name}.`); }
+  else log(`${actor.name}'s puppet operation in ${region.name} collapsed.`);
+}
+
+function runDialogue(actor, target) {
+  const trust = actor.memory[target.id].trust;
+  const gain = (8 + trust * 9) * ERA_PRESETS[state.era].diplomacyBoost;
+  actor.political += gain; actor.stability += 0.02; target.memory[actor.id].trust += 0.08;
+  actor.memory[target.id].grievance = clamp(actor.memory[target.id].grievance - 0.08, 0, 2);
+  log(`${actor.name} and ${target.name} held a summit (+${Math.round(gain)} political).`);
+}
+
+function runDisarmament(actor, target) {
+  const disarmed = Math.max(1, Math.floor(actor.nukes * 0.2));
+  actor.nukes -= disarmed; actor.political += disarmed * 5; actor.legitimacy += 0.06;
+  target.memory[actor.id].trust += 0.1;
+  log(`${actor.name} disarmed ${disarmed} warheads for political favor.`);
+}
+
+function runTriad(actor) {
+  actor.triad.silo = clamp(actor.triad.silo + 0.08, 0, 1);
+  actor.triad.sub = clamp(actor.triad.sub + 0.08, 0, 1);
+  actor.triad.bomber = clamp(actor.triad.bomber + 0.08, 0, 1);
+  actor.nukes += 0.5;
+  log(`${actor.name} improved triad deployment (sub, silo, bomber).`);
+}
+
+function runNuclear(actor, target, region, strikeType) {
+  if (actor.nukes < 1) { log(`${actor.name} attempted ${strikeType} without available stockpile.`); return; }
+  const doctrine = nuclearDoctrineScore(actor, target, region);
+  if (Math.random() > doctrine.executeChance) { log(`${actor.name} prepared ${strikeType} but aborted under deterrence pressure.`); return; }
+
+  actor.nukes -= 1;
+  const damage = 0.28 + Math.random() * 0.2;
+  target.stability -= damage;
+  target.resources -= 20 * damage;
+  target.legitimacy -= 0.12;
+
+  const globalPenalty = 0.14 + doctrine.globalInstability;
+  state.factions.forEach((f) => {
+    f.publicOpinion -= globalPenalty * (f.id === actor.id ? 1.4 : 1.0);
+    f.stability -= globalPenalty * 0.5;
+    f.economicStress += globalPenalty * 0.7;
+  });
+
+  region.resourceValue = Math.max(2, region.resourceValue - 3);
+  region.instability = clamp(region.instability + 0.2, 0, 1);
+  state.pendingEffects.push({ type: "fallout", turns: 4, regionId: region.id, severity: 0.05 });
+
+  const retaliationChance = doctrine.retaliationChance;
+  log(`${actor.name} executed ${strikeType} on ${region.name}. Global instability spiked.`);
+  if (Math.random() < retaliationChance && (target.nukes + target.hiddenStockpile) > 0) {
+    target.nukes = Math.max(0, target.nukes - 1);
+    actor.stability -= 0.22;
+    actor.resources -= 18;
+    actor.legitimacy -= 0.14;
+    log(`${target.name} retaliated under MAD logic.`);
+  }
+}
+
+function nuclearDoctrineScore(actor, target, region) {
+  const era = ERA_PRESETS[state.era];
+  const pressure = (1 - actor.stability) * 0.24 + actor.crazyLeader * 0.14 + actor.memory[target.id].grievance * 0.1;
+  const restraint = era.nuclearNorm * 0.19 + actor.democracy * 0.15 + actor.publicOpinion * 0.12 + actor.legitimacy * 0.08;
+  const targetThreat = actor.memory[target.id].threat + (target.nukes * 0.05) + region.chokepoint * 0.08;
+  const executeChance = clamp(0.08 + pressure + targetThreat - restraint, 0.02, 0.65);
+  const retaliationChance = clamp(0.28 + target.nukes * 0.07 + target.hiddenStockpile * 0.04 - actor.triad.sub * 0.06, 0.2, 0.94);
+  return { executeChance, retaliationChance, globalInstability: 0.06 + (1 - era.nuclearNorm) * -0.01 + region.chokepoint * 0.01 };
+}
+
+function instigateRevolution(actor, target, region) {
+  const intelMod = actor.perks.intelSurge > 0 ? 0.12 : 0;
+  const defenseIntel = target.tech * 0.07 + target.stability * 0.22 + target.memory[actor.id].threat * 0.12;
+  const supportDelta = (0.18 + actor.corporatism * 0.08 + region.instability * 0.16 + intelMod) - defenseIntel;
+  const contested = state.contestedRegions[region.id] || {
+    regionId: region.id, attackerId: actor.id, defenderId: target.id, attackerSupport: 0.42, defenderSupport: 0.58, turns: 0, pendingShowdown: false
+  };
+  contested.attackerSupport = clamp(contested.attackerSupport + supportDelta * 0.45 + (Math.random() - 0.5) * 0.08, 0.05, 0.95);
+  contested.defenderSupport = clamp(1 - contested.attackerSupport, 0.05, 0.95);
+  contested.turns += 1;
+  contested.pendingShowdown = Math.abs(contested.attackerSupport - contested.defenderSupport) <= 0.08;
+  state.contestedRegions[region.id] = contested;
+  if (actor.perks.intelSurge > 0) actor.perks.intelSurge -= 1;
+
+  log(`${actor.name} instigated revolution in ${region.name}. Support now ${Math.round(contested.attackerSupport * 100)}/${Math.round(contested.defenderSupport * 100)}.`);
+  if (contested.pendingShowdown) runRevolutionShowdown(contested, region);
+}
+
+function runRevolutionShowdown(contested, region) {
+  const attacker = byId(contested.attackerId), defender = byId(contested.defenderId);
+  const wagerA = 6 + Math.floor(attacker.political * 0.1);
+  const wagerD = 6 + Math.floor(defender.political * 0.1);
+  const result = simulateTttRound(attacker, defender, wagerA, wagerD, "revolution");
+
+  if (result === "X") {
+    transferRegion(defender, attacker, region.id);
+    attacker.political += 8; defender.political -= 8;
+    delete state.contestedRegions[region.id];
+    log(`Revolution showdown: ${attacker.name} took ${region.name}.`);
+  } else if (result === "O") {
+    defender.stability += 0.04; attacker.stability -= 0.04;
+    delete state.contestedRegions[region.id];
+    log(`Revolution crushed in ${region.name}; ${defender.name} held control.`);
+  } else {
+    const mutual = 5;
+    attacker.political -= mutual; defender.political -= mutual;
+    if (Math.random() < 0.5) {
+      state.neutralRegions[region.id] = { bornTurn: state.turn, reason: "cat-game neutral governance" };
+      delete state.mapOwnership[region.id];
+      attacker.regions = attacker.regions.filter((id) => id !== region.id);
+      defender.regions = defender.regions.filter((id) => id !== region.id);
+      log(`Cat's game in ${region.name}: region became neutral governance.`);
+    } else {
+      log(`Cat's game in ${region.name}: both factions penalized (${mutual}).`);
+    }
+    delete state.contestedRegions[region.id];
+  }
 }
 
 function transferRegion(from, to, regionId) {
-  if (!regionId) return;
+  delete state.neutralRegions[regionId];
   state.mapOwnership[regionId] = to.id;
-  from.regions = from.regions.filter((r) => r !== regionId);
+  if (from) from.regions = from.regions.filter((r) => r !== regionId);
   if (!to.regions.includes(regionId)) to.regions.push(regionId);
 }
 
-function normalizeFaction(f) {
-  f.resources = clamp(f.resources, 0, 300);
-  f.political = clamp(f.political, 0, 300);
-  f.nukes = clamp(f.nukes, 0, 120);
-  f.hiddenStockpile = clamp(f.hiddenStockpile, 0, 80);
-  f.stability = clamp(f.stability, 0.05, 1);
-  f.democracy = clamp(f.democracy, 0, 1);
-  f.corporatism = clamp(f.corporatism, 0, 1);
-}
-
-async function advanceTurn() {
+function advanceTurn() {
   if (!state.started || state.gameOver || state.ttt.animating) return;
-
-  state.factions.filter((f) => !f.isHuman).forEach((ai) => {
-    const target = pickTarget(ai);
-    const region = target.regions[Math.floor(Math.random() * Math.max(target.regions.length, 1))] || REGIONS[0].id;
-    const action = chooseAiAction(ai, target);
-    const strikeType = NUCLEAR_STRIKE_TYPES[Math.floor(Math.random() * NUCLEAR_STRIKE_TYPES.length)];
-    resolveAction(ai, action, target, region, false, strikeType);
-  });
-
-  systemicDrift();
-
-  const showcaseChance = state.humanEnabled ? 0.35 : 0.9;
-  if (Math.random() < showcaseChance) {
-    await playTttRound({ automated: true });
-  }
-
   state.turn += 1;
+  applyPendingEffects();
+  applyDomesticPressure();
+
+  const ais = state.factions.filter((f) => !f.isHuman);
+  for (const ai of ais) {
+    const actions = ai.perks.doubleTurn > 0 ? 2 : 1;
+    if (ai.perks.doubleTurn > 0) ai.perks.doubleTurn -= 1;
+    for (let i = 0; i < actions; i++) {
+      if (ai.aiSkipCycles > 0) { ai.aiSkipCycles -= 1; log(`${ai.name} skipped turn due to opponent Double Turn perk.`); break; }
+      const { action, target, region } = chooseAiAction(ai);
+      ai.scoredAction = `${action} vs ${target.name}`;
+      resolveAction(ai, action, target, region.id, false, STRIKE_TYPES[Math.floor(Math.random() * STRIKE_TYPES.length)]);
+    }
+  }
+
+  checkContinentPlayoffs();
+  detectDeadlock();
   endTurnChecks();
+  updateUI();
 }
 
-function chooseAiAction(ai, target) {
-  const pressure = (1 - ai.stability) + (1 - ai.democracy) * 0.4 + (ai.crazyLeader ? 0.5 : 0);
-  const madRestraint = ERA_PRESETS[state.era].nuclearNorm + target.nukes * 0.08;
-
-  if (ai.nukes + ai.hiddenStockpile > 3 && pressure > 1.0 && Math.random() > madRestraint * 0.35) return "Nuclear Strike";
-
-  const pool = ["Military Pressure", "Economic Capture", "Puppet Regime", "Support Sovereignty", "Dialogue Summit", "Invest in Technology", "Expand Nuclear Stockpile", "Secret Stockpile Build", "Disarmament Deal", "Deploy Nuclear Triad"];
-  if (ai.political < 30) return "Dialogue Summit";
-  if (ai.resources < 25) return "Support Sovereignty";
-  if (ai.objectives.economy > 0.65) return Math.random() > 0.4 ? "Economic Capture" : "Invest in Technology";
-  return pool[Math.floor(Math.random() * pool.length)];
+function chooseAiAction(ai) {
+  const opponents = state.factions.filter((f) => f.id !== ai.id);
+  const leader = leaderFaction();
+  let best = null;
+  for (const action of ACTIONS) {
+    for (const target of opponents) {
+      const region = chooseTargetRegion(ai, target);
+      const score = utility(ai, target, region, action, leader);
+      if (!best || score > best.score) best = { score, action, target, region };
+    }
+  }
+  return best;
 }
 
-function pickTarget(ai) {
-  const others = state.factions.filter((f) => f.id !== ai.id);
-  others.sort((a, b) => b.resources + b.political - (a.resources + a.political));
-  return others[0];
+function chooseTargetRegion(ai, target) {
+  const targetRegions = target.regions.map((id) => state.regions.find((r) => r.id === id)).filter(Boolean);
+  if (!targetRegions.length) return state.regions[Math.floor(Math.random() * state.regions.length)];
+  return targetRegions.sort((a, b) => (b.resourceValue + b.chokepoint) - (a.resourceValue + a.chokepoint))[0];
 }
 
-function systemicDrift() {
+function utility(ai, target, region, action, leader) {
+  const mem = ai.memory[target.id];
+  const politicalGain = ["Dialogue Summit", "Disarmament Deal"].includes(action) ? 12 : 6;
+  const resourceGain = ["Economic Capture", "Military Pressure", "Puppet Regime"].includes(action) ? region.resourceValue : 2;
+  const instabilityRisk = ai.economicStress * 10 + ai.warFatigue * 10 + (1 - ai.stability) * 15;
+  const retaliationRisk = action === "Nuclear Strike" ? target.nukes * 11 + target.hiddenStockpile * 7 : 3;
+  const globalEscPenalty = action === "Nuclear Strike" ? 28 : 5;
+  const antiHegemonBias = leader.id !== ai.id && target.id === leader.id ? 12 : 0;
+  const ideologyFit = ideologyActionBias(ai, action);
+  const revolutionBias = action === "Instigate Revolution" ? ((1 - target.stability) * 12 + region.instability * 14 + mem.threat * 5) : 0;
+  const nuclearPenalty = (state.era === "1984" ? 1.5 : state.era === "2026" ? 1.2 : 0.9) * globalEscPenalty;
+  return politicalGain + resourceGain + antiHegemonBias + ideologyFit + revolutionBias + mem.grievance * 8 + mem.threat * 7 - instabilityRisk - retaliationRisk - (action === "Nuclear Strike" ? nuclearPenalty : 0);
+}
+
+function ideologyActionBias(ai, action) {
+  if (action === "Dialogue Summit") return ai.democracy * 12;
+  if (action === "Economic Capture") return ai.corporatism * 12;
+  if (action === "Secret Stockpile Build") return (1 - ai.democracy) * 10;
+  if (action === "Nuclear Strike") return (1 - ai.stability) * 9 + (ai.crazyLeader ? 8 : 0);
+  return 4;
+}
+
+function applyDomesticPressure() {
   state.factions.forEach((f) => {
-    f.democracy += (Math.random() - 0.5) * 0.08;
-    f.corporatism += (Math.random() - 0.45) * 0.07;
-    if (f.crazyLeader) {
-      f.stability -= 0.03;
-      f.political -= 2;
-    }
-    if (f.democracy < 0.25 && Math.random() < 0.25) {
-      f.crazyLeader = true;
-      log(`${f.name} now has volatile leadership due to institutional decay.`);
-    }
-    normalizeFaction(f);
+    f.publicOpinion = clamp(f.publicOpinion - f.warFatigue * 0.05 + f.democracy * 0.02, 0, 1);
+    f.economicStress = clamp(f.economicStress + (f.resources < 30 ? 0.05 : -0.02), 0, 1);
+    f.legitimacy = clamp(f.legitimacy + f.publicOpinion * 0.03 - f.economicStress * 0.05, 0, 1);
+    f.stability = clamp(f.stability + f.legitimacy * 0.02 - f.warFatigue * 0.04, 0, 1);
+    f.democracy = clamp(f.democracy + (Math.random() - 0.5) * 0.04 - f.crazyLeader * 0.02, 0, 1);
+    f.corporatism = clamp(f.corporatism + (Math.random() - 0.5) * 0.04, 0, 1);
+    if (Math.random() < 0.07 && f.stability < 0.35) f.crazyLeader = true;
   });
 }
 
-function convertPoints() {
-  if (!state.started || !state.humanEnabled || state.gameOver) return;
-  const human = state.factions.find((f) => f.isHuman);
-  const from = dom.convertFrom.value;
-  const to = dom.convertTo.value;
-  const amount = Number(dom.convertAmount.value);
-
-  if (from === to || Number.isNaN(amount) || amount <= 0) return log("Conversion failed: choose different pools and positive amount.");
-  if (human[from] < amount) return log("Conversion failed: insufficient points.");
-
-  human[from] -= amount;
-  human[to] += amount * 0.7;
-  log(`Converted ${amount} ${from} to ${(amount * 0.7).toFixed(1)} ${to}.`);
-  endTurnChecks();
-}
-
-function computeMaxGamble() {
-  return Math.min(120, 10 + Math.floor(state.turn * 2.5));
-}
-
-async function playTttRound(options = {}) {
-  if (!state.started || state.gameOver || state.ttt.animating) return;
-
-  const automated = Boolean(options.automated);
-  if (!state.humanEnabled && !automated) {
-    log("Observer mode plays AI-vs-AI Tic-Tac-Toe showcase rounds automatically.");
-    return;
-  }
-
-  const maxWager = computeMaxGamble();
-  const human = state.factions.find((f) => f.isHuman);
-  const allAis = state.factions.filter((f) => !f.isHuman);
-
-  let sideX;
-  let sideO;
-  let wagerX;
-  let wagerO;
-
-  if (state.humanEnabled) {
-    wagerX = clamp(Number(dom.tttGambleInput.value || 0), 1, maxWager);
-    if (human.political < wagerX) {
-      log("Tic-Tac-Toe stake round blocked: insufficient political points for wager.");
-      return;
+function applyPendingEffects() {
+  state.pendingEffects = state.pendingEffects.filter((effect) => {
+    const region = state.regions.find((r) => r.id === effect.regionId);
+    if (region && effect.type === "fallout") {
+      region.instability = clamp(region.instability + effect.severity, 0, 1);
+      region.resourceValue = Math.max(1, region.resourceValue - 0.4);
     }
-    sideX = human;
-    sideO = allAis[Math.floor(Math.random() * allAis.length)];
-    wagerO = 1 + Math.floor(Math.random() * maxWager);
-  } else {
-    const shuffled = [...allAis].sort(() => Math.random() - 0.5);
-    sideX = shuffled[0];
-    sideO = shuffled[1] || shuffled[0];
-    wagerX = 1 + Math.floor(Math.random() * maxWager);
-    wagerO = 1 + Math.floor(Math.random() * maxWager);
-  }
+    effect.turns -= 1;
+    return effect.turns > 0;
+  });
+}
 
+function checkContinentPlayoffs() {
+  const continents = [...new Set(state.regions.map((r) => r.continent))];
+  continents.forEach((continent) => {
+    const ids = state.regions.filter((r) => r.continent === continent).map((r) => r.id);
+    const counts = state.factions.map((f) => ({ f, count: f.regions.filter((id) => ids.includes(id)).length })).sort((a, b) => b.count - a.count);
+    const total = ids.length;
+    const leader = counts[0], runner = counts[1];
+    if (!leader || !runner) return;
+    if (leader.count >= Math.ceil(total / 2) && Math.abs(leader.count - runner.count) <= 1) {
+      const prize = simulateTttRound(leader.f, runner.f, 8 + leader.count * 2, 8 + runner.count * 2, `continent:${continent}`);
+      if (prize === "X") {
+        leader.f.political += 10; leader.f.resources += 8; runner.f.aiSkipCycles += 1;
+        log(`${leader.f.name} won ${continent} playoff and gains continental initiative.`);
+      } else if (prize === "O") {
+        runner.f.political += 10; runner.f.resources += 8; leader.f.aiSkipCycles += 1;
+        log(`${runner.f.name} upset ${leader.f.name} in ${continent} playoff and seized initiative.`);
+      } else {
+        leader.f.political -= 4; runner.f.political -= 4;
+        log(`${continent} playoff tied; both factions penalized and bloc remains contested.`);
+      }
+    }
+  });
+}
+
+function detectDeadlock() {
+  const neutralCount = Object.keys(state.neutralRegions).length;
+  const contestedCount = Object.keys(state.contestedRegions).length;
+  if (state.turn > 18 && neutralCount + contestedCount > Math.ceil(state.regions.length * 0.4)) {
+    state.gameOver = true;
+    log("Strategic deadlock detected: neutral/contested zones exceed sustainable governance threshold.");
+  }
+}
+
+function endTurnChecks() {
+  const winner = state.factions.find((f) => f.regions.length >= Math.ceil(state.regions.length * 0.55));
+  if (winner || state.turn >= MAX_TURNS) {
+    state.gameOver = true;
+    const summary = winner || leaderFaction();
+    log(`Game complete. Winner: ${summary.name}.`);
+  }
+}
+
+function runStakeTtt(automated = false, forced = null) {
+  if (!state.started || state.gameOver || state.ttt.animating) return;
+  const allAis = state.factions.filter((f) => !f.isHuman);
+  const sideX = forced?.x || (state.humanEnabled && !automated ? state.factions.find((f) => f.isHuman) : allAis[Math.floor(Math.random() * allAis.length)]);
+  const sideO = forced?.o || randomOpponent(sideX);
+  const maxWager = computeMaxGamble();
+  const wagerX = forced?.wx ?? clamp(Number(dom.tttGambleInput.value || 0), 1, maxWager);
+  const wagerO = forced?.wo ?? (1 + Math.floor(Math.random() * maxWager));
+  const outcome = simulateTttRound(sideX, sideO, wagerX, wagerO, automated ? "ai" : "human");
+  settleTttRound(outcome, sideX, sideO, wagerX, wagerO, automated);
+  updateUI();
+}
+
+function simulateTttRound(sideX, sideO, wagerX, wagerO, context = "ai") {
   state.ttt.animating = true;
   state.ttt.board = Array(9).fill("");
-  state.ttt.active = true;
-  renderTicTacToe();
-
-  const matchup = `${sideX.name} (X) vs ${sideO.name} (O)`;
-  if (state.humanEnabled) {
-    log(`High-stakes Tic-Tac-Toe started: ${matchup}. Your visible wager: ${wagerX}; opponent wager is hidden.`);
-  } else {
-    log(`High-stakes Tic-Tac-Toe showcase: ${matchup}. Hidden wagers locked in.`);
-  }
-
-  const available = [...Array(9)].map((_, i) => i);
-  let symbol = "X";
-  let result = null;
+  state.ttt.miniBoard = Array(9).fill("");
+  const available = [...Array(9).keys()];
+  let sym = "X", result = null;
   while (available.length) {
-    const pickIndex = Math.floor(Math.random() * available.length);
-    const move = available.splice(pickIndex, 1)[0];
-    state.ttt.board[move] = symbol;
-    renderTicTacToe();
+    const idx = Math.floor(Math.random() * available.length);
+    const move = available.splice(idx, 1)[0];
+    state.ttt.board[move] = sym;
+    state.ttt.miniBoard[move] = sym;
     result = evaluateTtt(state.ttt.board);
     if (result) break;
-    symbol = symbol === "X" ? "O" : "X";
-    await delay(130);
+    sym = sym === "X" ? "O" : "X";
   }
-
-  settleTttRound(result, sideX, sideO, wagerX, wagerO);
+  dom.showdownLeftLog.textContent = `${sideX.name} wagered ${wagerX} (${context}).`;
+  dom.showdownRightLog.textContent = `${sideO.name} wagered ${wagerO} (${context}).`;
+  dom.miniTttStatus.textContent = `${sideX.name} (X) vs ${sideO.name} (O)`;
   state.ttt.animating = false;
-  if (!automated) endTurnChecks();
+  return result;
 }
 
-function settleTttRound(outcome, sideX, sideO, wagerX, wagerO) {
-  const luckHuman = 0.9 + Math.random() * 0.2;
-  const luckOpp = 0.9 + Math.random() * 0.2;
-  const effectiveHumanWager = Math.round(wagerX * luckHuman);
-  const effectiveOppWager = Math.round(wagerO * luckOpp);
-  const isHumanMatch = sideX.isHuman || sideO.isHuman;
-
+function settleTttRound(outcome, sideX, sideO, wagerX, wagerO, automated = false) {
+  const effX = Math.round(wagerX * (0.9 + Math.random() * 0.2));
+  const effO = Math.round(wagerO * (0.9 + Math.random() * 0.2));
   if (outcome === "X") {
-    sideX.political += effectiveOppWager;
-    sideO.political -= effectiveOppWager;
-    state.ttt.lastRoundSummary = isHumanMatch
-      ? `Won round. You risked ${wagerX} (eff ${effectiveHumanWager}), opponent risked hidden ${wagerO} (eff ${effectiveOppWager}); net +${effectiveOppWager}.`
-      : `${sideX.name} beat ${sideO.name}; swing +${effectiveOppWager} political.`;
-    log(`Tic-Tac-Toe result: ${sideX.name} won. Hidden wagers were ${wagerX}/${wagerO}; swing +${effectiveOppWager} to ${sideX.name}.`);
+    sideX.political += effO; sideO.political -= effO;
+    grantPerk(sideX);
+    state.ttt.lastRoundSummary = `${sideX.name} won; swing +${effO}.`;
   } else if (outcome === "O") {
-    sideX.political -= effectiveHumanWager;
-    sideO.political += effectiveHumanWager;
-    state.ttt.lastRoundSummary = isHumanMatch
-      ? `Lost round. You risked ${wagerX} (eff ${effectiveHumanWager}), opponent hidden was ${wagerO} (eff ${effectiveOppWager}); net -${effectiveHumanWager}.`
-      : `${sideO.name} beat ${sideX.name}; swing +${effectiveHumanWager} political.`;
-    log(`Tic-Tac-Toe result: ${sideO.name} won. Hidden wagers were ${wagerX}/${wagerO}; swing +${effectiveHumanWager} to ${sideO.name}.`);
+    sideX.political -= effX; sideO.political += effX;
+    grantPerk(sideO);
+    state.ttt.lastRoundSummary = `${sideO.name} won; swing +${effX}.`;
   } else {
-    const swing = Math.round((effectiveOppWager - effectiveHumanWager) * 0.35);
-    sideX.political += swing;
-    sideO.political -= swing;
-    state.ttt.lastRoundSummary = isHumanMatch
-      ? `Draw. Your eff wager ${effectiveHumanWager}, opponent eff ${effectiveOppWager}; net ${swing >= 0 ? "+" : ""}${swing}.`
-      : `Draw between ${sideX.name} and ${sideO.name}; limited swing ${swing >= 0 ? "+" : ""}${swing}.`;
-    log(`Tic-Tac-Toe draw. Hidden wagers were ${wagerX}/${wagerO}; conservative swing ${swing}.`);
+    const loss = 4;
+    sideX.political -= loss; sideO.political -= loss;
+    if (Math.random() < 0.3) {
+      const region = state.regions[Math.floor(Math.random() * state.regions.length)];
+      state.neutralRegions[region.id] = { bornTurn: state.turn, reason: "ttt-cat-game" };
+      log(`Cat's game triggered mutual penalty and neutral governance in ${region.name}.`);
+    }
+    state.ttt.lastRoundSummary = "Cat's game; both penalized.";
   }
-
-  normalizeFaction(sideX);
-  normalizeFaction(sideO);
+  log(`Tic-Tac-Toe outcome: ${outcome}. ${state.ttt.lastRoundSummary}`);
+  if (!automated) updateUI();
 }
 
-function renderTicTacToe() {
-  dom.tttBoard.innerHTML = "";
-  state.ttt.board.forEach((value) => {
-    const cell = document.createElement("div");
-    cell.className = "ttt-cell";
-    cell.textContent = value;
-    dom.tttBoard.appendChild(cell);
-  });
+function grantPerk(faction) {
+  const perk = id("tttPerkSelect").value || PERKS[Math.floor(Math.random() * PERKS.length)];
+  if (perk === "Double Turn") {
+    faction.perks.doubleTurn += 1;
+    const opponents = state.factions.filter((f) => f.id !== faction.id && !f.isHuman);
+    if (opponents.length) opponents[Math.floor(Math.random() * opponents.length)].aiSkipCycles += 1;
+  }
+  if (perk === "Intel Surge") faction.perks.intelSurge += 2;
+  if (perk === "Stability Shield") faction.perks.stabilityShield += 1;
+  if (faction.perks.stabilityShield > 0) {
+    faction.stability = clamp(faction.stability + 0.06, 0, 1);
+    faction.perks.stabilityShield -= 1;
+  }
+  log(`${faction.name} gained perk: ${perk}.`);
 }
 
 function evaluateTtt(board) {
   const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
   for (const [a,b,c] of lines) if (board[a] && board[a] === board[b] && board[a] === board[c]) return board[a];
-  if (board.every(Boolean)) return "draw";
-  return null;
+  return board.every(Boolean) ? "draw" : null;
 }
 
-function resetTicTacToe() {
-  state.ttt.board = Array(9).fill("");
-  state.ttt.active = true;
-  state.ttt.animating = false;
-  renderTicTacToe();
-}
+function resetTicTacToe() { state.ttt.board = Array(9).fill(""); state.ttt.miniBoard = Array(9).fill(""); renderTicTacToe(); renderMiniTtt(); }
+function renderTicTacToe() { renderBoard(dom.tttBoard, state.ttt.board); }
+function renderMiniTtt() { renderBoard(dom.miniTttBoard, state.ttt.miniBoard); }
+function renderBoard(root, board) { root.innerHTML = ""; board.forEach((v) => { const d = document.createElement("div"); d.className = "ttt-cell"; d.textContent = v; root.append(d); }); }
 
-function endTurnChecks() {
-  if (!state.started) return;
-  const winner = state.factions.find((f) => f.regions.length >= 5);
-  if (winner || state.turn >= MAX_TURNS) {
-    state.gameOver = true;
-    stopAutoAdvance();
-    const summaryWinner = winner || [...state.factions].sort((a, b) => (b.resources + b.political + b.regions.length * 15) - (a.resources + a.political + a.regions.length * 15))[0];
-    log(`Game complete. Winner: ${summaryWinner.name}. Download report for full analysis.`);
-  }
+function convertPoints() {
+  const human = state.factions.find((f) => f.isHuman);
+  if (!human) return;
+  const from = dom.convertFrom.value, to = dom.convertTo.value, amount = Number(dom.convertAmount.value || 0);
+  if (from === to || amount <= 0 || human[from] < amount) return;
+  human[from] -= amount; human[to] += amount * 0.72;
+  log(`Converted ${amount} ${from} to ${Math.round(amount * 0.72)} ${to}.`);
   updateUI();
 }
 
-function downloadReport() {
-  if (!state.gameOver) return;
-  const payload = {
-    generatedAt: new Date().toISOString(),
-    era: state.era,
-    turns: state.turn,
-    humanEnabled: state.humanEnabled,
-    factions: state.factions.map((f) => ({
-      name: f.name,
-      isHuman: f.isHuman,
-      resources: Math.round(f.resources),
-      political: Math.round(f.political),
-      nukes: Math.round(f.nukes),
-      hiddenStockpile: Math.round(f.hiddenStockpile),
-      stability: Number(f.stability.toFixed(3)),
-      democracy: Number(f.democracy.toFixed(3)),
-      corporatism: Number(f.corporatism.toFixed(3)),
-      regions: f.regions
-    })),
-    mapOwnership: state.mapOwnership,
-    tttSummary: state.ttt.lastRoundSummary,
-    log: state.logEntries
-  };
+function computeMaxGamble() { const human = state.factions.find((f) => f.isHuman) || state.factions[0]; return clamp(Math.floor(human?.political * 0.32 || 12), 5, 40); }
+function leaderFaction() { return [...state.factions].sort((a,b)=> (b.regions.length*13 + b.political + b.resources) - (a.regions.length*13 + a.political + a.resources))[0] || { name: "None", regions: [] }; }
+function randomOpponent(actor) { const ops = state.factions.filter((f) => f.id !== actor.id); return ops[Math.floor(Math.random() * ops.length)]; }
+function byId(idv) { return state.factions.find((f) => f.id === idv); }
+function normalizeFaction(f) { f.resources = Math.max(0, f.resources); f.political = Math.max(0, f.political); f.nukes = Math.max(0, f.nukes); f.stability = clamp(f.stability, 0, 1); f.legitimacy = clamp(f.legitimacy, 0, 1); }
+function updateMemory(actor, target, action) {
+  const mem = actor.memory[target.id];
+  if (["Military Pressure", "Puppet Regime", "Nuclear Strike", "Instigate Revolution"].includes(action)) mem.grievance += 0.12;
+  if (action === "Dialogue Summit") mem.trust += 0.08;
+  if (action === "Economic Capture") mem.threat += 0.07;
+  const leader = leaderFaction();
+  state.factions.forEach((f) => {
+    if (f.id === leader.id) return;
+    if (leader.regions.length > Math.ceil(state.regions.length * 0.32)) {
+      const m = f.memory[leader.id];
+      if (m) { m.threat = clamp(m.threat + 0.07, 0, 3); m.trust = clamp(m.trust - 0.05, 0, 1); }
+    }
+  });
+}
 
+function downloadReport() {
+  const payload = {
+    generatedAt: new Date().toISOString(), era: state.era, turn: state.turn, gameOver: state.gameOver, humanEnabled: state.humanEnabled,
+    indexLink: "file:///workspace/winning-move/index.html",
+    factions: state.factions.map((f) => ({
+      name: f.name, isHuman: f.isHuman, doctrine: f.doctrine, resources: Math.round(f.resources), political: Math.round(f.political), nukes: Number(f.nukes.toFixed(2)),
+      hiddenStockpile: Number(f.hiddenStockpile.toFixed(2)), stability: Number(f.stability.toFixed(3)), democracy: Number(f.democracy.toFixed(3)), corporatism: Number(f.corporatism.toFixed(3)),
+      publicOpinion: Number(f.publicOpinion.toFixed(3)), warFatigue: Number(f.warFatigue.toFixed(3)), economicStress: Number(f.economicStress.toFixed(3)), legitimacy: Number(f.legitimacy.toFixed(3)),
+      perks: f.perks, aiSkipCycles: f.aiSkipCycles, regions: f.regions,
+      memory: Object.fromEntries(Object.entries(f.memory).map(([k,v]) => [k, { grievance: Number(v.grievance.toFixed(3)), trust: Number(v.trust.toFixed(3)), threat: Number(v.threat.toFixed(3)) }]))
+    })),
+    mapOwnership: state.mapOwnership, contestedRegions: state.contestedRegions, neutralRegions: state.neutralRegions, pendingEffects: state.pendingEffects,
+    tttSummary: state.ttt.lastRoundSummary, log: state.logEntries
+  };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `world-strategy-report-turn-${state.turn}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
+  const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `world-strategy-report-turn-${state.turn}.json`; a.click(); URL.revokeObjectURL(url);
 }
 
 function log(message) {
   const line = `T${state.turn}: ${message}`;
   state.logEntries.push(line);
   const item = document.createElement("div");
-  item.className = "log-entry";
-  item.textContent = line;
+  item.className = "log-entry"; item.textContent = line;
   dom.log.prepend(item);
 }
 
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
-
-function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+function id(n) { return document.getElementById(n); }
+function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 
 init();
