@@ -383,3 +383,122 @@ button:hover { border-color: var(--accent); }
   min-width: 280px;
   box-shadow: 0 0 24px rgba(96, 165, 250, 0.3);
 }
+
+.strategic-panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+#defconPanel, #cognitivePanel, #destructionReportPanel, #eventMonitor {
+  background: #08111f;
+  border: 1px solid #294055;
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+#destructionReportPanel.hidden {
+  display: none;
+}
+
+#defconMeter, #cognitiveContent, #casualtyContent, #eventOverlay, #gameOverSummary {
+  font-family: "Courier New", Consolas, monospace;
+  white-space: pre-wrap;
+  line-height: 1.4;
+}
+
+#cognitiveContent, #casualtyContent {
+  color: #57f287;
+  text-shadow: 0 0 6px rgba(87, 242, 135, 0.3);
+}
+
+.defcon { font-weight: 600; }
+.defcon-5 { color: #60a5fa; }
+.defcon-4 { color: #2dd4bf; }
+.defcon-3 { color: #facc15; }
+.defcon-2 { color: #fb923c; }
+.defcon-1 { color: #ef4444; animation: defconPulse 0.9s infinite; }
+
+@keyframes defconPulse {
+  0% { text-shadow: 0 0 4px rgba(239, 68, 68, 0.5); }
+  50% { text-shadow: 0 0 14px rgba(239, 68, 68, 1); }
+  100% { text-shadow: 0 0 4px rgba(239, 68, 68, 0.5); }
+}
+
+.monitor-wrap {
+  position: relative;
+  min-height: 140px;
+}
+
+#staticCanvas {
+  width: 100%;
+  background: #04070e;
+  border: 1px solid #1f2c3a;
+  border-radius: 6px;
+}
+
+#eventOverlay {
+  position: absolute;
+  inset: 8px;
+  color: #fca5a5;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#eventOverlay.active {
+  opacity: 1;
+}
+
+#eventOverlay.flicker {
+  animation: flicker 200ms linear infinite;
+}
+
+@keyframes flicker {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+body[data-tone="tense"] .console-panel {
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.18);
+}
+
+body[data-tone="critical"] .console-panel {
+  box-shadow: 0 0 16px rgba(248, 113, 113, 0.22);
+}
+
+body[data-tone="terminal"] .console-panel {
+  animation: terminalBeat 1.4s ease-in-out infinite;
+}
+
+body[data-tone="terminal"] .log-entry {
+  animation: textJitter 0.15s infinite;
+}
+
+body[data-tone="post-collapse"] {
+  filter: saturate(0.45);
+}
+
+body[data-tone="post-collapse"] #gameDashboard {
+  opacity: 0.88;
+}
+
+@keyframes terminalBeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.004); }
+}
+
+@keyframes textJitter {
+  0% { transform: translateX(0px); }
+  50% { transform: translateX(0.6px); }
+  100% { transform: translateX(-0.6px); }
+}
+
+#gameOverSummary {
+  margin: 0.6rem 0;
+  padding: 0.6rem;
+  border: 1px solid #334155;
+  background: #02060d;
+  color: #93c5fd;
+  min-height: 110px;
+}
