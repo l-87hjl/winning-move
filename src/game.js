@@ -72,6 +72,7 @@ const SCENARIO_SETTINGS = {
   allianceFractureShock: 1,
   climateShockWeight: 1,
   famineShockWeight: 1,
+  paradigmShiftEnabled: true,
   continentShowdownThreshold: 0.5,
   continentSecureThreshold: 0.6,
   maxContestedTurnsBeforeShowdown: 4
@@ -323,7 +324,7 @@ function bindDom() {
     settingGlobalFallout: id("settingGlobalFallout"), settingCredibilityWeight: id("settingCredibilityWeight"), settingHumanitarianWeight: id("settingHumanitarianWeight"),
     settingLongTermWeight: id("settingLongTermWeight"), settingDomesticBacklash: id("settingDomesticBacklash"), settingEscalationReciprocity: id("settingEscalationReciprocity"),
     settingContinentShowdownThreshold: id("settingContinentShowdownThreshold"), settingContinentSecureThreshold: id("settingContinentSecureThreshold"),
-    settingSharedCollapse: id("settingSharedCollapse"), maxTurnsInput: id("maxTurnsInput"),
+    settingSharedCollapse: id("settingSharedCollapse"), settingParadigmShiftEnabled: id("settingParadigmShiftEnabled"), maxTurnsInput: id("maxTurnsInput"),
     scenarioSetupContainer: id("scenarioSetupContainer"), gameOverOverlay: id("gameOverOverlay"), gameOverWinnerText: id("gameOverWinnerText"), mapOverlay: id("mapOverlay"),
     destructionReportPanel: id("destructionReportPanel"), casualtyContent: id("casualtyContent"), defconMeter: id("defconMeter"),
     cognitiveContent: id("cognitiveContent"), eventOverlay: id("eventOverlay"), staticCanvas: id("staticCanvas"),
@@ -375,6 +376,7 @@ function applyGameModeDefaults() {
   if (dom.settingContinentShowdownThreshold) dom.settingContinentShowdownThreshold.value = merged.continentShowdownThreshold;
   if (dom.settingContinentSecureThreshold) dom.settingContinentSecureThreshold.value = merged.continentSecureThreshold;
   if (dom.settingSharedCollapse) dom.settingSharedCollapse.checked = merged.sharedCollapseEnabled;
+  if (dom.settingParadigmShiftEnabled) dom.settingParadigmShiftEnabled.checked = merged.paradigmShiftEnabled;
 }
 
 function syncExecutionModeUi() {
@@ -461,6 +463,9 @@ function startGame() {
   assignStartingOwnership(); drawMap(); updateSelectors();
   log(`Scenario started for ${state.era}. Doctrine baseline: ${ERA_PRESETS[state.era].doctrine}.`);
   log(`Scenario settings loaded: ${JSON.stringify(state.scenarioSettings)}.`);
+  if (!state.scenarioSettings.paradigmShiftEnabled) {
+    log("WARNING: Paradigm shift temporarily disabled for diagnostics.");
+  }
   dom.scenarioSetupContainer?.classList.add("collapsed");
   drawStaticImagery();
   if (id("appVersion")) id("appVersion").textContent = `v${APP_VERSION}`;
@@ -495,6 +500,7 @@ function scenarioSettingsFromUI() {
     continentSecureThreshold: Number(dom.settingContinentSecureThreshold?.value ?? SCENARIO_SETTINGS.continentSecureThreshold),
     maxContestedTurnsBeforeShowdown: paceToTurns(),
     sharedCollapseEnabled: Boolean(dom.settingSharedCollapse?.checked),
+    paradigmShiftEnabled: Boolean(dom.settingParadigmShiftEnabled?.checked),
     deterrenceModel: SCENARIO_SETTINGS.deterrenceModel,
     surrenderPenaltyWeight: SCENARIO_SETTINGS.surrenderPenaltyWeight
   };
@@ -1890,6 +1896,10 @@ function updateAiEmergence() {
 }
 
 function updateParadigmState() {
+  if (!state.scenarioSettings.paradigmShiftEnabled) {
+    state.paradigmState = "normal";
+    return;
+  }
   window.GameEngine.checkParadigmShift({ state, clamp });
 }
 
