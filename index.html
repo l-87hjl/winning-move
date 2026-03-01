@@ -163,7 +163,7 @@
     </div>
 
     <div id="persistentControlBar" class="panel console-panel">
-      <button id="nextTurnBtn" disabled>Advance Turn</button>
+      <button id="nextTurnBtn" disabled title="Advances to the next strategic turn and resolves the mandatory TTT phase before AI actions.">Advance Turn (with TTT Phase)</button>
       <button id="autoAdvanceBtn" disabled>Auto Advance: Off</button>
       <button id="downloadReportBtn" disabled>Download Game Report</button>
       <button id="newGameBtn">New Game</button>
@@ -210,7 +210,7 @@
 
     <div id="gameDashboard">
       <section class="panel console-panel top-ttt-panel">
-        <h2>Live Showdown Feed (AI vs AI / Human vs AI)</h2>
+        <h2 title="Every turn begins with a mandatory TTT contest that sets initiative bonuses.">Turn-Phase TTT Showdown Feed (Core Initiative Layer)</h2>
         <div id="showdownRow">
           <div id="showdownLeftLog" class="showdown-log gambleLeft"></div>
           <div class="tttBoard">
@@ -302,8 +302,8 @@
           <button id="convertBtn">Convert</button>
         </div>
 
-        <h3>High-Stakes Tic-Tac-Toe (Human Board)</h3>
-        <p class="caption">Gamble for perks: Double Turn, Intel Surge, Stability Shield.</p>
+        <h3 title="TTT is core turn resolution. Manual rounds let humans trigger additional high-stakes contests.">High-Stakes Tic-Tac-Toe Command Board</h3>
+        <p class="caption">TTT drives action economy and regional pressure each turn; manual rounds can additionally gamble for perks: Double Turn, Intel Surge, Stability Shield.</p>
         <div class="converter-row">
           <label>
             Your Gamble
