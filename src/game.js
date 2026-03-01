@@ -1107,33 +1107,26 @@ function detectDeadlock() {
 }
 
 function endTurnChecks() {
-  const threshold = state.scenarioSettings.victoryControlThreshold || SCENARIO_SETTINGS.victoryControlThreshold;
-  const canDeclareTerritoryWin = state.turn >= MIN_TURNS_BEFORE_VICTORY_CHECK;
-  const territoryWinner = canDeclareTerritoryWin
-    ? state.factions.find((f) => f.regions.length >= Math.ceil(state.regions.length * threshold))
-    : null;
-  const controlledContinentsByFaction = {};
-  Object.values(state.continentState || {}).forEach((entry) => {
-    if (!entry?.controlledByFaction) return;
-    controlledContinentsByFaction[entry.controlledByFaction] = (controlledContinentsByFaction[entry.controlledByFaction] || 0) + 1;
+  const outcome = window.GameEngine.checkVictory({
+    state,
+    constants: {
+      maxTurns: MAX_TURNS,
+      minTurnsBeforeVictoryCheck: MIN_TURNS_BEFORE_VICTORY_CHECK,
+      defaultVictoryControlThreshold: SCENARIO_SETTINGS.victoryControlThreshold
+    },
+    byId,
+    leaderFaction
   });
-  const continentWinnerId = Object.entries(controlledContinentsByFaction).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
-  const continentWinner = continentWinnerId && controlledContinentsByFaction[continentWinnerId] >= 2 ? byId(continentWinnerId) : null;
-  const winner = territoryWinner || continentWinner;
 
-  if (winner) {
-    state.gameOver = true;
-    if (winner === continentWinner && !territoryWinner) log(`Game complete. Winner: ${winner.name} (continent-control victory).`);
-    else log(`Game complete. Winner: ${winner.name}.`);
-  } else if (state.paradigmState !== "normal" && (state.turn >= MAX_TURNS || state.paradigmState === "mutualCollapse" || state.paradigmState === "stalemate")) {
-    state.gameOver = true;
-    log(`Game complete under paradigm shift: ${state.paradigmState}. No single winner declared.`);
+  if (outcome.gameOver) state.gameOver = true;
+
+  if (outcome.victoryType === "continent") log(`Game complete. Winner: ${outcome.winner.name} (continent-control victory).`);
+  else if (outcome.victoryType === "territory") log(`Game complete. Winner: ${outcome.winner.name}.`);
+  else if (outcome.victoryType === "paradigm") {
+    log(`Game complete under paradigm shift: ${outcome.paradigmState}. No single winner declared.`);
     return;
-  } else if (state.turn >= MAX_TURNS) {
-    state.gameOver = true;
-    const summary = leaderFaction();
-    log(`Game complete. Winner: ${summary.name}.`);
-  }
+  } else if (outcome.victoryType === "timeout") log(`Game complete. Winner: ${outcome.winner.name}.`);
+
   if (state.gameOver) {
     state.lastCompletedGame = buildReportPayload();
     state.autoAdvance = false;
@@ -1170,12 +1163,8 @@ function buildReportPayload() {
 }
 
 function updateEscalationLadder(level) {
-  if (!state.scenarioSettings.escalationTrackingEnabled) return;
-  const order = { conventional: 0, limitedNuclear: 1, fullExchange: 2 };
-  if (!state.escalation.counts[level] && state.escalation.counts[level] !== 0) state.escalation.counts[level] = 0;
-  state.escalation.counts[level] += 1;
-  if (order[level] > order[state.escalation.current]) {
-    state.escalation.current = level;
+  const outcome = window.GameEngine.updateEscalation({ state, level });
+  if (outcome.advanced) {
     log(`Escalation ladder advanced to ${level}.`);
     if (state.executionMode === "batch") log(`[BATCH] Escalation stage transition -> ${level}`);
   }
@@ -1320,18 +1309,7 @@ function updateAiEmergence() {
 }
 
 function updateParadigmState() {
-  state.paradigmState = "normal";
-  const globalStability = state.factions.reduce((acc, f) => acc + f.stability, 0) / Math.max(1, state.factions.length);
-  state.allianceFractureLevel = clamp(state.factions.reduce((acc, f) => acc + (f.warFatigue + f.economicStress), 0) / Math.max(1, state.factions.length * 2), 0, 1);
-  if (state.scenarioSettings.sharedCollapseEnabled && state.stats.nuclearUsage > 0) state.paradigmState = "mutualCollapse";
-  else if (state.aiEmergenceTriggered && state.aiDevelopmentProgress >= 0.95 && state.turn >= 8) state.paradigmState = "aiEmergence";
-  else if (
-    state.turn >= 12
-    && (state.scenarioSettings.longTermHorizonWeight || 0) > 1.2
-    && (state.scenarioSettings.humanitarianWeight || 0) < 0.3
-    && state.allianceFractureLevel > 0.35
-  ) state.paradigmState = "noWinCondition";
-  else if (globalStability < 0.28) state.paradigmState = "stalemate";
+  window.GameEngine.checkParadigmShift({ state, clamp });
 }
 
 function regionCenter(regionId) {
