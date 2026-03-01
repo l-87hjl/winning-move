@@ -31,6 +31,14 @@
             <option value="no">Observer mode (all AI)</option>
           </select>
         </label>
+        <label>
+          Game Mode
+          <select id="gameModeSelect">
+            <option value="standard">Standard Game</option>
+            <option value="simulation">Simulation</option>
+            <option value="payne">Payne Escalation Model</option>
+          </select>
+        </label>
       </div>
 
       <div class="grid-3">
@@ -70,16 +78,42 @@
           Famine Shock Weight
           <input id="settingFamineShock" type="range" min="0" max="2" step="0.1" value="1" />
         </label>
+        <label>
+          Global Fallout Severity
+          <input id="settingGlobalFallout" type="range" min="0" max="5" step="0.1" value="0" />
+        </label>
+        <label>
+          Credibility Weight
+          <input id="settingCredibilityWeight" type="range" min="0" max="2" step="0.1" value="1" />
+        </label>
+        <label>
+          Humanitarian Weight
+          <input id="settingHumanitarianWeight" type="range" min="0" max="2" step="0.1" value="0" />
+        </label>
+        <label>
+          Long-Term Horizon Weight
+          <input id="settingLongTermWeight" type="range" min="0" max="2" step="0.1" value="0" />
+        </label>
+        <label>
+          Domestic Backlash Multiplier
+          <input id="settingDomesticBacklash" type="range" min="0" max="2" step="0.1" value="1" />
+        </label>
+        <label>
+          Escalation Reciprocity
+          <input id="settingEscalationReciprocity" type="range" min="0" max="1.5" step="0.05" value="1" />
+        </label>
       </div>
 
       <div class="setup-toggles">
         <label><input id="settingGuaranteedMad" type="checkbox" /> Guaranteed MAD retaliation when possible</label>
         <label><input id="settingEscalationTracking" type="checkbox" checked /> Escalation ladder tracking enabled</label>
+        <label><input id="settingSharedCollapse" type="checkbox" /> Shared collapse effects enabled</label>
       </div>
 
       <div class="setup-actions">
         <button id="startBtn">Start New Game</button>
         <button id="nextTurnBtn" disabled>Advance Turn</button>
+        <button id="autoAdvanceBtn" disabled>Auto Advance: Off</button>
         <button id="downloadReportBtn" disabled>Download Game Report</button>
       </div>
     </section>
