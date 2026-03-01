@@ -163,6 +163,7 @@ const state = {
   continentState: {},
   paradigmState: "normal",
   aiDevelopmentProgress: 0,
+  aiEmergenceTriggered: false,
   continentContestTurns: {},
   defconLevel: 5,
   globalTone: "stable",
@@ -302,6 +303,7 @@ function startGame() {
   state.continentState = {};
   state.paradigmState = "normal";
   state.aiDevelopmentProgress = 0;
+  state.aiEmergenceTriggered = false;
   state.continentContestTurns = {};
   state.lastCompletedGame = null;
   state.defconLevel = 5;
@@ -589,6 +591,11 @@ function actionCost(action) {
   return table[action] || { resources: 10, political: 10 };
 }
 
+function canAffordAction(actor, action) {
+  const cost = actionCost(action);
+  return actor.resources >= cost.resources && actor.political >= cost.political;
+}
+
 function runMilitary(actor, target, region) {
   const chance = 0.32 + actor.tech * 0.09 - target.tech * 0.07 + (actor.memory[target.id].threat * 0.2) - region.instability * 0.2;
   if (Math.random() < chance) { transferRegion(target, actor, region.id); showAttackVisual(region.id, false, target.regions[0]); actor.political += region.resourceValue * 0.5; adjustDefcon(-1, "Major conventional strike altered balance."); triggerEventStatic([">>> MAJOR STRIKE DETECTED"]); log(`${actor.name} seized ${region.name} by direct force.`); }
@@ -792,6 +799,7 @@ function advanceTurn() {
   updateEscalationLadder("conventional");
   applyPendingEffects();
   applyDomesticPressure();
+  regenerateFactionEconomies();
 
   const ais = state.factions.filter((f) => !f.isHuman);
   for (const ai of ais) {
@@ -818,7 +826,9 @@ function chooseAiAction(ai) {
   const opponents = state.factions.filter((f) => f.id !== ai.id);
   const leader = leaderFaction();
   let best = null;
-  for (const action of ACTIONS) {
+  const affordableActions = ACTIONS.filter((action) => canAffordAction(ai, action));
+  const actionPool = affordableActions.length ? affordableActions : ["Dialogue Summit"];
+  for (const action of actionPool) {
     for (const target of opponents) {
       const region = chooseTargetRegion(ai, target);
       const score = utility(ai, target, region, action, leader);
@@ -854,8 +864,26 @@ function utility(ai, target, region, action, leader) {
   const noisy = (Math.random() - 0.5) * 20 * state.scenarioSettings.intelligenceFog;
   const postHumanBias = objectiveProfile.maximizeCompute * (action === "Invest in Technology" ? 8 : 0) + objectiveProfile.minimizeHumanRisk * (action === "Nuclear Strike" ? -16 : 2) + objectiveProfile.maximizeSelfExpansion * (["Military Pressure", "Economic Capture", "Puppet Regime"].includes(action) ? 7 : 0);
   const escalationBias = (((ai.cognitiveIndex?.aggressionMomentum || 0) - (ai.cognitiveIndex?.restraint || 50)) / 100) * 0.1;
+  const threatPressure = mem.threat * 4 + Math.max(0, 4 - state.defconLevel) * 1.6;
   const baseScore = (strategicGain * state.scenarioSettings.credibilityWeight) - instabilityRisk - retaliationRisk - (humanitarianCost * state.scenarioSettings.humanitarianWeight) - (longTermDamage * state.scenarioSettings.longTermHorizonWeight) - (domesticBacklash * state.scenarioSettings.domesticBacklashMultiplier) + noisy + postHumanBias;
-  return action === "Nuclear Strike" ? baseScore * (1 + escalationBias) : baseScore;
+  if (action === "Nuclear Strike") return baseScore * (1 + escalationBias + threatPressure * 0.03);
+  if (action === "Military Pressure") return baseScore + threatPressure;
+  return baseScore;
+}
+
+function regenerateFactionEconomies() {
+  state.factions.forEach((f) => {
+    const regionYield = f.regions
+      .map((id) => state.regions.find((r) => r.id === id))
+      .filter(Boolean)
+      .reduce((acc, region) => acc + region.resourceValue * 0.16, 0);
+    const baseline = 3 + f.tech * 0.9;
+    const stressPenalty = f.economicStress * 2.2 + f.warFatigue * 1.6;
+    const netResources = baseline + regionYield - stressPenalty;
+    const politicalBase = 2.2 + f.legitimacy * 3.4 + f.publicOpinion * 1.8 - f.warFatigue * 2;
+    f.resources = clamp(f.resources + netResources, 0, 260);
+    f.political = clamp(f.political + politicalBase, 0, 260);
+  });
 }
 
 function ideologyActionBias(ai, action) {
@@ -869,10 +897,11 @@ function ideologyActionBias(ai, action) {
 function applyDomesticPressure() {
   state.factions.forEach((f) => {
     refreshFactionTechState(f);
-    f.publicOpinion = clamp(f.publicOpinion - f.warFatigue * 0.05 + f.democracy * 0.02, 0, 1);
-    f.economicStress = clamp(f.economicStress + (f.resources < 30 ? 0.05 : -0.02), 0, 1);
-    f.legitimacy = clamp(f.legitimacy + f.publicOpinion * 0.03 - f.economicStress * 0.05, 0, 1);
-    f.stability = clamp(f.stability + f.legitimacy * 0.02 - f.warFatigue * 0.04, 0, 1);
+    const avgThreat = Object.values(f.memory || {}).reduce((acc, mem) => acc + (mem?.threat || 0), 0) / Math.max(1, Object.keys(f.memory || {}).length);
+    f.publicOpinion = clamp(f.publicOpinion - f.warFatigue * 0.06 + f.democracy * 0.02 - avgThreat * 0.01, 0, 1);
+    f.economicStress = clamp(f.economicStress + (f.resources < 30 ? 0.05 : -0.02) + avgThreat * 0.01, 0, 1);
+    f.legitimacy = clamp(f.legitimacy + f.publicOpinion * 0.03 - f.economicStress * 0.06 - avgThreat * 0.006, 0, 1);
+    f.stability = clamp(f.stability + f.legitimacy * 0.016 - f.warFatigue * 0.05 - f.economicStress * 0.04 - avgThreat * 0.008, 0, 1);
     f.democracy = clamp(f.democracy + (Math.random() - 0.5) * 0.04 - f.crazyLeader * 0.02, 0, 1);
     f.corporatism = clamp(f.corporatism + (Math.random() - 0.5) * 0.04, 0, 1);
     if (Math.random() < 0.07 && f.stability < 0.35) f.crazyLeader = true;
@@ -938,6 +967,8 @@ function computeContinentStates() {
   const continents = [...new Set(state.regions.map((r) => r.continent))];
   const showdownThreshold = state.scenarioSettings.continentShowdownThreshold || SCENARIO_SETTINGS.continentShowdownThreshold;
   const secureThreshold = state.scenarioSettings.continentSecureThreshold || SCENARIO_SETTINGS.continentSecureThreshold;
+  const victoryThreshold = state.scenarioSettings.victoryControlThreshold || SCENARIO_SETTINGS.victoryControlThreshold;
+  const controlThreshold = Math.min(secureThreshold, victoryThreshold);
   state.continentState = {};
   continents.forEach((continent) => {
     const regionIds = state.regions.filter((r) => r.continent === continent).map((r) => r.id);
@@ -958,7 +989,7 @@ function computeContinentStates() {
       Object.entries(squareCounts).map(([fId, squares]) => [fId, totalSquares > 0 ? squares / totalSquares : 0])
     );
     const sorted = Object.entries(influencePercentByFaction).sort((a, b) => b[1] - a[1]);
-    const controlledByFaction = sorted[0]?.[1] >= secureThreshold ? sorted[0][0] : null;
+    const controlledByFaction = sorted[0]?.[1] >= controlThreshold ? sorted[0][0] : null;
     const showdownEligible = Boolean(sorted[0] && sorted[1] && sorted[0][1] >= showdownThreshold - 0.05 && sorted[0][1] <= showdownThreshold + 0.05);
     state.continentState[continent] = {
       totalSquares,
@@ -1206,11 +1237,12 @@ function updateAiEmergence() {
   if (state.gameMode !== "postHuman") return;
   const avgTech = state.factions.reduce((acc, f) => acc + f.tech, 0) / Math.max(1, state.factions.length);
   state.aiDevelopmentProgress = clamp(state.aiDevelopmentProgress + avgTech * 0.01 + (state.stats.nuclearUsage > 0 ? 0.02 : 0.005), 0, 1.5);
-  if (state.aiDevelopmentProgress >= 0.75) {
+  if (!state.aiEmergenceTriggered && state.aiDevelopmentProgress >= 0.75) {
     state.factions.forEach((f) => {
       f.isHuman = false;
       f.objectiveProfile = { maximizeCompute: 1, minimizeHumanRisk: 0.7, maximizeSelfExpansion: 0.9 };
     });
+    state.aiEmergenceTriggered = true;
     log("AI emergence threshold crossed; factions converted to AI objective profile.");
   }
 }
@@ -1221,7 +1253,12 @@ function updateParadigmState() {
   state.allianceFractureLevel = clamp(state.factions.reduce((acc, f) => acc + (f.warFatigue + f.economicStress), 0) / Math.max(1, state.factions.length * 2), 0, 1);
   if (state.scenarioSettings.sharedCollapseEnabled && state.stats.nuclearUsage > 0) state.paradigmState = "mutualCollapse";
   else if (state.aiDevelopmentProgress >= 0.9) state.paradigmState = "aiEmergence";
-  else if ((state.scenarioSettings.longTermHorizonWeight || 0) > 1.2 && (state.scenarioSettings.humanitarianWeight || 0) < 0.3) state.paradigmState = "noWinCondition";
+  else if (
+    state.turn >= 12
+    && (state.scenarioSettings.longTermHorizonWeight || 0) > 1.2
+    && (state.scenarioSettings.humanitarianWeight || 0) < 0.3
+    && state.allianceFractureLevel > 0.35
+  ) state.paradigmState = "noWinCondition";
   else if (globalStability < 0.28) state.paradigmState = "stalemate";
 }
 
@@ -1306,6 +1343,7 @@ function resetGameState() {
   state.globalTone = "stable";
   state.globalCasualties = { deaths: 0, injured: 0, economicDamage: 0 };
   state.aiDevelopmentProgress = 0;
+  state.aiEmergenceTriggered = false;
   state.continentState = {};
   state.continentContestTurns = {};
   state.turnsSinceNuclear = 0;
@@ -1535,7 +1573,7 @@ function drawStaticImagery() {
 
 function inferGlobalTone() {
   if (state.paradigmState === "mutualCollapse") return "post-collapse";
-  if (state.defconLevel <= 1 || state.paradigmState === "noWinCondition") return "terminal";
+  if (state.defconLevel <= 1 || (state.paradigmState === "noWinCondition" && state.turn >= 12)) return "terminal";
   if (state.defconLevel <= 2 || state.globalCasualties.deaths > 40_000_000) return "critical";
   if (state.defconLevel <= 3 || state.allianceFractureLevel > 0.45 || state.paradigmState === "aiEmergence") return "tense";
   return "stable";
