@@ -38,6 +38,7 @@ main { padding: 1rem; }
 .setup-panel, .top-ttt-panel { margin-bottom: 1rem; }
 
 .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.7rem; margin-top: 0.8rem; }
 .layout-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1rem; }
 
 label {
@@ -60,6 +61,8 @@ button { cursor: pointer; }
 button:hover { border-color: var(--accent); }
 
 .setup-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.setup-toggles { display: flex; flex-wrap: wrap; gap: 1rem; margin: 0.5rem 0 0.9rem; }
+.setup-toggles label { margin-bottom: 0; font-size: 0.85rem; color: #bfdbfe; }
 
 .showdown-grid {
   display: grid;

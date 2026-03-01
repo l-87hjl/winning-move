@@ -33,6 +33,50 @@
         </label>
       </div>
 
+      <div class="grid-3">
+        <label>
+          Nuclear Penalty Severity
+          <input id="settingNuclearPenalty" type="range" min="0" max="2" step="0.1" value="1" />
+        </label>
+        <label>
+          Retaliation Certainty
+          <input id="settingRetaliation" type="range" min="0" max="1" step="0.05" value="0.5" />
+        </label>
+        <label>
+          AI Future Weighting
+          <input id="settingFutureWeight" type="range" min="0" max="2" step="0.1" value="1" />
+        </label>
+        <label>
+          Reputation / Backlash Weight
+          <input id="settingBacklash" type="range" min="0" max="2" step="0.1" value="1" />
+        </label>
+        <label>
+          Intelligence Fog (AI Noise)
+          <input id="settingFog" type="range" min="0" max="1" step="0.05" value="0" />
+        </label>
+        <label>
+          Victory Control Threshold
+          <input id="settingVictoryControl" type="range" min="0.4" max="0.75" step="0.01" value="0.55" />
+        </label>
+        <label>
+          Alliance Fracture Shock
+          <input id="settingAllianceShock" type="range" min="0" max="2" step="0.1" value="1" />
+        </label>
+        <label>
+          Climate Shock Weight
+          <input id="settingClimateShock" type="range" min="0" max="2" step="0.1" value="1" />
+        </label>
+        <label>
+          Famine Shock Weight
+          <input id="settingFamineShock" type="range" min="0" max="2" step="0.1" value="1" />
+        </label>
+      </div>
+
+      <div class="setup-toggles">
+        <label><input id="settingGuaranteedMad" type="checkbox" /> Guaranteed MAD retaliation when possible</label>
+        <label><input id="settingEscalationTracking" type="checkbox" checked /> Escalation ladder tracking enabled</label>
+      </div>
+
       <div class="setup-actions">
         <button id="startBtn">Start New Game</button>
         <button id="nextTurnBtn" disabled>Advance Turn</button>
