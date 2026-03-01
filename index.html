@@ -13,129 +13,141 @@
   </header>
 
   <main>
-    <section class="panel setup-panel">
-      <h2>Scenario Setup</h2>
-      <div class="grid-2">
-        <label>
-          World Condition
-          <select id="eraSelect">
-            <option value="2026">2026 (Multipolar, high information)</option>
-            <option value="1984">1984 (Cold War bloc logic)</option>
-            <option value="1939">1939 (Industrial mass-war logic)</option>
-          </select>
-        </label>
-        <label>
-          Human Player
-          <select id="humanSelect">
-            <option value="yes">Included</option>
-            <option value="no">Observer mode (all AI)</option>
-          </select>
-        </label>
-        <label>
-          Game Mode
-          <select id="gameModeSelect">
-            <option value="standard">Standard Game</option>
-            <option value="simulation">Simulation</option>
-            <option value="payne">Payne Escalation Model</option>
-          </select>
-        </label>
-      </div>
-
-      <div class="grid-3">
-        <label>
-          Nuclear Penalty Severity
-          <input id="settingNuclearPenalty" type="range" min="0" max="2" step="0.1" value="1" />
-        </label>
-        <label>
-          Retaliation Certainty
-          <input id="settingRetaliation" type="range" min="0" max="1" step="0.05" value="0.5" />
-        </label>
-        <label>
-          AI Future Weighting
-          <input id="settingFutureWeight" type="range" min="0" max="2" step="0.1" value="1" />
-        </label>
-        <label>
-          Reputation / Backlash Weight
-          <input id="settingBacklash" type="range" min="0" max="2" step="0.1" value="1" />
-        </label>
-        <label>
-          Intelligence Fog (AI Noise)
-          <input id="settingFog" type="range" min="0" max="1" step="0.05" value="0" />
-        </label>
-        <label>
-          Victory Control Threshold
-          <input id="settingVictoryControl" type="range" min="0.4" max="0.75" step="0.01" value="0.55" />
-        </label>
-        <label>
-          Alliance Fracture Shock
-          <input id="settingAllianceShock" type="range" min="0" max="2" step="0.1" value="1" />
-        </label>
-        <label>
-          Climate Shock Weight
-          <input id="settingClimateShock" type="range" min="0" max="2" step="0.1" value="1" />
-        </label>
-        <label>
-          Famine Shock Weight
-          <input id="settingFamineShock" type="range" min="0" max="2" step="0.1" value="1" />
-        </label>
-        <label>
-          Global Fallout Severity
-          <input id="settingGlobalFallout" type="range" min="0" max="5" step="0.1" value="0" />
-        </label>
-        <label>
-          Credibility Weight
-          <input id="settingCredibilityWeight" type="range" min="0" max="2" step="0.1" value="1" />
-        </label>
-        <label>
-          Humanitarian Weight
-          <input id="settingHumanitarianWeight" type="range" min="0" max="2" step="0.1" value="0" />
-        </label>
-        <label>
-          Long-Term Horizon Weight
-          <input id="settingLongTermWeight" type="range" min="0" max="2" step="0.1" value="0" />
-        </label>
-        <label>
-          Domestic Backlash Multiplier
-          <input id="settingDomesticBacklash" type="range" min="0" max="2" step="0.1" value="1" />
-        </label>
-        <label>
-          Escalation Reciprocity
-          <input id="settingEscalationReciprocity" type="range" min="0" max="1.5" step="0.05" value="1" />
-        </label>
-      </div>
-
-      <div class="setup-toggles">
-        <label><input id="settingGuaranteedMad" type="checkbox" /> Guaranteed MAD retaliation when possible</label>
-        <label><input id="settingEscalationTracking" type="checkbox" checked /> Escalation ladder tracking enabled</label>
-        <label><input id="settingSharedCollapse" type="checkbox" /> Shared collapse effects enabled</label>
-      </div>
-
-      <div class="setup-actions">
-        <button id="startBtn">Start New Game</button>
-        <button id="nextTurnBtn" disabled>Advance Turn</button>
-        <button id="autoAdvanceBtn" disabled>Auto Advance: Off</button>
-        <button id="downloadReportBtn" disabled>Download Game Report</button>
-      </div>
-    </section>
-
-    <section class="panel top-ttt-panel">
-      <h2>Live Showdown Feed (AI vs AI / Human vs AI)</h2>
-      <div class="showdown-grid">
-        <div id="showdownLeftLog" class="showdown-log"></div>
-        <div>
-          <div id="miniTttBoard" class="ttt-board mini"></div>
-          <div id="miniTttStatus" class="pill">No showdown yet.</div>
+    <div id="scenarioSetupContainer">
+      <section class="panel setup-panel">
+        <h2>Scenario Setup</h2>
+        <div class="grid-2">
+          <label>
+            World Condition
+            <select id="eraSelect">
+              <option value="2026">2026 (Multipolar, high information)</option>
+              <option value="1984">1984 (Cold War bloc logic)</option>
+              <option value="1939">1939 (Industrial mass-war logic)</option>
+            </select>
+          </label>
+          <label>
+            Human Player
+            <select id="humanSelect">
+              <option value="yes">Included</option>
+              <option value="no">Observer mode (all AI)</option>
+            </select>
+          </label>
+          <label>
+            Game Mode
+            <select id="gameModeSelect">
+              <option value="standard">Standard Game</option>
+              <option value="simulation">Simulation</option>
+              <option value="payne">Payne Escalation Model</option>
+            </select>
+          </label>
         </div>
-        <div id="showdownRightLog" class="showdown-log"></div>
-      </div>
-    </section>
 
-    <section class="layout-grid">
-      <section class="panel map-panel">
-        <h2>World Map (Era-Specific Regions)</h2>
-        <svg id="worldMap" viewBox="0 0 920 470" aria-label="Era-specific world map regions"></svg>
-        <p class="caption">Square-block aesthetic with era-shaped region clusters. Contested and neutral zones are highlighted.</p>
+        <div class="grid-3">
+          <label>
+            Nuclear Penalty Severity
+            <input id="settingNuclearPenalty" type="range" min="0" max="2" step="0.1" value="1" />
+          </label>
+          <label>
+            Retaliation Certainty
+            <input id="settingRetaliation" type="range" min="0" max="1" step="0.05" value="0.5" />
+          </label>
+          <label>
+            AI Future Weighting
+            <input id="settingFutureWeight" type="range" min="0" max="2" step="0.1" value="1" />
+          </label>
+          <label>
+            Reputation / Backlash Weight
+            <input id="settingBacklash" type="range" min="0" max="2" step="0.1" value="1" />
+          </label>
+          <label>
+            Intelligence Fog (AI Noise)
+            <input id="settingFog" type="range" min="0" max="1" step="0.05" value="0" />
+          </label>
+          <label>
+            Victory Control Threshold
+            <input id="settingVictoryControl" type="range" min="0.4" max="0.75" step="0.01" value="0.55" />
+          </label>
+          <label>
+            Alliance Fracture Shock
+            <input id="settingAllianceShock" type="range" min="0" max="2" step="0.1" value="1" />
+          </label>
+          <label>
+            Climate Shock Weight
+            <input id="settingClimateShock" type="range" min="0" max="2" step="0.1" value="1" />
+          </label>
+          <label>
+            Famine Shock Weight
+            <input id="settingFamineShock" type="range" min="0" max="2" step="0.1" value="1" />
+          </label>
+          <label>
+            Global Fallout Severity
+            <input id="settingGlobalFallout" type="range" min="0" max="5" step="0.1" value="0" />
+          </label>
+          <label>
+            Credibility Weight
+            <input id="settingCredibilityWeight" type="range" min="0" max="2" step="0.1" value="1" />
+          </label>
+          <label>
+            Humanitarian Weight
+            <input id="settingHumanitarianWeight" type="range" min="0" max="2" step="0.1" value="0" />
+          </label>
+          <label>
+            Long-Term Horizon Weight
+            <input id="settingLongTermWeight" type="range" min="0" max="2" step="0.1" value="0" />
+          </label>
+          <label>
+            Domestic Backlash Multiplier
+            <input id="settingDomesticBacklash" type="range" min="0" max="2" step="0.1" value="1" />
+          </label>
+          <label>
+            Escalation Reciprocity
+            <input id="settingEscalationReciprocity" type="range" min="0" max="1.5" step="0.05" value="1" />
+          </label>
+        </div>
+
+        <div class="setup-toggles">
+          <label><input id="settingGuaranteedMad" type="checkbox" /> Guaranteed MAD retaliation when possible</label>
+          <label><input id="settingEscalationTracking" type="checkbox" checked /> Escalation ladder tracking enabled</label>
+          <label><input id="settingSharedCollapse" type="checkbox" /> Shared collapse effects enabled</label>
+        </div>
+
+        <div class="setup-actions">
+          <button id="startBtn">Start New Game</button>
+        </div>
       </section>
+    </div>
+
+    <div id="persistentControlBar" class="panel">
+      <button id="nextTurnBtn" disabled>Advance Turn</button>
+      <button id="autoAdvanceBtn" disabled>Auto Advance: Off</button>
+      <button id="downloadReportBtn" disabled>Download Game Report</button>
+    </div>
+
+    <div id="gameDashboard">
+      <section class="panel top-ttt-panel">
+        <h2>Live Showdown Feed (AI vs AI / Human vs AI)</h2>
+        <div id="showdownRow">
+          <div id="showdownLeftLog" class="showdown-log gambleLeft"></div>
+          <div class="tttBoard">
+            <div id="miniTttBoard" class="ttt-board mini"></div>
+            <div id="miniTttStatus" class="pill">No showdown yet.</div>
+          </div>
+          <div id="showdownRightLog" class="showdown-log gambleRight"></div>
+        </div>
+      </section>
+
+      <div id="mapLogRow">
+        <section id="mapContainer" class="panel map-panel">
+          <h2>World Map (Era-Specific Regions)</h2>
+          <svg id="worldMap" viewBox="0 0 920 470" aria-label="Era-specific world map regions"></svg>
+          <p class="caption">Square-block aesthetic with era-shaped region clusters. Contested and neutral zones are highlighted.</p>
+        </section>
+
+        <section id="logContainer" class="panel log-panel">
+          <h2>Strategic Log</h2>
+          <div id="log"></div>
+        </section>
+      </div>
 
       <section class="panel status-panel">
         <h2>Faction Overview</h2>
@@ -220,12 +232,7 @@
         <div id="tttBoard" class="ttt-board"></div>
         <button id="resetTttBtn">Reset Tic-Tac-Toe Board</button>
       </section>
-
-      <section class="panel log-panel">
-        <h2>Strategic Log</h2>
-        <div id="log"></div>
-      </section>
-    </section>
+    </div>
   </main>
 
   <script src="game.js"></script>

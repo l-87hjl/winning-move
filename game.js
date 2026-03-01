@@ -113,7 +113,7 @@ const state = {
   ttt: { board: Array(9).fill(""), miniBoard: Array(9).fill(""), animating: false, lastRoundSummary: "", maxGamble: 10 }
 };
 
-let autoAdvanceTimer = null;
+let autoAdvanceInterval = null;
 
 const dom = bindDom();
 
@@ -131,7 +131,7 @@ function bindDom() {
     settingEscalationTracking: id("settingEscalationTracking"), settingAllianceShock: id("settingAllianceShock"), settingClimateShock: id("settingClimateShock"), settingFamineShock: id("settingFamineShock"),
     settingGlobalFallout: id("settingGlobalFallout"), settingCredibilityWeight: id("settingCredibilityWeight"), settingHumanitarianWeight: id("settingHumanitarianWeight"),
     settingLongTermWeight: id("settingLongTermWeight"), settingDomesticBacklash: id("settingDomesticBacklash"), settingEscalationReciprocity: id("settingEscalationReciprocity"),
-    settingSharedCollapse: id("settingSharedCollapse")
+    settingSharedCollapse: id("settingSharedCollapse"), scenarioSetupContainer: id("scenarioSetupContainer")
   };
 }
 
@@ -152,7 +152,6 @@ function init() {
   renderTicTacToe();
   renderMiniTtt();
   updateUI();
-  scheduleAutoAdvance();
 }
 
 function applyGameModeDefaults() {
@@ -172,24 +171,28 @@ function applyGameModeDefaults() {
 
 function toggleAutoAdvance() {
   state.autoAdvance = !state.autoAdvance;
-  dom.autoAdvanceBtn.textContent = `Auto Advance: ${state.autoAdvance ? "On" : "Off"}`;
-  if (!state.autoAdvance && autoAdvanceTimer) {
-    clearTimeout(autoAdvanceTimer);
-    autoAdvanceTimer = null;
+
+  if (state.autoAdvance) {
+    if (autoAdvanceInterval) clearInterval(autoAdvanceInterval);
+    autoAdvanceInterval = setInterval(() => {
+      advanceTurn();
+    }, 800);
+  } else {
+    clearInterval(autoAdvanceInterval);
+    autoAdvanceInterval = null;
   }
-  if (state.autoAdvance) scheduleAutoAdvance();
+
+  updateAutoAdvanceButtonUI();
 }
 
-function scheduleAutoAdvance() {
-  if (!state.autoAdvance || !state.started || state.gameOver || state.ttt.animating) return;
-  if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
-  autoAdvanceTimer = setTimeout(() => { autoAdvanceTimer = null; advanceTurn(); }, 450);
+function updateAutoAdvanceButtonUI() {
+  dom.autoAdvanceBtn.textContent = `Auto Advance: ${state.autoAdvance ? "On" : "Off"}`;
 }
 
 function startGame() {
   state.turn = 0; state.gameOver = false; state.started = true; state.logEntries = []; dom.log.innerHTML = "";
   state.autoAdvance = false;
-  if (autoAdvanceTimer) { clearTimeout(autoAdvanceTimer); autoAdvanceTimer = null; }
+  if (autoAdvanceInterval) { clearInterval(autoAdvanceInterval); autoAdvanceInterval = null; }
   state.era = dom.eraSelect.value; state.humanEnabled = dom.humanSelect.value === "yes"; state.gameMode = dom.gameModeSelect?.value || "standard";
   state.scenarioSettings = scenarioSettingsFromUI();
   state.regions = ERA_REGION_MAPS[state.era].map((r) => ({ ...r }));
@@ -201,8 +204,8 @@ function startGame() {
   assignStartingOwnership(); drawMap(); updateSelectors();
   log(`Scenario started for ${state.era}. Doctrine baseline: ${ERA_PRESETS[state.era].doctrine}.`);
   log(`Scenario settings loaded: ${JSON.stringify(state.scenarioSettings)}.`);
+  dom.scenarioSetupContainer?.classList.add("collapsed");
   updateUI();
-  scheduleAutoAdvance();
 }
 
 function scenarioSettingsFromUI() {
@@ -384,7 +387,12 @@ function updateUI() {
   dom.downloadReportBtn.disabled = !state.started;
   dom.nextTurnBtn.disabled = !state.started || state.gameOver || state.ttt.animating;
   dom.autoAdvanceBtn.disabled = !state.started || state.gameOver;
-  dom.autoAdvanceBtn.textContent = `Auto Advance: ${state.autoAdvance ? "On" : "Off"}`;
+  if ((!state.started || state.gameOver) && autoAdvanceInterval) {
+    clearInterval(autoAdvanceInterval);
+    autoAdvanceInterval = null;
+    state.autoAdvance = false;
+  }
+  updateAutoAdvanceButtonUI();
   dom.humanControls.classList.toggle("disabled", !(state.started && state.humanEnabled && !state.gameOver));
   recolorMap();
   renderTicTacToe();
@@ -650,7 +658,6 @@ function advanceTurn() {
   detectDeadlock();
   endTurnChecks();
   updateUI();
-  scheduleAutoAdvance();
 }
 
 function chooseAiAction(ai) {
@@ -816,7 +823,6 @@ function runStakeTtt(automated = false, forced = null) {
   const outcome = simulateTttRound(sideX, sideO, wagerX, wagerO, automated ? "ai" : "human");
   settleTttRound(outcome, sideX, sideO, wagerX, wagerO, automated);
   updateUI();
-  scheduleAutoAdvance();
 }
 
 function simulateTttRound(sideX, sideO, wagerX, wagerO, context = "ai") {
@@ -901,7 +907,6 @@ function convertPoints() {
   human[from] -= amount; human[to] += amount * 0.72;
   log(`Converted ${amount} ${from} to ${Math.round(amount * 0.72)} ${to}.`);
   updateUI();
-  scheduleAutoAdvance();
 }
 
 function computeMaxGamble() { const human = state.factions.find((f) => f.isHuman) || state.factions[0]; return clamp(Math.floor(human?.political * 0.32 || 12), 5, 40); }
