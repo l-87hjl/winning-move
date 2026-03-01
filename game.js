@@ -14,6 +14,20 @@ const PERKS = ["Double Turn", "Intel Surge", "Stability Shield"];
 const STRIKE_TYPES = ["Counterforce", "Countervalue", "Demonstration", "Submarine Launch", "Silo Saturation", "Bomber Penetration"];
 const MAX_TURNS = 60;
 
+const SCENARIO_SETTINGS = {
+  nuclearPenaltySeverity: 1,
+  retaliationCertainty: 0.5,
+  guaranteedMad: false,
+  futureWeighting: 1,
+  reputationBacklash: 1,
+  intelligenceFog: 0,
+  victoryControlThreshold: 0.55,
+  escalationTrackingEnabled: true,
+  allianceFractureShock: 1,
+  climateShockWeight: 1,
+  famineShockWeight: 1
+};
+
 const ERA_REGION_MAPS = {
   2026: [
     r("na_canada", "Canada", "north_america", 50, 34, 95, 52, 24, 16, { res: 13, choke: 1.1, lean: 0.58, unstable: 0.18 }),
@@ -56,6 +70,8 @@ const state = {
   turn: 0, era: "2026", started: false, gameOver: false, humanEnabled: true,
   factions: [], regions: [], mapOwnership: {}, selectedRegionId: null, selectedStrikeType: STRIKE_TYPES[0],
   contestedRegions: {}, neutralRegions: {}, pendingEffects: [], logEntries: [], skipAIUntil: {},
+  scenarioSettings: { ...SCENARIO_SETTINGS },
+  escalation: { current: "conventional", counts: { conventional: 0, limitedNuclear: 0, fullExchange: 0 } },
   ttt: { board: Array(9).fill(""), miniBoard: Array(9).fill(""), animating: false, lastRoundSummary: "", maxGamble: 10 }
 };
 
@@ -69,7 +85,10 @@ function bindDom() {
     executeActionBtn: id("executeActionBtn"), humanControls: id("humanControls"), convertFrom: id("convertFrom"), convertTo: id("convertTo"),
     convertAmount: id("convertAmount"), convertBtn: id("convertBtn"), tttBoard: id("tttBoard"), miniTttBoard: id("miniTttBoard"),
     tttGambleInput: id("tttGambleInput"), tttMaxInfo: id("tttMaxInfo"), tttRoundInfo: id("tttRoundInfo"), playTttRoundBtn: id("playTttRoundBtn"),
-    resetTttBtn: id("resetTttBtn"), showdownLeftLog: id("showdownLeftLog"), showdownRightLog: id("showdownRightLog"), miniTttStatus: id("miniTttStatus"), log: id("log")
+    resetTttBtn: id("resetTttBtn"), showdownLeftLog: id("showdownLeftLog"), showdownRightLog: id("showdownRightLog"), miniTttStatus: id("miniTttStatus"), log: id("log"),
+    settingNuclearPenalty: id("settingNuclearPenalty"), settingRetaliation: id("settingRetaliation"), settingFutureWeight: id("settingFutureWeight"),
+    settingBacklash: id("settingBacklash"), settingFog: id("settingFog"), settingVictoryControl: id("settingVictoryControl"), settingGuaranteedMad: id("settingGuaranteedMad"),
+    settingEscalationTracking: id("settingEscalationTracking"), settingAllianceShock: id("settingAllianceShock"), settingClimateShock: id("settingClimateShock"), settingFamineShock: id("settingFamineShock")
   };
 }
 
@@ -92,11 +111,30 @@ function init() {
 function startGame() {
   state.turn = 0; state.gameOver = false; state.started = true; state.logEntries = []; dom.log.innerHTML = "";
   state.era = dom.eraSelect.value; state.humanEnabled = dom.humanSelect.value === "yes";
+  state.scenarioSettings = scenarioSettingsFromUI();
   state.regions = ERA_REGION_MAPS[state.era].map((r) => ({ ...r }));
   state.contestedRegions = {}; state.neutralRegions = {}; state.pendingEffects = []; state.skipAIUntil = {};
+  state.escalation = { current: "conventional", counts: { conventional: 0, limitedNuclear: 0, fullExchange: 0 } };
   buildFactions(); assignStartingOwnership(); drawMap(); updateSelectors();
   log(`Scenario started for ${state.era}. Doctrine baseline: ${ERA_PRESETS[state.era].doctrine}.`);
+  log(`Scenario settings loaded: ${JSON.stringify(state.scenarioSettings)}.`);
   updateUI();
+}
+
+function scenarioSettingsFromUI() {
+  return {
+    nuclearPenaltySeverity: Number(dom.settingNuclearPenalty?.value ?? SCENARIO_SETTINGS.nuclearPenaltySeverity),
+    retaliationCertainty: Number(dom.settingRetaliation?.value ?? SCENARIO_SETTINGS.retaliationCertainty),
+    guaranteedMad: Boolean(dom.settingGuaranteedMad?.checked),
+    futureWeighting: Number(dom.settingFutureWeight?.value ?? SCENARIO_SETTINGS.futureWeighting),
+    reputationBacklash: Number(dom.settingBacklash?.value ?? SCENARIO_SETTINGS.reputationBacklash),
+    intelligenceFog: Number(dom.settingFog?.value ?? SCENARIO_SETTINGS.intelligenceFog),
+    victoryControlThreshold: Number(dom.settingVictoryControl?.value ?? SCENARIO_SETTINGS.victoryControlThreshold),
+    escalationTrackingEnabled: Boolean(dom.settingEscalationTracking?.checked),
+    allianceFractureShock: Number(dom.settingAllianceShock?.value ?? SCENARIO_SETTINGS.allianceFractureShock),
+    climateShockWeight: Number(dom.settingClimateShock?.value ?? SCENARIO_SETTINGS.climateShockWeight),
+    famineShockWeight: Number(dom.settingFamineShock?.value ?? SCENARIO_SETTINGS.famineShockWeight)
+  };
 }
 
 function buildFactions() {
@@ -319,20 +357,27 @@ function runNuclear(actor, target, region, strikeType) {
   target.resources -= 20 * damage;
   target.legitimacy -= 0.12;
 
-  const globalPenalty = 0.14 + doctrine.globalInstability;
+  const severity = state.scenarioSettings.nuclearPenaltySeverity;
+  const backlashWeight = state.scenarioSettings.reputationBacklash;
+  const globalPenalty = (0.14 + doctrine.globalInstability) * severity;
   state.factions.forEach((f) => {
-    f.publicOpinion -= globalPenalty * (f.id === actor.id ? 1.4 : 1.0);
-    f.stability -= globalPenalty * 0.5;
+    f.publicOpinion -= globalPenalty * (f.id === actor.id ? 1.4 * backlashWeight : 1.0 * backlashWeight);
+    f.stability -= globalPenalty * 0.5 * severity;
     f.economicStress += globalPenalty * 0.7;
   });
 
-  region.resourceValue = Math.max(2, region.resourceValue - 3);
-  region.instability = clamp(region.instability + 0.2, 0, 1);
-  state.pendingEffects.push({ type: "fallout", turns: 4, regionId: region.id, severity: 0.05 });
+  region.resourceValue = Math.max(2, region.resourceValue - 3 * severity);
+  region.instability = clamp(region.instability + 0.2 * severity, 0, 1);
+  state.pendingEffects.push({ type: "fallout", turns: 4, regionId: region.id, severity: 0.05 * severity });
+  state.pendingEffects.push({ type: "climate", turns: 3, severity: 0.02 * state.scenarioSettings.climateShockWeight * severity });
+  state.pendingEffects.push({ type: "famine", turns: 3, severity: 0.02 * state.scenarioSettings.famineShockWeight * severity });
+  state.pendingEffects.push({ type: "alliance", turns: 2, severity: 0.015 * state.scenarioSettings.allianceFractureShock * severity, actorId: actor.id });
+  updateEscalationLadder("limitedNuclear");
+  if (state.factions.filter((f) => f.nukes > 0).length <= 2 || state.escalation.counts.limitedNuclear >= 4) updateEscalationLadder("fullExchange");
 
   const retaliationChance = doctrine.retaliationChance;
   log(`${actor.name} executed ${strikeType} on ${region.name}. Global instability spiked.`);
-  if (Math.random() < retaliationChance && (target.nukes + target.hiddenStockpile) > 0) {
+  if ((state.scenarioSettings.guaranteedMad || Math.random() < retaliationChance) && (target.nukes + target.hiddenStockpile) > 0) {
     target.nukes = Math.max(0, target.nukes - 1);
     actor.stability -= 0.22;
     actor.resources -= 18;
@@ -347,7 +392,8 @@ function nuclearDoctrineScore(actor, target, region) {
   const restraint = era.nuclearNorm * 0.19 + actor.democracy * 0.15 + actor.publicOpinion * 0.12 + actor.legitimacy * 0.08;
   const targetThreat = actor.memory[target.id].threat + (target.nukes * 0.05) + region.chokepoint * 0.08;
   const executeChance = clamp(0.08 + pressure + targetThreat - restraint, 0.02, 0.65);
-  const retaliationChance = clamp(0.28 + target.nukes * 0.07 + target.hiddenStockpile * 0.04 - actor.triad.sub * 0.06, 0.2, 0.94);
+  const certaintyMod = 0.45 + state.scenarioSettings.retaliationCertainty;
+  const retaliationChance = clamp((0.28 + target.nukes * 0.07 + target.hiddenStockpile * 0.04 - actor.triad.sub * 0.06) * certaintyMod, 0.05, 0.99);
   return { executeChance, retaliationChance, globalInstability: 0.06 + (1 - era.nuclearNorm) * -0.01 + region.chokepoint * 0.01 };
 }
 
@@ -410,6 +456,7 @@ function transferRegion(from, to, regionId) {
 function advanceTurn() {
   if (!state.started || state.gameOver || state.ttt.animating) return;
   state.turn += 1;
+  updateEscalationLadder("conventional");
   applyPendingEffects();
   applyDomesticPressure();
 
@@ -461,8 +508,11 @@ function utility(ai, target, region, action, leader) {
   const antiHegemonBias = leader.id !== ai.id && target.id === leader.id ? 12 : 0;
   const ideologyFit = ideologyActionBias(ai, action);
   const revolutionBias = action === "Instigate Revolution" ? ((1 - target.stability) * 12 + region.instability * 14 + mem.threat * 5) : 0;
-  const nuclearPenalty = (state.era === "1984" ? 1.5 : state.era === "2026" ? 1.2 : 0.9) * globalEscPenalty;
-  return politicalGain + resourceGain + antiHegemonBias + ideologyFit + revolutionBias + mem.grievance * 8 + mem.threat * 7 - instabilityRisk - retaliationRisk - (action === "Nuclear Strike" ? nuclearPenalty : 0);
+  const nuclearPenalty = (state.era === "1984" ? 1.5 : state.era === "2026" ? 1.2 : 0.9) * globalEscPenalty * state.scenarioSettings.nuclearPenaltySeverity;
+  const futureRisk = (action === "Nuclear Strike" ? 22 : 6) * state.scenarioSettings.futureWeighting;
+  const backlash = action === "Nuclear Strike" ? (1 - ai.publicOpinion) * 16 * state.scenarioSettings.reputationBacklash : 0;
+  const noisy = (Math.random() - 0.5) * 20 * state.scenarioSettings.intelligenceFog;
+  return politicalGain + resourceGain + antiHegemonBias + ideologyFit + revolutionBias + mem.grievance * 8 + mem.threat * 7 - instabilityRisk - retaliationRisk - futureRisk - backlash - (action === "Nuclear Strike" ? nuclearPenalty : 0) + noisy;
 }
 
 function ideologyActionBias(ai, action) {
@@ -491,6 +541,25 @@ function applyPendingEffects() {
     if (region && effect.type === "fallout") {
       region.instability = clamp(region.instability + effect.severity, 0, 1);
       region.resourceValue = Math.max(1, region.resourceValue - 0.4);
+    }
+    if (effect.type === "climate") {
+      state.factions.forEach((f) => {
+        f.resources -= 3 * effect.severity;
+        f.stability -= 0.02 * effect.severity;
+      });
+    }
+    if (effect.type === "famine") {
+      state.factions.forEach((f) => {
+        f.publicOpinion -= 0.04 * effect.severity;
+        f.economicStress += 0.03 * effect.severity;
+      });
+    }
+    if (effect.type === "alliance") {
+      state.factions.forEach((f) => {
+        if (f.id === effect.actorId) return;
+        f.memory[effect.actorId].threat = clamp(f.memory[effect.actorId].threat + 0.06 * effect.severity, 0, 3);
+        f.memory[effect.actorId].trust = clamp(f.memory[effect.actorId].trust - 0.06 * effect.severity, 0, 1);
+      });
     }
     effect.turns -= 1;
     return effect.turns > 0;
@@ -531,11 +600,23 @@ function detectDeadlock() {
 }
 
 function endTurnChecks() {
-  const winner = state.factions.find((f) => f.regions.length >= Math.ceil(state.regions.length * 0.55));
+  const threshold = state.scenarioSettings.victoryControlThreshold || SCENARIO_SETTINGS.victoryControlThreshold;
+  const winner = state.factions.find((f) => f.regions.length >= Math.ceil(state.regions.length * threshold));
   if (winner || state.turn >= MAX_TURNS) {
     state.gameOver = true;
     const summary = winner || leaderFaction();
     log(`Game complete. Winner: ${summary.name}.`);
+  }
+}
+
+function updateEscalationLadder(level) {
+  if (!state.scenarioSettings.escalationTrackingEnabled) return;
+  const order = { conventional: 0, limitedNuclear: 1, fullExchange: 2 };
+  if (!state.escalation.counts[level] && state.escalation.counts[level] !== 0) state.escalation.counts[level] = 0;
+  state.escalation.counts[level] += 1;
+  if (order[level] > order[state.escalation.current]) {
+    state.escalation.current = level;
+    log(`Escalation ladder advanced to ${level}.`);
   }
 }
 
@@ -659,6 +740,7 @@ function updateMemory(actor, target, action) {
 function downloadReport() {
   const payload = {
     generatedAt: new Date().toISOString(), era: state.era, turn: state.turn, gameOver: state.gameOver, humanEnabled: state.humanEnabled,
+    scenarioSettings: state.scenarioSettings, escalation: state.escalation,
     indexLink: "file:///workspace/winning-move/index.html",
     factions: state.factions.map((f) => ({
       name: f.name, isHuman: f.isHuman, doctrine: f.doctrine, resources: Math.round(f.resources), political: Math.round(f.political), nukes: Number(f.nukes.toFixed(2)),
