@@ -1,19 +1,29 @@
 const ERA_PRESETS = {
-  2026: { techBoost: 1.2, diplomacyBoost: 1.2, warFriction: 1.0, nuclearNorm: 1.3, doctrine: "Multipolar Adaptive" },
-  1984: { techBoost: 1.0, diplomacyBoost: 0.82, warFriction: 1.1, nuclearNorm: 1.45, doctrine: "Cold War Deterrence" },
-  1939: { techBoost: 0.76, diplomacyBoost: 0.7, warFriction: 1.35, nuclearNorm: 0.55, doctrine: "Industrial Total War" }
+  2026: { techBoost: 1.2,  diplomacyBoost: 1.2,  warFriction: 1.0,  nuclearNorm: 1.3,  doctrine: "Multipolar Adaptive",      timeScale: 1,  startYear: 2026, startMonth: 1 },
+  1984: { techBoost: 1.0,  diplomacyBoost: 0.82, warFriction: 1.1,  nuclearNorm: 1.45, doctrine: "Cold War Deterrence",      timeScale: 3,  startYear: 1984, startMonth: 1 },
+  1950: { techBoost: 0.86, diplomacyBoost: 0.70, warFriction: 1.25, nuclearNorm: 0.90, doctrine: "Cold War Proxy",           timeScale: 1,  startYear: 1950, startMonth: 6 },
+  "1944": { techBoost: 0.80, diplomacyBoost: 0.60, warFriction: 1.40, nuclearNorm: 0.30, doctrine: "Late Industrial War",     timeScale: 1,  startYear: 1944, startMonth: 1 },
+  "1942": { techBoost: 0.78, diplomacyBoost: 0.62, warFriction: 1.42, nuclearNorm: 0.20, doctrine: "Industrial Attrition",    timeScale: 1,  startYear: 1942, startMonth: 1 },
+  1939: { techBoost: 0.76, diplomacyBoost: 0.70, warFriction: 1.35, nuclearNorm: 0.55, doctrine: "Industrial Total War",    timeScale: 1,  startYear: 1939, startMonth: 9 },
+  1936: { techBoost: 0.72, diplomacyBoost: 0.78, warFriction: 1.20, nuclearNorm: 0.10, doctrine: "Interwar Rearmament",     timeScale: 3,  startYear: 1936, startMonth: 1 },
+  1946: { techBoost: 0.82, diplomacyBoost: 0.90, warFriction: 0.85, nuclearNorm: 0.40, doctrine: "Reconstruction Diplomacy",timeScale: 3,  startYear: 1946, startMonth: 1 }
 };
 
 const ACTIONS = [
   "Military Pressure", "Economic Capture", "Puppet Regime", "Support Sovereignty", "Dialogue Summit",
   "Invest in Technology", "Expand Nuclear Stockpile", "Secret Stockpile Build", "Disarmament Deal", "Nuclear Strike",
-  "Deploy Nuclear Triad", "Instigate Revolution"
+  "Deploy Nuclear Triad", "Instigate Revolution", "Upgrade Region", "Convert Land Use"
 ];
 
 const PERKS = ["Double Turn", "Intel Surge", "Stability Shield"];
 const STRIKE_TYPES = ["Counterforce", "Countervalue", "Demonstration", "Submarine Launch", "Silo Saturation", "Bomber Penetration"];
 const ERA_TECH_UNLOCKS = {
+  1936: [],
   1939: ["submarine"],
+  "1942": ["submarine"],
+  "1944": ["submarine"],
+  1946: ["submarine"],
+  1950: ["nuclear", "submarine"],
   1984: ["nuclear", "icbm", "submarine", "stealthBomber", "satellite"],
   2026: ["nuclear", "icbm", "stealthBomber", "submarine", "hypersonic", "satellite", "cyberHybrid"]
 };
@@ -29,8 +39,8 @@ const TECH_TREE_TEMPLATE = {
   exotic: { unlockedAtEra: 2026, techCost: 8 }
 };
 
-const MAX_TURNS = 60;
-const APP_VERSION = "1.04";
+const MAX_TURNS = 60; // default; overridden by maxTurnsInput at game start
+const APP_VERSION = "1.05";
 // Raised from 5 to 8 so continent and territory victories cannot fire in the
 // first few turns before meaningful strategic development has occurred.
 const MIN_TURNS_BEFORE_VICTORY_CHECK = 8;
@@ -134,7 +144,12 @@ const ERA_REGION_MAPS = {
   1939: []
 };
 ERA_REGION_MAPS[1984] = ERA_REGION_MAPS[2026].map((x) => ({ ...x, id: `84_${x.id}`, instability: clamp(x.instability + 0.08, 0, 1), ideologyLean: clamp(x.ideologyLean - 0.08, 0, 1), name: x.name.replace("SEATO", "SEATO Bloc").replace("W. Europe", "W. Europe/NATO").replace("E. Europe", "Warsaw Sphere") }));
+ERA_REGION_MAPS[1950] = ERA_REGION_MAPS[2026].map((x) => ({ ...x, id: `50_${x.id}`, instability: clamp(x.instability + 0.10, 0, 1), ideologyLean: clamp(x.ideologyLean - 0.12, 0, 1), name: x.name.replace("SEATO","Far East").replace("Japan/Korea","Korea/Japan").replace("W. Europe","W. Europe Recovery").replace("E. Europe","Soviet Satellites") }));
+ERA_REGION_MAPS[1946] = ERA_REGION_MAPS[2026].map((x) => ({ ...x, id: `46_${x.id}`, instability: clamp(x.instability + 0.12, 0, 1), ideologyLean: clamp(x.ideologyLean - 0.15, 0, 1), resourceValue: Math.max(3, Math.round(x.resourceValue * 0.75)), maxResourceValue: Math.max(3, Math.round(x.resourceValue * 0.75)), name: x.name.replace("W. Europe","W. Europe Ruins").replace("E. Europe","E. Europe Occupied").replace("Japan/Korea","Occupied Japan").replace("Russia","Soviet Union") }));
+ERA_REGION_MAPS["1944"] = ERA_REGION_MAPS[2026].map((x) => ({ ...x, id: `44_${x.id}`, instability: clamp(x.instability + 0.16, 0, 1), ideologyLean: clamp(x.ideologyLean - 0.20, 0, 1), resourceValue: Math.max(3, Math.round(x.resourceValue * 0.80)), maxResourceValue: Math.max(3, Math.round(x.resourceValue * 0.80)), name: x.name.replace("W. Europe","Western Front").replace("E. Europe","Eastern Front").replace("Levant","Levant Mandate").replace("Gulf","Arabian Theater").replace("Russia","Soviet Union").replace("Japan/Korea","Imperial Japan/Korea").replace("SEATO","Imperial Pacific") }));
+ERA_REGION_MAPS["1942"] = ERA_REGION_MAPS[2026].map((x) => ({ ...x, id: `42_${x.id}`, instability: clamp(x.instability + 0.18, 0, 1), ideologyLean: clamp(x.ideologyLean - 0.22, 0, 1), resourceValue: Math.max(3, Math.round(x.resourceValue * 0.78)), maxResourceValue: Math.max(3, Math.round(x.resourceValue * 0.78)), name: x.name.replace("W. Europe","Fortress Europe").replace("E. Europe","Eastern Front").replace("Levant","Levant Mandate").replace("Gulf","Arabian Theater").replace("Russia","Soviet Union").replace("Japan/Korea","Imperial Japan").replace("SEATO","Imperial Pacific").replace("North Africa","N. Africa Campaign") }));
 ERA_REGION_MAPS[1939] = ERA_REGION_MAPS[2026].map((x) => ({ ...x, id: `39_${x.id}`, instability: clamp(x.instability + 0.14, 0, 1), ideologyLean: clamp(x.ideologyLean - 0.18, 0, 1), name: x.name.replace("W. Europe", "W. Europe Front").replace("E. Europe", "Eastern Front").replace("Levant", "Levant Mandates").replace("Gulf", "Arabian Theater") }));
+ERA_REGION_MAPS[1936] = ERA_REGION_MAPS[2026].map((x) => ({ ...x, id: `36_${x.id}`, instability: clamp(x.instability + 0.10, 0, 1), ideologyLean: clamp(x.ideologyLean - 0.14, 0, 1), name: x.name.replace("E. Europe","Central Europe").replace("Levant","Levant Mandate").replace("Gulf","Arabian Protectorate").replace("Russia","Soviet Union") }));
 
 function r(id, name, continent, x, y, w, h, sx, sy, props) {
   return {
@@ -218,7 +233,8 @@ const CONTINENT_MASKS = {
 };
 
 const state = {
-  turn: 0, era: "2026", started: false, gameOver: false, humanEnabled: false, gameMode: "standard", executionMode: "observer", autoAdvance: false,
+  turn: 0, era: "2026", started: false, gameOver: false, humanEnabled: false, gameMode: "standard", executionMode: "observer", autoAdvance: false, maxTurns: MAX_TURNS,
+  simulatedYear: 2026, simulatedMonth: 1,
   factions: [], regions: [], mapOwnership: {}, selectedRegionId: null, selectedStrikeType: STRIKE_TYPES[0],
   contestedRegions: {}, neutralRegions: {}, pendingEffects: [], logEntries: [], debugLogEntries: [], skipAIUntil: {},
   scenarioSettings: { ...SCENARIO_SETTINGS },
@@ -261,7 +277,8 @@ function bindDom() {
     settingGlobalFallout: id("settingGlobalFallout"), settingCredibilityWeight: id("settingCredibilityWeight"), settingHumanitarianWeight: id("settingHumanitarianWeight"),
     settingLongTermWeight: id("settingLongTermWeight"), settingDomesticBacklash: id("settingDomesticBacklash"), settingEscalationReciprocity: id("settingEscalationReciprocity"),
     settingContinentShowdownThreshold: id("settingContinentShowdownThreshold"), settingContinentSecureThreshold: id("settingContinentSecureThreshold"),
-    settingSharedCollapse: id("settingSharedCollapse"), scenarioSetupContainer: id("scenarioSetupContainer"), gameOverOverlay: id("gameOverOverlay"), gameOverWinnerText: id("gameOverWinnerText"), mapOverlay: id("mapOverlay"),
+    settingSharedCollapse: id("settingSharedCollapse"), maxTurnsInput: id("maxTurnsInput"),
+    scenarioSetupContainer: id("scenarioSetupContainer"), gameOverOverlay: id("gameOverOverlay"), gameOverWinnerText: id("gameOverWinnerText"), mapOverlay: id("mapOverlay"),
     destructionReportPanel: id("destructionReportPanel"), casualtyContent: id("casualtyContent"), defconMeter: id("defconMeter"),
     cognitiveContent: id("cognitiveContent"), eventOverlay: id("eventOverlay"), staticCanvas: id("staticCanvas"),
     strategicPanels: id("strategicPanels"), defconHeader: id("defconHeader"), cognitiveHeader: id("cognitiveHeader"),
@@ -359,11 +376,16 @@ function startGame() {
   state.autoAdvance = false;
   if (autoAdvanceInterval) { clearInterval(autoAdvanceInterval); autoAdvanceInterval = null; }
   state.era = dom.eraSelect.value;
+  const parsedMaxTurns = parseInt(dom.maxTurnsInput?.value, 10);
+  state.maxTurns = Number.isFinite(parsedMaxTurns) && parsedMaxTurns >= 20 ? parsedMaxTurns : MAX_TURNS;
+  const eraPreset = (window.GameData?.ERA_PRESETS || ERA_PRESETS)[state.era];
+  state.simulatedYear = eraPreset?.startYear ?? Number(state.era);
+  state.simulatedMonth = eraPreset?.startMonth ?? 1;
   state.executionMode = dom.executionModeSelect?.value || "observer";
   state.humanEnabled = state.executionMode === "interactive" ? true : dom.humanSelect.value === "yes";
   state.gameMode = dom.gameModeSelect?.value || "standard";
   state.scenarioSettings = scenarioSettingsFromUI();
-  state.regions = ERA_REGION_MAPS[state.era].map((r) => ({ ...r }));
+  state.regions = ERA_REGION_MAPS[state.era].map((r) => ({ ...r, development: 0, resourceTypeOverride: null }));
   state.contestedRegions = {}; state.neutralRegions = {}; state.pendingEffects = []; state.skipAIUntil = {};
   state.escalation = { current: "conventional", counts: { conventional: 0, limitedNuclear: 0, fullExchange: 0 } };
   state.stats = { nuclearUsage: 0, tacticalNuclear: 0, strategicNuclear: 0, surrenderAttempts: 0, maxEscalationStage: {}, collapseTriggered: false };
@@ -458,14 +480,15 @@ function buildTechTreeForEra() {
 
 function refreshFactionTechState(faction) {
   if (!faction.techTree) faction.techTree = buildTechTreeForEra();
-  const allowByEra = Number(state.era) >= 1984;
+  const eraNum = Number(state.era);
+  const allowByEra = eraNum >= 1984;
   const override = faction.techPoints >= 7;
-  faction.techTree.nuclear.unlocked = allowByEra || override;
+  faction.techTree.nuclear.unlocked = (eraNum >= 1950) || override;
   faction.techTree.icbm.unlocked = allowByEra || override;
-  faction.techTree.stealthBomber.unlocked = Number(state.era) >= 1984 || override;
-  faction.techTree.hypersonic.unlocked = Number(state.era) >= 2026 || faction.techPoints >= 8;
-  faction.techTree.satellite.unlocked = Number(state.era) >= 1984 || override;
-  faction.techTree.cyberHybrid.unlocked = Number(state.era) >= 2026 || faction.techPoints >= 8;
+  faction.techTree.stealthBomber.unlocked = eraNum >= 1984 || override;
+  faction.techTree.hypersonic.unlocked = eraNum >= 2026 || faction.techPoints >= 8;
+  faction.techTree.satellite.unlocked = eraNum >= 1984 || override;
+  faction.techTree.cyberHybrid.unlocked = eraNum >= 2026 || faction.techPoints >= 8;
   faction.techTree.exotic.unlocked = faction.techPoints >= faction.techTree.exotic.techCost;
   faction.deliverySystemModifier = 1 + (faction.techTree.icbm.unlocked ? 0.08 : 0) + (faction.techTree.submarine.unlocked ? 0.06 : 0) + (faction.techTree.hypersonic.unlocked ? 0.1 : 0);
   faction.detectionRiskModifier = 1 - (faction.techTree.stealthBomber.unlocked ? 0.08 : 0) - (faction.techTree.cyberHybrid.unlocked ? 0.06 : 0) - (faction.techTree.satellite.unlocked ? 0.04 : 0);
@@ -540,14 +563,27 @@ function drawMap() {
       const accent = CONTINENT_ACCENT[region.continent] || "transparent";
       rect.style.outline = `1px solid ${accent}`;
 
-      // Show the resource icon on the first land tile of each region.
-      if (tIdx === 0 && resDef?.icon) {
-        rect.title = `${region.name} — ${resDef.label} (${resDef.harvestType})`;
-        const iconEl = document.createElement("span");
-        iconEl.className = "resource-icon";
-        iconEl.textContent = resDef.icon;
-        iconEl.setAttribute("aria-hidden", "true");
-        rect.append(iconEl);
+      // Show the resource icon and development badge on the first land tile.
+      if (tIdx === 0) {
+        const devLevel = region.development || 0;
+        const devBadges = ["", "▪", "■", "◆"];
+        if (resDef?.icon) {
+          rect.title = `${region.name} — ${resDef.label} (${resDef.harvestType}) | Dev: ${DEV_LEVEL_LABELS[devLevel]}`;
+          const iconEl = document.createElement("span");
+          iconEl.className = "resource-icon";
+          iconEl.textContent = resDef.icon;
+          iconEl.setAttribute("aria-hidden", "true");
+          rect.append(iconEl);
+        } else {
+          rect.title = region.name;
+        }
+        if (devLevel > 0) {
+          const badge = document.createElement("span");
+          badge.className = `tile-dev-badge tile-dev-${devLevel}`;
+          badge.textContent = devBadges[devLevel];
+          badge.setAttribute("aria-hidden", "true");
+          rect.append(badge);
+        }
       } else {
         rect.title = region.name;
       }
@@ -630,10 +666,41 @@ function updateSelectors() {
   state.factions.filter((f) => f.id !== human.id).forEach((f) => dom.targetFactionSelect.append(new Option(f.name, f.id)));
 }
 
+function advanceSimulatedDate() {
+  const eraPreset = (window.GameData?.ERA_PRESETS || ERA_PRESETS)[state.era];
+  const monthsPerTurn = eraPreset?.timeScale ?? 1;
+  state.simulatedMonth = (state.simulatedMonth || 1) + monthsPerTurn;
+  while (state.simulatedMonth > 12) {
+    state.simulatedMonth -= 12;
+    state.simulatedYear = (state.simulatedYear || Number(state.era)) + 1;
+  }
+}
+
+const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+function formatSimDate() {
+  const eraPreset = (window.GameData?.ERA_PRESETS || ERA_PRESETS)[state.era];
+  const mpt = eraPreset?.timeScale ?? 1;
+  if (mpt >= 12) {
+    // Year-scale eras: just show the year.
+    return `${state.simulatedYear}`;
+  }
+  if (mpt >= 3) {
+    // Quarter-scale eras: show Q1-Q4.
+    const q = Math.ceil((state.simulatedMonth || 1) / 3);
+    return `Q${q} ${state.simulatedYear}`;
+  }
+  // Month-scale eras.
+  const m = Math.min(12, Math.max(1, Math.round(state.simulatedMonth || 1)));
+  return `${MONTH_NAMES[m - 1]} ${state.simulatedYear}`;
+}
+
 function updateUI(shouldRender = true) {
   const era = ERA_PRESETS[state.era];
   const top = leaderFaction();
-  dom.turnInfo.innerHTML = `<p><strong>Turn:</strong> ${state.turn}/${MAX_TURNS} | <strong>Era:</strong> ${state.era} | <strong>Doctrine Engine:</strong> ${era.doctrine} | <strong>Leader:</strong> ${top.name} (${top.regions.length} regions)</p>`;
+  const maxT = state.maxTurns ?? MAX_TURNS;
+  const simDate = state.started ? ` | <strong>Date:</strong> ${formatSimDate()}` : "";
+  dom.turnInfo.innerHTML = `<p><strong>Turn:</strong> ${state.turn}/${maxT}${simDate} | <strong>Era:</strong> ${state.era} | <strong>Doctrine Engine:</strong> ${era.doctrine} | <strong>Leader:</strong> ${top.name} (${top.regions.length} regions)</p>`;
   dom.factionTableBody.innerHTML = "";
   state.factions.forEach((f) => {
     const tr = document.createElement("tr");
@@ -702,6 +769,8 @@ function resolveAction(actor, action, target, regionId, isHuman = false, strikeT
     case "Deploy Nuclear Triad": runTriad(actor); break;
     case "Nuclear Strike": runNuclear(actor, target, region, strikeType); break;
     case "Instigate Revolution": instigateRevolution(actor, target, region); break;
+    case "Upgrade Region": upgradeRegion(actor, region); break;
+    case "Convert Land Use": convertLandUse(actor, region); break;
   }
 
   normalizeFaction(actor);
@@ -716,7 +785,8 @@ function actionCost(action) {
     "Dialogue Summit": { resources: 4, political: 6 }, "Invest in Technology": { resources: 14, political: 5 },
     "Expand Nuclear Stockpile": { resources: 20, political: 12 }, "Secret Stockpile Build": { resources: 17, political: 10 },
     "Disarmament Deal": { resources: 6, political: 6 }, "Nuclear Strike": { resources: 34, political: 24 },
-    "Deploy Nuclear Triad": { resources: 14, political: 11 }, "Instigate Revolution": { resources: 11, political: 12 }
+    "Deploy Nuclear Triad": { resources: 14, political: 11 }, "Instigate Revolution": { resources: 11, political: 12 },
+    "Upgrade Region": { resources: 18, political: 6 }, "Convert Land Use": { resources: 22, political: 10 }
   };
   return table[action] || { resources: 10, political: 10 };
 }
@@ -946,6 +1016,7 @@ function advanceTurn() {
   if (!state.started || state.gameOver || state.ttt.animating) return;
   state.turn += 1;
   state.turnsSinceNuclear += 1;
+  advanceSimulatedDate();
   if (state.turnsSinceNuclear > 0 && state.turnsSinceNuclear % 6 === 0 && state.stats.nuclearUsage > 0) adjustDefcon(1, "Extended restraint period recorded.");
   updateEscalationLadder("conventional");
   logDebugSnapshot("turn-start");
@@ -1030,6 +1101,8 @@ function utility(ai, target, region, action, leader) {
 
 function regenerateFactionEconomies() {
   const gameData = window.GameData;
+  // Track rebellion yield to credit instigators at end of loop.
+  const rebellionCredit = {};  // instigatorId -> accumulated resources
 
   state.factions.forEach((f) => {
     let regionYield = 0;
@@ -1041,9 +1114,19 @@ function regenerateFactionEconomies() {
       // is available (oil / rare-earth yield more; water / forest yield less).
       let baseYield = region.resourceValue * 0.22;
       if (gameData?.computeRegionYieldMult) {
-        baseYield *= gameData.computeRegionYieldMult(regionId);
+        // Use resource type override if set by convertLandUse.
+        baseYield *= gameData.computeRegionYieldMult(regionId, region.resourceTypeOverride?.primary);
       }
-      regionYield += baseYield;
+      // Apply tile development level yield multiplier (default 1.0 if not set).
+      const devLevel = region.development || 0;
+      baseYield *= DEV_YIELD_MULT[devLevel] || 1.0;
+
+      // Rebellion diversion: contested regions give less to the controlling faction.
+      const divResult = applyRebellionResourceDiversion(region, f, baseYield);
+      regionYield += divResult.ownerYield;
+      if (divResult.instigatorYield > 0 && divResult.instigatorId) {
+        rebellionCredit[divResult.instigatorId] = (rebellionCredit[divResult.instigatorId] || 0) + divResult.instigatorYield;
+      }
 
       // Resource regeneration: partially-depleted regions recover each turn
       // at a rate determined by their primary resource type.
@@ -1068,6 +1151,14 @@ function regenerateFactionEconomies() {
     f.resources = clamp(f.resources + netResources, 0, 260);
     f.political = clamp(f.political + politicalBase, 0, 260);
   });
+
+  // Credit rebellion instigators with diverted resource yield.
+  Object.entries(rebellionCredit).forEach(([fid, credit]) => {
+    const instigator = byId(fid);
+    if (instigator && credit > 0) {
+      instigator.resources = clamp(instigator.resources + credit, 0, 260);
+    }
+  });
 }
 
 function ideologyActionBias(ai, action) {
@@ -1075,6 +1166,8 @@ function ideologyActionBias(ai, action) {
   if (action === "Economic Capture") return ai.corporatism * 12;
   if (action === "Secret Stockpile Build") return (1 - ai.democracy) * 10;
   if (action === "Nuclear Strike") return (1 - ai.stability) * 9 + (ai.crazyLeader ? 8 : 0);
+  if (action === "Upgrade Region") return (ai.corporatism * 8) + (ai.resources > 60 ? 6 : 0);
+  if (action === "Convert Land Use") return ai.resources > 80 ? 5 : 1;
   return 4;
 }
 
@@ -1250,9 +1343,16 @@ function checkContinentPlayoffs() {
 function detectDeadlock() {
   const neutralCount = Object.keys(state.neutralRegions).length;
   const contestedCount = Object.keys(state.contestedRegions).length;
-  if (state.turn > 18 && neutralCount + contestedCount > Math.ceil(state.regions.length * 0.4)) {
+  const total = neutralCount + contestedCount;
+  const hardDeadlockFraction = 0.65;
+  const warnFraction = 0.50;
+  // Hard deadlock: only after turn 30 and > 65% of regions ungoverned.
+  if (state.turn >= 30 && total > Math.ceil(state.regions.length * hardDeadlockFraction)) {
     state.gameOver = true;
-    log("Strategic deadlock detected: neutral/contested zones exceed sustainable governance threshold.");
+    log("Strategic deadlock: ungoverned zones exceeded sustainable threshold after prolonged conflict.");
+  } else if (state.turn >= 20 && total > Math.ceil(state.regions.length * warnFraction)) {
+    // Warning only — do not end the game yet.
+    log(`⚠ Governance warning: ${total} of ${state.regions.length} regions are neutral or contested.`);
   }
 }
 
@@ -1260,7 +1360,7 @@ function endTurnChecks() {
   const outcome = window.GameEngine.checkVictory({
     state,
     constants: {
-      maxTurns: MAX_TURNS,
+      maxTurns: state.maxTurns ?? MAX_TURNS,
       minTurnsBeforeVictoryCheck: MIN_TURNS_BEFORE_VICTORY_CHECK,
       defaultVictoryControlThreshold: SCENARIO_SETTINGS.victoryControlThreshold
     },
@@ -1425,6 +1525,86 @@ function computeMaxGamble() { const human = state.factions.find((f) => f.isHuman
 function leaderFaction() { return [...state.factions].sort((a,b)=> (b.regions.length*13 + b.political + b.resources) - (a.regions.length*13 + a.political + a.resources))[0] || { name: "None", regions: [] }; }
 function randomOpponent(actor) { const ops = state.factions.filter((f) => f.id !== actor.id); return ops[Math.floor(Math.random() * ops.length)]; }
 function byId(idv) { return state.factions.find((f) => f.id === idv); }
+// ---------------------------------------------------------------------------
+// Tile development and land-use conversion
+// ---------------------------------------------------------------------------
+
+const DEV_LEVEL_LABELS = ["Undeveloped", "Basic", "Developed", "Industrial"];
+const DEV_YIELD_MULT   = [1.0, 1.20, 1.45, 1.75];  // yield multiplier per development level
+const DEV_UPGRADE_COST_MULT = [1, 1.8, 2.6];         // cost multiplier for each tier transition
+
+function upgradeRegion(actor, region) {
+  // Only the owning faction can upgrade a region they hold.
+  if (state.mapOwnership[region.id] !== actor.id) {
+    log(`${actor.name} cannot upgrade ${region.name} — not under their control.`);
+    return;
+  }
+  if (state.contestedRegions[region.id]) {
+    log(`${actor.name} cannot upgrade ${region.name} — region is contested.`);
+    return;
+  }
+  const dev = region.development || 0;
+  if (dev >= 3) {
+    log(`${region.name} is already at maximum development (Industrial).`);
+    return;
+  }
+  const baseCost = 15 * DEV_UPGRADE_COST_MULT[dev];
+  if (actor.resources < baseCost) {
+    log(`${actor.name} lacks resources to upgrade ${region.name} (needs ${Math.round(baseCost)}).`);
+    return;
+  }
+  actor.resources -= baseCost;
+  region.development = dev + 1;
+  region.maxResourceValue = Math.min(30, region.maxResourceValue + 2);
+  log(`${actor.name} upgraded ${region.name} to ${DEV_LEVEL_LABELS[region.development]}. Yield +${Math.round((DEV_YIELD_MULT[region.development] - DEV_YIELD_MULT[dev]) * 100)}%.`);
+}
+
+function convertLandUse(actor, region) {
+  // Convert the primary resource type (e.g., forest → farmland in industrial era).
+  if (state.mapOwnership[region.id] !== actor.id) {
+    log(`${actor.name} cannot convert ${region.name} — not under their control.`);
+    return;
+  }
+  if (state.contestedRegions[region.id]) {
+    log(`${actor.name} cannot convert ${region.name} — region is contested.`);
+    return;
+  }
+  const gameData = window.GameData;
+  if (!gameData) { log("Resource data not available for land-use conversion."); return; }
+
+  const primary = gameData.getPrimaryResource?.(region.id) || "grain";
+  const CONVERSION_MAP = { forest: "grain", grain: "oil", oil: "minerals", maritime: "grain" };
+  const target = CONVERSION_MAP[primary] || "grain";
+
+  // Redevelopment penalty: reset development by 1 tier, spike instability.
+  region.development = Math.max(0, (region.development || 0) - 1);
+  region.instability = clamp(region.instability + 0.12, 0, 1);
+  region.resourceValue = Math.max(3, Math.round(region.resourceValue * 0.70));
+
+  // Override the primary resource type for this region for the rest of the game.
+  if (!region.resourceTypeOverride) region.resourceTypeOverride = {};
+  region.resourceTypeOverride.primary = target;
+
+  log(`${actor.name} converted ${region.name} from ${primary} to ${target} production. Development reset to ${DEV_LEVEL_LABELS[region.development]}; instability spike.`);
+}
+
+// ---------------------------------------------------------------------------
+// Rebellion resource yield: contested regions withhold income from controller
+// and redirect a fraction to the revolution instigator.
+// ---------------------------------------------------------------------------
+const REBELLION_YIELD_FRACTION = 0.40;  // fraction of contested region yield diverted to instigator
+
+function applyRebellionResourceDiversion(region, owner, baseYield) {
+  const contested = state.contestedRegions[region.id];
+  if (!contested) return { ownerYield: baseYield, instigatorYield: 0, instigatorId: null };
+
+  // Controlling faction loses income proportional to rebellion support.
+  const rebellionIntensity = clamp(contested.attackerSupport || 0.5, 0, 1);
+  const diverted = baseYield * REBELLION_YIELD_FRACTION * rebellionIntensity;
+  const ownerYield = baseYield - diverted;
+  return { ownerYield, instigatorYield: diverted, instigatorId: contested.attackerId };
+}
+
 function normalizeFaction(f) { f.resources = Math.max(0, f.resources); f.political = Math.max(0, f.political); f.nukes = Math.max(0, f.nukes); f.stability = clamp(f.stability, 0, 1); f.legitimacy = clamp(f.legitimacy, 0, 1); }
 function updateMemory(actor, target, action) {
   const mem = actor.memory[target.id];

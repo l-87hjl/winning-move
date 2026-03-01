@@ -1,186 +1,116 @@
-# Agent Documentation Standards — Winning Move
+# Claude Code & Agent Instructions — Winning Move
 
-This file directs AI agents (Claude Code and any future automation) on how to
-document changes to this project. Following these standards keeps the
-repository audit-able and maintainable across multiple automated sessions.
-
----
-
-## 1. Always update these files when you make changes
-
-### `docs/CHANGELOG.md`
-Every PR / agent session that modifies source files **must** add an entry.
-
-Format:
-```
-## [PR #N] — YYYY-MM-DD
-### Added
-- Bullet-point list of new files, features, or capabilities.
-### Changed
-- What existing behaviour was altered and why.
-### Fixed
-- Bugs that were corrected, with a brief explanation of the root cause.
-### Known Issues
-- Any issues you discovered but did not fix; include enough detail for a
-  future agent to reproduce and resolve them.
-```
-
-### `docs/game-features.md`
-When you implement something from the **Desired / Next** list, move it to
-**Implemented** with a one-line description. When you identify new desired
-features during audit, add them to the **Desired / Next** list.
-
-### `docs/PERSISTENT_ISSUES.md`
-If you discover a recurring bug or design tension that you cannot fully
-resolve in one session, add a dated entry with:
-- Symptom observed
-- Root-cause analysis (even if partial)
-- Steps to reproduce
-- Suggested fix or investigation path
-
-### `README.md`
-Update the version badge and feature summary whenever:
-- A new game mode or era is added
-- A major mechanic changes (win condition, economy, nuclear model)
-- New data or engine modules are created
+This file contains **Claude Code–specific** behavioural instructions that
+supplement the general AI agent documentation in `README_AI.md`. Read
+`README_AI.md` first, then apply the overrides and additions below.
 
 ---
 
-## 2. Module and file conventions
+## 1. Documentation obligations (same as README_AI.md — enforced here)
 
-### Source organisation
-```
-src/
-  data/          Canonical static data (eras, resources, game modes).
-                 Modules attach to window.GameData.
-  engine/        Stateless logic operating on the game state object.
-                 Modules attach to window.GameEngine.
-  game.js        UI orchestrator and main turn loop.
-                 Consumes window.GameData and window.GameEngine.
-  styles.css     All visual styles.
-docs/
-  CHANGELOG.md           PR/session history.
-  game-features.md       Feature tracking (implemented vs. desired).
-  PERSISTENT_ISSUES.md   Known bugs and design tensions.
-  game-log-spec.md       Log format reference.
-CLAUDE.md                This file — agent documentation standards.
-README.md                User-facing project overview.
-```
-
-### Adding a new engine module
-1. Create `src/engine/<name>.js` using the IIFE pattern:
-   ```javascript
-   (function init<Name>Module(global) {
-     const engine = (global.GameEngine = global.GameEngine || {});
-     // ... pure functions that accept state as a parameter ...
-     engine.myFunction = myFunction;
-   })(window);
-   ```
-2. Add a `<script src="src/engine/<name>.js">` tag to `index.html` **before**
-   `src/game.js`.
-3. Document the module's public API in `docs/game-features.md`.
-
-### Adding a new data module
-1. Create `src/data/<name>.js` using the IIFE pattern:
-   ```javascript
-   (function init<Name>Module(global) {
-     const data = (global.GameData = global.GameData || {});
-     // ... constant tables and pure helper functions ...
-     data.MY_TABLE = MY_TABLE;
-   })(window);
-   ```
-2. Add the script tag in `index.html` **before** engine and game scripts.
-3. If the new data supersedes something already defined inline in `game.js`,
-   update `game.js` to reference `window.GameData.<key>` with a fallback to
-   the old inline value so nothing breaks.
+Claude Code sessions **must** update `docs/CHANGELOG.md`, `docs/game-features.md`,
+`docs/PERSISTENT_ISSUES.md`, and `README.md` as described in `README_AI.md §1`
+before pushing any commit. These updates are not optional.
 
 ---
 
-## 3. Era, game mode, and scenario type discipline
+## 2. Tool-call conventions for this project
 
-- **Era** (`src/data/eras.js`): defines world-condition multipliers (tech boost,
-  diplomacy boost, nuclear norm, doctrine label) and the region map layout.
-  Do not hard-code era-specific values in `game.js`; always read from
-  `window.GameData.ERA_PRESETS[state.era]`.
+### File reads
+- Read `src/game.js` in offset/limit chunks (≤ 300 lines) — the file exceeds
+  25 000 tokens and will exceed the single-read limit.
+- Always read a file **before** editing it; the Edit tool will error otherwise.
 
-- **Game Mode** (`src/data/game-modes.js`): defines a named overlay of
-  `SCENARIO_SETTINGS` values. A game mode must never contain region or
-  faction data — it only adjusts simulation parameters.
+### Parallel tool calls
+- Whenever two or more reads / searches are independent, issue them in a
+  **single message** with multiple tool-call blocks so they run concurrently.
+- Do not batch completions — mark each TodoWrite task complete immediately
+  after finishing it.
 
-- **Scenario Type** (`src/data/game-modes.js → SCENARIO_TYPES`): a
-  higher-level narrative preset that bundles an era + game mode + optional
-  setting overrides. When adding a new narrative scenario, add it here,
-  not as a branch inside `game.js`.
-
-- **Execution Mode** (observer / interactive / aiOnly / batch): controls
-  rendering speed and human-player availability. Do not conflate this with
-  game mode or scenario type.
+### Write vs Edit
+- Prefer `Edit` for targeted changes to existing files.
+- Use `Write` only for new files or complete rewrites.
 
 ---
 
-## 4. Resource type discipline
+## 3. Branch and git discipline
 
-Resource data lives in `src/data/resources.js` (attached to `window.GameData`).
-When adding or changing a resource type:
-1. Add/update its entry in `RESOURCE_TYPES` with all required fields
-   (`label`, `icon`, `color`, `harvestType`, `regenRate`, `yieldMult`, `desc`).
-2. Update `REGION_RESOURCES` if the new type should be assigned to regions.
-3. Verify that `computeRegionYieldMult` and `computeTileRegenRate` return
-   sensible values for the new type.
-4. Document the harvest-type semantics (renewable / annual / conditional /
-   one-time) in `docs/game-features.md`.
+- All work goes on the branch specified in the task description (pattern:
+  `claude/<slug>-<sessionId>`). Never push to `main` or `master`.
+- Commit messages must follow the convention in `README_AI.md §7`.
+- Push with `git push -u origin <branch-name>`. Retry up to 4× on network
+  failure using exponential back-off (2 s → 4 s → 8 s → 16 s).
+- Do not amend published commits; create new commits instead.
 
 ---
 
-## 5. Victory and game-ending conditions
+## 4. Module and IIFE pattern (strict)
 
-Victory condition logic lives in `src/engine/victory.js`. When touching it:
-- Keep `MIN_TURNS_MUTUAL_COLLAPSE` ≥ 10 and `MIN_TURNS_STALEMATE` ≥ 15 to
-  prevent sub-10-turn endings.
-- `MIN_TURNS_BEFORE_VICTORY_CHECK` in `game.js` must be ≥ 8.
-- Territory victory threshold (default 0.55) should not be lowered below 0.5
-  without documenting the rationale.
-- Continent victory requires **3 or more** controlled continents so small
-  two-region continents (Middle East, Oceania) cannot be trivially captured
-  for an instant win.
+All `src/data/` and `src/engine/` files **must** follow the IIFE pattern and
+end with `})(window);`. Claude Code must verify this in any file it touches.
+
+Script tag load order in `index.html`:
+```
+src/data/eras.js
+src/data/resources.js
+src/data/game-modes.js
+src/engine/escalation.js
+src/engine/paradigm.js
+src/engine/victory.js
+src/engine/economy.js
+src/game.js          ← always last
+```
+Adding a new module means inserting its `<script>` tag in the correct
+position — data modules before engine modules, both before `game.js`.
 
 ---
 
-## 6. Commit message conventions
+## 5. Era additions — Claude Code checklist
 
-```
-<type>(<scope>): <short summary>
-
-<optional body: what changed and why>
-```
-
-Types: `feat`, `fix`, `refactor`, `docs`, `chore`, `test`
-Scope examples: `victory`, `economy`, `map`, `eras`, `resources`, `ttt`, `ui`
-
-Example:
-```
-fix(victory): add turn guards to stalemate and mutualCollapse endings
-
-Stalemate now requires turn >= 15 and stability < 0.22 (was 0.28).
-MutualCollapse requires turn >= 10. This prevents sub-8-turn game
-endings caused by early nuclear exchanges or brief stability dips.
-```
+When adding a new era (e.g., a WW2 breakdown era):
+1. Add the preset to `ERA_PRESETS` in `src/data/eras.js` with keys:
+   `label`, `techBoost`, `diplomacyBoost`, `warFriction`, `nuclearNorm`,
+   `doctrine`, `timeScale` (months per turn), `startYear`, `startMonth`.
+2. Add a corresponding entry to `ERA_TECH_UNLOCKS` and `ERA_DOCTRINES`.
+3. Derive or define the `ERA_REGION_MAPS[<key>]` entry.
+4. Fallback copies in `game.js` top-of-file `ERA_PRESETS` must also be
+   extended so nothing breaks if the data module fails to load.
+5. Add the `<option>` to `#eraSelect` in `index.html`.
+6. Update `README.md` version badge and feature summary.
 
 ---
 
-## 7. Audit checklist
+## 6. Game-balance guardrails (Claude Code must not violate)
 
-When performing a code audit, check each of the following and note findings
-in `docs/PERSISTENT_ISSUES.md`:
+| Constant | File | Minimum value |
+|---|---|---|
+| `MIN_TURNS_BEFORE_VICTORY_CHECK` | `game.js` | 8 |
+| `MIN_TURNS_MUTUAL_COLLAPSE` | `victory.js` | 10 |
+| `MIN_TURNS_STALEMATE` | `victory.js` | 15 |
+| `MIN_CONTINENTS_FOR_VICTORY` | `victory.js` | 3 |
+| `STALEMATE_STABILITY_THRESHOLD` | `paradigm.js` | ≤ 0.22 |
+| `STALEMATE_MIN_TURN` | `paradigm.js` | 12 |
+| `detectDeadlock` turn threshold | `game.js` | 30 |
+| `detectDeadlock` region fraction | `game.js` | > 0.60 |
 
-- [ ] No data constants duplicated between `src/data/` modules and `game.js`.
-- [ ] All new functions reference `window.GameData` / `window.GameEngine`
-      rather than hard-coding values.
-- [ ] Victory check minimum turns are enforced.
-- [ ] `MIN_TURNS_BEFORE_VICTORY_CHECK` ≥ 8 in `game.js`.
-- [ ] Continent win requires ≥ 3 continents in `victory.js`.
-- [ ] Stalemate threshold ≤ 0.22 and minimum turn ≥ 12 in `paradigm.js`.
-- [ ] `maxResourceValue` is set on all regions at game start.
-- [ ] Resource regeneration runs per turn without compounding errors.
-- [ ] No script tag in `index.html` references a file that does not exist.
-- [ ] All IIFE modules end with `})(window);`.
+Any PR that violates a guardrail must include a `docs/PERSISTENT_ISSUES.md`
+entry explaining the rationale.
+
+---
+
+## 7. Audit checklist (Claude Code session version)
+
+Before each commit, verify:
+
+- [ ] `README_AI.md §8` audit checklist passes.
+- [ ] No `console.log` left in production paths (use the structured `log()`).
+- [ ] No inline `setTimeout`/`setInterval` added outside `toggleAutoAdvance`.
+- [ ] `src/game.js` still references `window.GameData.*` with fallback for
+      every constant that has a canonical data-module equivalent.
+- [ ] All new HTML inputs have an `id` referenced in `bindDom()`.
+- [ ] TTT board state is reset between rounds (no stale symbols).
+- [ ] `state.maxTurns` (when set from UI) is used in `endTurnChecks()` via
+      the `constants.maxTurns` argument — not a stale `MAX_TURNS` reference.
+- [ ] Tile `development` levels are initialised (default 0) in `startGame()`.
+- [ ] Rebellion yield deducts from controlling faction before crediting instigator.
+- [ ] Simulated date advances each turn via `advanceSimulatedDate(state)`.
