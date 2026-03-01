@@ -2098,8 +2098,22 @@ function defconLabel(level) {
 
 function renderStrategicPanels() {
   if (dom.defconMeter) {
-    dom.defconMeter.textContent = defconLabel(state.defconLevel);
-    dom.defconMeter.className = `defcon defcon-${state.defconLevel}`;
+    const label = defconLabel(state.defconLevel);
+    const title = dom.defconMeter.querySelector("#defconTitle");
+    const cells = dom.defconMeter.querySelectorAll("[data-defcon-level]");
+    if (title) {
+      title.textContent = label;
+    } else {
+      dom.defconMeter.textContent = label;
+    }
+    dom.defconMeter.className = "defcon-ladder";
+    cells.forEach((cell) => {
+      const level = Number(cell.dataset.defconLevel);
+      const isActive = level === state.defconLevel;
+      cell.classList.toggle("is-active", isActive);
+      cell.classList.toggle("is-inactive", !isActive);
+      cell.setAttribute("aria-current", isActive ? "true" : "false");
+    });
   }
   const top = leaderFaction();
   if (dom.cognitiveContent && top?.cognitiveIndex) {
