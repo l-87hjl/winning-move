@@ -177,7 +177,16 @@
     <section id="strategicPanels" class="panel console-panel strategic-panels-strip strategic-panels">
       <div id="defconPanel" class="console-panel">
         <h3 id="defconHeader">DEFCON STATUS</h3>
-        <div id="defconMeter"></div>
+        <div id="defconMeter" class="defcon-ladder" aria-live="polite">
+          <div class="defcon-title" id="defconTitle"></div>
+          <div class="defcon-level-row" role="list" aria-label="DEFCON level ladder">
+            <span class="defcon-cell" data-defcon-level="5" role="listitem">5</span>
+            <span class="defcon-cell" data-defcon-level="4" role="listitem">4</span>
+            <span class="defcon-cell" data-defcon-level="3" role="listitem">3</span>
+            <span class="defcon-cell" data-defcon-level="2" role="listitem">2</span>
+            <span class="defcon-cell" data-defcon-level="1" role="listitem">1</span>
+          </div>
+        </div>
       </div>
 
       <div id="cognitivePanel" class="console-panel">
