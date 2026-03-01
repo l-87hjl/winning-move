@@ -30,8 +30,10 @@ const TECH_TREE_TEMPLATE = {
 };
 
 const MAX_TURNS = 60;
-const APP_VERSION = "1.03";
-const MIN_TURNS_BEFORE_VICTORY_CHECK = 5;
+const APP_VERSION = "1.04";
+// Raised from 5 to 8 so continent and territory victories cannot fire in the
+// first few turns before meaningful strategic development has occurred.
+const MIN_TURNS_BEFORE_VICTORY_CHECK = 8;
 const DEFCON_MIN = 1;
 const DEFCON_MAX = 5;
 const TONE_STATES = ["stable", "tense", "critical", "terminal", "post-collapse"];
@@ -139,64 +141,79 @@ function r(id, name, continent, x, y, w, h, sx, sy, props) {
     id, name, continent,
     gx: Math.round(x / MAP_PITCH), gy: Math.round(y / MAP_PITCH),
     cols: Math.max(2, Math.round(w / MAP_PITCH)), rows: Math.max(2, Math.round(h / MAP_PITCH)),
-    resourceValue: props.res, chokepoint: props.choke, ideologyLean: props.lean, instability: props.unstable
+    resourceValue: props.res,
+    // maxResourceValue tracks the original cap so partial fallout depletion
+    // can be replenished by resource-type-specific regeneration each turn.
+    maxResourceValue: props.res,
+    chokepoint: props.choke, ideologyLean: props.lean, instability: props.unstable
   };
 }
 
+// Larger, more geographically-shaped continent masks.
+// Each mask is a 2D binary grid; 1 = land tile, 0 = ocean gap.
+// Wider/taller masks produce more organic continent outlines.
 const CONTINENT_MASKS = {
   north_america: [
-    [0,0,1,1,1,1,0,0],
-    [0,1,1,1,1,1,1,0],
-    [1,1,1,1,1,1,1,0],
-    [1,1,1,1,1,1,0,0],
-    [0,1,1,1,1,1,0,0],
-    [0,0,1,1,1,0,0,0]
+    [0,0,0,1,1,1,1,0,0,0],
+    [0,0,1,1,1,1,1,1,0,0],
+    [0,1,1,1,1,1,1,1,1,0],
+    [1,1,1,1,1,1,1,1,1,0],
+    [1,1,1,1,1,1,1,1,0,0],
+    [0,1,1,1,1,1,1,0,0,0],
+    [0,0,1,1,1,1,0,0,0,0],
+    [0,0,0,1,1,0,0,0,0,0]
   ],
   south_america: [
-    [1,1,1,0],
-    [0,1,1,1],
-    [0,1,1,1],
-    [0,1,1,0],
-    [0,1,1,0],
-    [0,1,0,0],
-    [0,1,0,0],
-    [0,1,0,0]
+    [0,1,1,1,0],
+    [0,1,1,1,1],
+    [0,1,1,1,0],
+    [1,1,1,1,0],
+    [0,1,1,1,0],
+    [0,1,1,0,0],
+    [0,1,1,0,0],
+    [0,1,1,0,0],
+    [0,1,0,0,0],
+    [0,1,0,0,0]
   ],
   europe: [
-    [0,1,1,1,0],
-    [1,1,1,1,1],
-    [1,1,1,1,0],
-    [0,1,1,0,0]
+    [0,0,1,1,1,0],
+    [0,1,1,1,1,1],
+    [1,1,1,1,1,0],
+    [0,1,1,1,0,0],
+    [0,0,1,0,0,0]
   ],
   africa: [
-    [0,1,1,0,0],
-    [1,1,1,1,0],
-    [1,1,1,1,0],
-    [0,1,1,1,0],
-    [0,1,1,1,0],
-    [0,1,1,0,0],
-    [0,1,1,0,0]
+    [0,0,1,1,1,0,0],
+    [0,1,1,1,1,1,0],
+    [1,1,1,1,1,1,0],
+    [0,1,1,1,1,1,0],
+    [0,1,1,1,1,0,0],
+    [0,0,1,1,1,0,0],
+    [0,0,1,1,0,0,0],
+    [0,0,0,1,0,0,0]
   ],
   middle_east: [
-    [1,1,1,0],
-    [1,1,1,1],
-    [0,1,1,1],
-    [0,1,1,0]
-  ],
-  asia: [
-    [0,1,1,1,1,1,0,0],
-    [1,1,1,1,1,1,1,0],
-    [1,1,1,1,1,1,1,1],
-    [1,1,1,1,1,1,1,1],
-    [0,1,1,1,1,1,1,0],
-    [0,1,1,1,1,1,0,0],
-    [0,0,1,1,1,0,0,0]
-  ],
-  oceania: [
-    [0,1,1,1,0],
+    [1,1,1,1,0],
     [1,1,1,1,1],
     [0,1,1,1,1],
     [0,0,1,1,0]
+  ],
+  asia: [
+    [0,0,1,1,1,1,1,1,1,0],
+    [0,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,0],
+    [0,1,1,1,1,1,1,1,0,0],
+    [0,1,1,1,1,1,1,0,0,0],
+    [0,0,1,1,1,1,0,0,0,0],
+    [0,0,0,1,1,0,0,0,0,0]
+  ],
+  oceania: [
+    [0,0,1,1,1,0],
+    [0,1,1,1,1,1],
+    [1,1,1,1,1,1],
+    [0,1,1,1,1,0],
+    [0,0,0,1,0,0]
   ]
 };
 
@@ -306,9 +323,9 @@ function syncExecutionModeUi() {
 
 function paceToTurns() {
   const pace = dom.conflictPaceSelect?.value || "standard";
-  if (pace === "short") return 2;
-  if (pace === "long") return 6;
-  return 4;
+  // Use canonical table from data module when available.
+  const table = window.GameData?.PACE_TO_TURNS || { short: 2, standard: 4, long: 6 };
+  return table[pace] || 4;
 }
 
 function autoAdvanceDelayMs() {
@@ -456,6 +473,9 @@ function refreshFactionTechState(faction) {
 }
 
 function doctrineFor(i) {
+  // Use canonical doctrines from the data module when available.
+  const eraDoctrines = window.GameData?.ERA_DOCTRINES;
+  if (eraDoctrines?.[state.era]) return eraDoctrines[state.era][i] || "Unknown Doctrine";
   if (state.era === "1984") return ["MAD Hawk", "Deterrence Dove", "Proxy Gambler", "Bloc Stabilizer", "Shadow Escalator"][i];
   if (state.era === "1939") return ["Industrial Expansion", "Authoritarian Blitz", "Defensive Mobilizer", "Colonial Attrition", "Mass-Front Doctrine"][i];
   return ["Techno-Realist", "Market Coercion", "Alliance Balancer", "Stability First", "Hybrid Opportunist"][i];
@@ -473,25 +493,81 @@ function assignStartingOwnership() {
 
 function drawMap() {
   dom.worldMap.innerHTML = "";
+
+  // Track which continent labels have been placed to avoid duplicates.
+  const labeledContinents = new Set();
+
+  // Continent background-accent colors for visual grouping.
+  const CONTINENT_ACCENT = {
+    north_america: "rgba(96,165,250,0.07)",
+    south_america: "rgba(52,211,153,0.07)",
+    europe:        "rgba(251,191,36,0.07)",
+    africa:        "rgba(249,115,22,0.07)",
+    middle_east:   "rgba(239,68,68,0.07)",
+    asia:          "rgba(167,139,250,0.07)",
+    oceania:       "rgba(34,211,238,0.07)"
+  };
+
   for (const region of state.regions) {
     const cluster = document.createElement("div");
-    cluster.setAttribute("class", "region");
+    cluster.setAttribute("class", `region continent-${region.continent}`);
     cluster.dataset.regionId = region.id;
+    cluster.dataset.continent = region.continent;
     cluster.style.display = "contents";
     cluster.addEventListener("click", () => {
       state.selectedRegionId = region.id;
       dom.targetRegionInput.value = region.name;
       highlightSelectedRegion();
     });
+
     const tiles = regionTiles(region);
-    tiles.forEach((tile) => {
+
+    // Determine primary resource type for visual indicator.
+    const data = window.GameData;
+    const primaryRes = data?.getPrimaryResource?.(region.id) || "grain";
+    const resDef = data?.RESOURCE_TYPES?.[primaryRes];
+
+    tiles.forEach((tile, tIdx) => {
       const rect = document.createElement("div");
       rect.setAttribute("class", "region-tile");
       rect.style.gridColumn = `${region.gx + tile.c + 1}`;
-      rect.style.gridRow = `${region.gy + tile.r + 1}`;
-      rect.dataset.regionId = region.id;
+      rect.style.gridRow    = `${region.gy + tile.r + 1}`;
+      rect.dataset.regionId   = region.id;
+      rect.dataset.continent  = region.continent;
+      rect.dataset.resource   = primaryRes;
+
+      // Subtle continent accent tint via outline.
+      const accent = CONTINENT_ACCENT[region.continent] || "transparent";
+      rect.style.outline = `1px solid ${accent}`;
+
+      // Show the resource icon on the first land tile of each region.
+      if (tIdx === 0 && resDef?.icon) {
+        rect.title = `${region.name} — ${resDef.label} (${resDef.harvestType})`;
+        const iconEl = document.createElement("span");
+        iconEl.className = "resource-icon";
+        iconEl.textContent = resDef.icon;
+        iconEl.setAttribute("aria-hidden", "true");
+        rect.append(iconEl);
+      } else {
+        rect.title = region.name;
+      }
+
       cluster.append(rect);
     });
+
+    // Place a continent label on the first tile of the first region in each
+    // continent so orientation is always clear.
+    if (!labeledContinents.has(region.continent) && tiles.length) {
+      labeledContinents.add(region.continent);
+      const firstTile = tiles[0];
+      const labelEl = document.createElement("div");
+      labelEl.className = "continent-label";
+      labelEl.textContent = region.continent.replace(/_/g, " ").toUpperCase();
+      labelEl.style.gridColumn = `${region.gx + firstTile.c + 1}`;
+      labelEl.style.gridRow    = `${region.gy + firstTile.r + 1}`;
+      dom.worldMap.append(labelEl);
+    }
+
     dom.worldMap.append(cluster);
   }
   recolorMap();
@@ -513,7 +589,9 @@ function regionTiles(region) {
       if (maskRow[maskC] === 1) tiles.push({ c, r });
     }
   }
-  region.tiles = tiles.length >= 4 ? tiles : fallbackTiles(region);
+  // Accept ≥ 2 shaped tiles so larger masks still produce organic outlines
+  // on small regions (2 or 3 tiles is better than a full rectangle).
+  region.tiles = tiles.length >= 2 ? tiles : fallbackTiles(region);
   return region.tiles;
 }
 
@@ -951,17 +1029,42 @@ function utility(ai, target, region, action, leader) {
 }
 
 function regenerateFactionEconomies() {
+  const gameData = window.GameData;
+
   state.factions.forEach((f) => {
-    const regionYield = f.regions
-      .map((id) => state.regions.find((r) => r.id === id))
-      .filter(Boolean)
-      .reduce((acc, region) => acc + region.resourceValue * 0.22, 0);
-    const baseline = 3.4 + f.tech * 0.9;
-    const stressPenalty = f.economicStress * 1.7 + f.warFatigue * 1.3;
-    const reserveBoost = f.resources < 24 ? 3.5 : 0;
+    let regionYield = 0;
+    f.regions.forEach((regionId) => {
+      const region = state.regions.find((r) => r.id === regionId);
+      if (!region) return;
+
+      // Base yield; scaled by resource-type multiplier when the data module
+      // is available (oil / rare-earth yield more; water / forest yield less).
+      let baseYield = region.resourceValue * 0.22;
+      if (gameData?.computeRegionYieldMult) {
+        baseYield *= gameData.computeRegionYieldMult(regionId);
+      }
+      regionYield += baseYield;
+
+      // Resource regeneration: partially-depleted regions recover each turn
+      // at a rate determined by their primary resource type.
+      const maxRv = region.maxResourceValue || region.resourceValue;
+      if (region.resourceValue < maxRv) {
+        const regenRate = gameData?.computeTileRegenRate
+          ? gameData.computeTileRegenRate(regionId)
+          : 0.3;
+        // Recover up to 5 % of cap per turn, modulated by regenRate.
+        const recovery = maxRv * 0.05 * regenRate;
+        region.resourceValue = Math.min(maxRv, region.resourceValue + recovery);
+      }
+    });
+
+    const baseline       = 3.4 + f.tech * 0.9;
+    const stressPenalty  = f.economicStress * 1.7 + f.warFatigue * 1.3;
+    const reserveBoost   = f.resources < 24 ? 3.5 : 0;
     const highReserveTax = f.resources > 160 ? (f.resources - 160) * 0.04 : 0;
-    const netResources = baseline + regionYield + reserveBoost - stressPenalty - highReserveTax;
-    const politicalBase = 2.8 + f.legitimacy * 3.2 + f.publicOpinion * 1.7 - f.warFatigue * 1.5 - f.economicStress * 0.9;
+    const netResources   = baseline + regionYield + reserveBoost - stressPenalty - highReserveTax;
+    const politicalBase  = 2.8 + f.legitimacy * 3.2 + f.publicOpinion * 1.7
+                           - f.warFatigue * 1.5 - f.economicStress * 0.9;
     f.resources = clamp(f.resources + netResources, 0, 260);
     f.political = clamp(f.political + politicalBase, 0, 260);
   });
