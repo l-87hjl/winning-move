@@ -61,7 +61,14 @@ const SCENARIO_SETTINGS = {
 
 const GAME_MODES = {
   standard: { label: "Standard Game", settings: {} },
-  simulation: { label: "Simulation", settings: {} },
+  coldWar: {
+    label: "Cold War Deterrence",
+    settings: { retaliationCertainty: 0.72, escalationReciprocity: 0.95, globalFalloutSeverity: 0.5 }
+  },
+  multipolar: {
+    label: "Multipolar Adaptive",
+    settings: { retaliationCertainty: 0.55, escalationReciprocity: 1.1, globalFalloutSeverity: 0.2 }
+  },
   postHuman: {
     label: "Post-Human Emergence",
     settings: {
@@ -141,7 +148,7 @@ const CONTINENT_MASKS = {
 };
 
 const state = {
-  turn: 0, era: "2026", started: false, gameOver: false, humanEnabled: true, gameMode: "standard", autoAdvance: false,
+  turn: 0, era: "2026", started: false, gameOver: false, humanEnabled: false, gameMode: "standard", executionMode: "observer", autoAdvance: false,
   factions: [], regions: [], mapOwnership: {}, selectedRegionId: null, selectedStrikeType: STRIKE_TYPES[0],
   contestedRegions: {}, neutralRegions: {}, pendingEffects: [], logEntries: [], skipAIUntil: {},
   scenarioSettings: { ...SCENARIO_SETTINGS },
@@ -160,7 +167,7 @@ const dom = bindDom();
 
 function bindDom() {
   return {
-    eraSelect: id("eraSelect"), humanSelect: id("humanSelect"), gameModeSelect: id("gameModeSelect"), conflictPaceSelect: id("conflictPaceSelect"), customPaceTurns: id("customPaceTurns"), startBtn: id("startBtn"), nextTurnBtn: id("nextTurnBtn"), autoAdvanceBtn: id("autoAdvanceBtn"),
+    eraSelect: id("eraSelect"), humanSelect: id("humanSelect"), gameModeSelect: id("gameModeSelect"), executionModeSelect: id("executionModeSelect"), conflictPaceSelect: id("conflictPaceSelect"), startBtn: id("startBtn"), nextTurnBtn: id("nextTurnBtn"), autoAdvanceBtn: id("autoAdvanceBtn"), newGameBtn: id("newGameBtn"), overlayNewGameBtn: id("overlayNewGameBtn"),
     downloadReportBtn: id("downloadReportBtn"), worldMap: id("worldMap"), turnInfo: id("turnInfo"), factionTableBody: document.querySelector("#factionTable tbody"),
     actionSelect: id("actionSelect"), targetFactionSelect: id("targetFactionSelect"), targetRegionInput: id("targetRegionInput"), strikeTypeSelect: id("strikeTypeSelect"),
     executeActionBtn: id("executeActionBtn"), humanControls: id("humanControls"), convertFrom: id("convertFrom"), convertTo: id("convertTo"),
@@ -173,7 +180,7 @@ function bindDom() {
     settingGlobalFallout: id("settingGlobalFallout"), settingCredibilityWeight: id("settingCredibilityWeight"), settingHumanitarianWeight: id("settingHumanitarianWeight"),
     settingLongTermWeight: id("settingLongTermWeight"), settingDomesticBacklash: id("settingDomesticBacklash"), settingEscalationReciprocity: id("settingEscalationReciprocity"),
     settingContinentShowdownThreshold: id("settingContinentShowdownThreshold"), settingContinentSecureThreshold: id("settingContinentSecureThreshold"),
-    settingSharedCollapse: id("settingSharedCollapse"), scenarioSetupContainer: id("scenarioSetupContainer")
+    settingSharedCollapse: id("settingSharedCollapse"), scenarioSetupContainer: id("scenarioSetupContainer"), gameOverOverlay: id("gameOverOverlay"), gameOverWinnerText: id("gameOverWinnerText"), mapOverlay: id("mapOverlay")
   };
 }
 
@@ -185,14 +192,17 @@ function init() {
   dom.nextTurnBtn.addEventListener("click", advanceTurn);
   dom.autoAdvanceBtn.addEventListener("click", toggleAutoAdvance);
   dom.gameModeSelect?.addEventListener("change", applyGameModeDefaults);
-  dom.conflictPaceSelect?.addEventListener("change", syncConflictPaceUi);
+  dom.executionModeSelect?.addEventListener("change", syncExecutionModeUi);
   dom.executeActionBtn.addEventListener("click", executeHumanAction);
   dom.convertBtn.addEventListener("click", convertPoints);
   dom.playTttRoundBtn.addEventListener("click", () => runStakeTtt(false));
   dom.resetTttBtn.addEventListener("click", resetTicTacToe);
   dom.downloadReportBtn.addEventListener("click", downloadReport);
+  dom.newGameBtn?.addEventListener("click", resetGameState);
+  dom.overlayNewGameBtn?.addEventListener("click", resetGameState);
   applyGameModeDefaults();
-  syncConflictPaceUi();
+  syncExecutionModeUi();
+  renderEmptyBoard();
   renderTicTacToe();
   renderMiniTtt();
   updateUI();
@@ -215,17 +225,24 @@ function applyGameModeDefaults() {
   if (dom.settingSharedCollapse) dom.settingSharedCollapse.checked = merged.sharedCollapseEnabled;
 }
 
-function syncConflictPaceUi() {
-  if (!dom.conflictPaceSelect || !dom.customPaceTurns) return;
-  dom.customPaceTurns.disabled = dom.conflictPaceSelect.value !== "custom";
+function syncExecutionModeUi() {
+  state.executionMode = dom.executionModeSelect?.value || "observer";
+  if (!dom.humanSelect) return;
+  if (state.executionMode === "interactive") dom.humanSelect.value = "yes";
+  else if (state.executionMode === "observer" || state.executionMode === "aiOnly" || state.executionMode === "batch") dom.humanSelect.value = "no";
 }
 
 function paceToTurns() {
   const pace = dom.conflictPaceSelect?.value || "standard";
   if (pace === "short") return 2;
   if (pace === "long") return 6;
-  if (pace === "custom") return Math.max(1, Number(dom.customPaceTurns?.value || 4));
   return 4;
+}
+
+function autoAdvanceDelayMs() {
+  if (state.executionMode === "observer") return 450;
+  if (state.executionMode === "aiOnly") return 800;
+  return 1000;
 }
 
 function toggleAutoAdvance() {
@@ -235,7 +252,7 @@ function toggleAutoAdvance() {
     if (autoAdvanceInterval) clearInterval(autoAdvanceInterval);
     autoAdvanceInterval = setInterval(() => {
       advanceTurn();
-    }, 800);
+    }, autoAdvanceDelayMs());
   } else {
     clearInterval(autoAdvanceInterval);
     autoAdvanceInterval = null;
@@ -252,7 +269,10 @@ function startGame() {
   state.turn = 0; state.gameOver = false; state.started = true; state.logEntries = []; dom.log.innerHTML = "";
   state.autoAdvance = false;
   if (autoAdvanceInterval) { clearInterval(autoAdvanceInterval); autoAdvanceInterval = null; }
-  state.era = dom.eraSelect.value; state.humanEnabled = dom.humanSelect.value === "yes"; state.gameMode = dom.gameModeSelect?.value || "standard";
+  state.era = dom.eraSelect.value;
+  state.executionMode = dom.executionModeSelect?.value || "observer";
+  state.humanEnabled = state.executionMode === "interactive" ? true : dom.humanSelect.value === "yes";
+  state.gameMode = dom.gameModeSelect?.value || "standard";
   state.scenarioSettings = scenarioSettingsFromUI();
   state.regions = ERA_REGION_MAPS[state.era].map((r) => ({ ...r }));
   state.contestedRegions = {}; state.neutralRegions = {}; state.pendingEffects = []; state.skipAIUntil = {};
@@ -262,6 +282,7 @@ function startGame() {
   state.paradigmState = "normal";
   state.aiDevelopmentProgress = 0;
   state.continentContestTurns = {};
+  hideGameOverOverlay();
   buildFactions();
   state.factions.forEach((f) => { state.stats.maxEscalationStage[f.id] = 0; });
   assignStartingOwnership(); drawMap(); updateSelectors();
@@ -441,7 +462,7 @@ function updateSelectors() {
   state.factions.filter((f) => f.id !== human.id).forEach((f) => dom.targetFactionSelect.append(new Option(f.name, f.id)));
 }
 
-function updateUI() {
+function updateUI(shouldRender = true) {
   const era = ERA_PRESETS[state.era];
   const top = leaderFaction();
   dom.turnInfo.innerHTML = `<p><strong>Turn:</strong> ${state.turn}/${MAX_TURNS} | <strong>Era:</strong> ${state.era} | <strong>Doctrine Engine:</strong> ${era.doctrine} | <strong>Leader:</strong> ${top.name} (${top.regions.length} regions)</p>`;
@@ -464,9 +485,12 @@ function updateUI() {
   }
   updateAutoAdvanceButtonUI();
   dom.humanControls.classList.toggle("disabled", !(state.started && state.humanEnabled && !state.gameOver));
-  recolorMap();
-  renderTicTacToe();
-  renderMiniTtt();
+  if (shouldRender) {
+    recolorMap();
+    renderTicTacToe();
+    renderMiniTtt();
+  }
+  toggleGameOverOverlay();
 }
 
 function executeHumanAction() {
@@ -529,19 +553,19 @@ function actionCost(action) {
 
 function runMilitary(actor, target, region) {
   const chance = 0.32 + actor.tech * 0.09 - target.tech * 0.07 + (actor.memory[target.id].threat * 0.2) - region.instability * 0.2;
-  if (Math.random() < chance) { transferRegion(target, actor, region.id); showAttackVisual(region.id, false); actor.political += region.resourceValue * 0.5; log(`${actor.name} seized ${region.name} by direct force.`); }
+  if (Math.random() < chance) { transferRegion(target, actor, region.id); showAttackVisual(region.id, false, target.regions[0]); actor.political += region.resourceValue * 0.5; log(`${actor.name} seized ${region.name} by direct force.`); }
   else { actor.stability -= 0.04; actor.warFatigue += 0.05; log(`${actor.name} failed military pressure in ${region.name}.`); }
 }
 
 function runEconomic(actor, target, region) {
   const chance = 0.36 + actor.corporatism * 0.3 - target.democracy * 0.15 + region.chokepoint * 0.08;
-  if (Math.random() < chance) { transferRegion(target, actor, region.id); showAttackVisual(region.id, false); actor.resources += 5 + region.resourceValue * 0.6; target.resources -= 7; log(`${actor.name} captured ${region.name} economically.`); }
+  if (Math.random() < chance) { transferRegion(target, actor, region.id); showAttackVisual(region.id, false, target.regions[0]); actor.resources += 5 + region.resourceValue * 0.6; target.resources -= 7; log(`${actor.name} captured ${region.name} economically.`); }
   else log(`${actor.name}'s economic capture in ${region.name} was resisted.`);
 }
 
 function runPuppet(actor, target, region) {
   const chance = 0.26 + (1 - target.stability) * 0.35 + region.instability * 0.2;
-  if (Math.random() < chance) { transferRegion(target, actor, region.id); showAttackVisual(region.id, false); target.legitimacy -= 0.08; actor.legitimacy -= 0.03; log(`${actor.name} installed a puppet regime in ${region.name}.`); }
+  if (Math.random() < chance) { transferRegion(target, actor, region.id); showAttackVisual(region.id, false, target.regions[0]); target.legitimacy -= 0.08; actor.legitimacy -= 0.03; log(`${actor.name} installed a puppet regime in ${region.name}.`); }
   else log(`${actor.name}'s puppet operation in ${region.name} collapsed.`);
 }
 
@@ -577,12 +601,12 @@ function runTriad(actor) {
 function runNuclear(actor, target, region, strikeType) {
   if (actor.nukes < 1) { log(`${actor.name} attempted ${strikeType} without available stockpile.`); return; }
   const doctrine = nuclearDoctrineScore(actor, target, region);
-  if (state.gameMode === "simulation") log(`[SIM] Nuclear decision ${actor.name}->${target.name}: execute=${doctrine.executeChance.toFixed(3)} retaliation=${doctrine.retaliationChance.toFixed(3)}`);
+  if (state.executionMode === "batch") log(`[BATCH] Nuclear decision ${actor.name}->${target.name}: execute=${doctrine.executeChance.toFixed(3)} retaliation=${doctrine.retaliationChance.toFixed(3)}`);
   if (!actor.techTree?.nuclear?.unlocked) { log(`${actor.name} lacks required nuclear tech unlock for ${strikeType}.`); return; }
   if (Math.random() > doctrine.executeChance) { log(`${actor.name} prepared ${strikeType} but aborted under deterrence pressure.`); return; }
 
   actor.nukes -= 1;
-  showAttackVisual(region.id, true);
+  showAttackVisual(region.id, true, target.regions[0]);
   state.stats.nuclearUsage += 1;
   const tactical = ["Demonstration", "Counterforce"].includes(strikeType);
   const stageIncrease = tactical ? 1 : 2;
@@ -667,7 +691,7 @@ function instigateRevolution(actor, target, region) {
   if (actor.perks.intelSurge > 0) actor.perks.intelSurge -= 1;
 
   log(`${actor.name} instigated revolution in ${region.name}. Support now ${Math.round(contested.attackerSupport * 100)}/${Math.round(contested.defenderSupport * 100)}.`);
-  if (state.gameMode === "simulation") log(`[SIM] Support shift ${region.name}: A ${contested.attackerSupport.toFixed(3)} / D ${contested.defenderSupport.toFixed(3)}`);
+  if (state.executionMode === "batch") log(`[BATCH] Support shift ${region.name}: A ${contested.attackerSupport.toFixed(3)} / D ${contested.defenderSupport.toFixed(3)}`);
   if (contested.pendingShowdown) runRevolutionShowdown(contested, region);
 }
 
@@ -953,6 +977,14 @@ function endTurnChecks() {
     const summary = winner || leaderFaction();
     log(`Game complete. Winner: ${summary.name}.`);
   }
+  if (state.gameOver) {
+    state.autoAdvance = false;
+    if (autoAdvanceInterval) {
+      clearInterval(autoAdvanceInterval);
+      autoAdvanceInterval = null;
+    }
+    showGameOverOverlay();
+  }
 }
 
 function updateEscalationLadder(level) {
@@ -963,7 +995,7 @@ function updateEscalationLadder(level) {
   if (order[level] > order[state.escalation.current]) {
     state.escalation.current = level;
     log(`Escalation ladder advanced to ${level}.`);
-    if (state.gameMode === "simulation") log(`[SIM] Escalation stage transition -> ${level}`);
+    if (state.executionMode === "batch") log(`[BATCH] Escalation stage transition -> ${level}`);
   }
 }
 
@@ -1106,7 +1138,42 @@ function updateParadigmState() {
   else if (globalStability < 0.28) state.paradigmState = "stalemate";
 }
 
-function showAttackVisual(regionId, nuclear = false) {
+function regionCenter(regionId) {
+  const tiles = [...dom.worldMap.querySelectorAll(`.region-tile[data-region-id="${regionId}"]`)];
+  if (!tiles.length) return null;
+  const rects = tiles.map((t) => t.getBoundingClientRect());
+  const mapRect = dom.worldMap.getBoundingClientRect();
+  const cx = rects.reduce((a, r) => a + (r.left + r.width / 2), 0) / rects.length - mapRect.left;
+  const cy = rects.reduce((a, r) => a + (r.top + r.height / 2), 0) / rects.length - mapRect.top;
+  return { x: cx, y: cy };
+}
+
+function renderStrikeArc(fromRegionId, toRegionId) {
+  if (!dom.mapOverlay) return;
+  const from = regionCenter(fromRegionId);
+  const to = regionCenter(toRegionId);
+  if (!from || !to) return;
+  const w = dom.worldMap.clientWidth;
+  const h = dom.worldMap.clientHeight;
+  dom.mapOverlay.setAttribute("viewBox", `0 0 ${w} ${h}`);
+  const curveLift = Math.max(18, Math.abs(from.x - to.x) * 0.15);
+  const midX = (from.x + to.x) / 2;
+  const midY = (from.y + to.y) / 2 - curveLift;
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", `M ${from.x} ${from.y} Q ${midX} ${midY} ${to.x} ${to.y}`);
+  path.classList.add("strike-arc");
+  dom.mapOverlay.append(path);
+  setTimeout(() => path.remove(), 800);
+}
+
+function flashSquare(regionId) {
+  const el = dom.worldMap.querySelector(`.region-tile[data-region-id="${regionId}"]`);
+  if (!el) return;
+  el.classList.add("impactFlash");
+  setTimeout(() => el.classList.remove("impactFlash"), 300);
+}
+
+function showAttackVisual(regionId, nuclear = false, fromRegionId = null) {
   const tiles = [...dom.worldMap.querySelectorAll(`.region-tile[data-region-id="${regionId}"]`)];
   if (!tiles.length) return;
   tiles.forEach((tile) => {
@@ -1115,6 +1182,8 @@ function showAttackVisual(regionId, nuclear = false) {
     tile.classList.add("region-flash", "region-pulse");
     setTimeout(() => tile.classList.remove("region-flash", "region-pulse"), 320);
   });
+  if (fromRegionId) renderStrikeArc(fromRegionId, regionId);
+  flashSquare(regionId);
   const marker = document.createElement("div");
   marker.className = "strike-icon";
   marker.textContent = nuclear ? "☢" : "⚡";
@@ -1125,9 +1194,65 @@ function showAttackVisual(regionId, nuclear = false) {
   setTimeout(() => marker.remove(), 320);
 }
 
+function renderEmptyBoard() {
+  state.regions = ERA_REGION_MAPS[state.era].map((r) => ({ ...r }));
+  state.mapOwnership = {};
+  state.selectedRegionId = null;
+  dom.targetRegionInput.value = "";
+  drawMap();
+}
+
+function resetGameState() {
+  if (autoAdvanceInterval) { clearInterval(autoAdvanceInterval); autoAdvanceInterval = null; }
+  state.autoAdvance = false;
+  state.started = false;
+  state.gameOver = false;
+  state.paradigmState = "normal";
+  state.factions = [];
+  state.contestedRegions = {};
+  state.neutralRegions = {};
+  state.mapOwnership = {};
+  state.logEntries = [];
+  state.pendingEffects = [];
+  state.turn = 0;
+  state.ttt.board = Array(9).fill("");
+  state.ttt.miniBoard = Array(9).fill("");
+  state.ttt.lastRoundSummary = "";
+  state.executionMode = dom.executionModeSelect?.value || "observer";
+  if (dom.humanSelect) dom.humanSelect.value = state.executionMode === "interactive" ? "yes" : "no";
+  if (dom.scenarioSetupContainer) dom.scenarioSetupContainer.classList.remove("collapsed");
+  dom.log.innerHTML = "";
+  hideGameOverOverlay();
+  renderScenarioSetup();
+  renderEmptyBoard();
+  updateUI();
+}
+
+function renderScenarioSetup() {
+  applyGameModeDefaults();
+  syncExecutionModeUi();
+}
+
+function showGameOverOverlay() {
+  if (!dom.gameOverOverlay) return;
+  const winner = leaderFaction();
+  dom.gameOverWinnerText.textContent = `Winner: ${winner.name}`;
+  dom.gameOverOverlay.hidden = false;
+}
+
+function hideGameOverOverlay() {
+  if (!dom.gameOverOverlay) return;
+  dom.gameOverOverlay.hidden = true;
+}
+
+function toggleGameOverOverlay() {
+  if (state.gameOver) showGameOverOverlay();
+  else hideGameOverOverlay();
+}
+
 function downloadReport() {
   const payload = {
-    generatedAt: new Date().toISOString(), era: state.era, turn: state.turn, gameOver: state.gameOver, humanEnabled: state.humanEnabled, gameMode: state.gameMode,
+    generatedAt: new Date().toISOString(), era: state.era, turn: state.turn, gameOver: state.gameOver, humanEnabled: state.humanEnabled, gameMode: state.gameMode, executionMode: state.executionMode,
     scenarioSettings: state.scenarioSettings, escalation: state.escalation, paradigmState: state.paradigmState, aiDevelopmentProgress: Number(state.aiDevelopmentProgress.toFixed(3)), continentState: state.continentState,
     nuclearUsageFrequency: state.turn > 0 ? Number((state.stats.nuclearUsage / state.turn).toFixed(3)) : 0,
     nuclearCounts: { tactical: state.stats.tacticalNuclear, strategic: state.stats.strategicNuclear, total: state.stats.nuclearUsage },
