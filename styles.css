@@ -37,9 +37,54 @@ main { padding: 1rem; }
 
 .setup-panel, .top-ttt-panel { margin-bottom: 1rem; }
 
+#scenarioSetupContainer {
+  transition: all 0.3s ease;
+}
+
+#scenarioSetupContainer.collapsed {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+#persistentControlBar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+#gameDashboard {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 20px;
+}
+
+#mapLogRow {
+  display: grid;
+  grid-template-columns: 60% 40%;
+  gap: 20px;
+  min-height: 450px;
+}
+
+#mapContainer {
+  min-height: 450px;
+  max-height: 600px;
+}
+
+#logContainer {
+  max-height: 450px;
+  overflow-y: auto;
+}
+
 .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
 .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.7rem; margin-top: 0.8rem; }
-.layout-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1rem; }
 
 label {
   display: flex;
@@ -64,11 +109,11 @@ button:hover { border-color: var(--accent); }
 .setup-toggles { display: flex; flex-wrap: wrap; gap: 1rem; margin: 0.5rem 0 0.9rem; }
 .setup-toggles label { margin-bottom: 0; font-size: 0.85rem; color: #bfdbfe; }
 
-.showdown-grid {
+#showdownRow {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
-  gap: 0.75rem;
   align-items: center;
+  gap: 20px;
 }
 
 .showdown-log {
@@ -81,9 +126,15 @@ button:hover { border-color: var(--accent); }
   color: #bfdbfe;
 }
 
+.tttBoard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 #worldMap {
   width: 100%;
-  min-height: 320px;
+  min-height: 450px;
   background: radial-gradient(circle at center, #0f2444, #0a1b34);
   border-radius: 10px;
   border: 1px solid #475569;
@@ -186,6 +237,7 @@ button:hover { border-color: var(--accent); }
 .log-entry:last-child { border-bottom: none; }
 
 @media (max-width: 980px) {
-  .layout-grid { grid-template-columns: 1fr; }
-  .showdown-grid { grid-template-columns: 1fr; }
+  #mapLogRow { grid-template-columns: 1fr; }
+  #showdownRow { grid-template-columns: 1fr; }
+  #logContainer { max-height: none; }
 }
