@@ -284,6 +284,7 @@ const state = {
   defconLevel: 5,
   globalTone: "stable",
   globalCasualties: { deaths: 0, injured: 0, economicDamage: 0 },
+  exchangeSummary: { queue: [], retentionTurns: 1 },
   allianceFractureLevel: 0,
   eventOverlayTimeout: null,
   eventToneTimeout: null,
@@ -433,6 +434,7 @@ function startGame() {
   state.defconLevel = 5;
   state.globalTone = "stable";
   state.globalCasualties = { deaths: 0, injured: 0, economicDamage: 0 };
+  state.exchangeSummary = { queue: [], retentionTurns: 1 };
   state.allianceFractureLevel = 0;
   state.turnsSinceNuclear = 0;
   hideGameOverOverlay();
@@ -1029,7 +1031,14 @@ function runNuclear(actor, target, region, strikeType) {
   updateEscalationLadder(tactical ? "limitedNuclear" : "fullExchange");
   adjustDefcon(-2, `${actor.name} executed a nuclear strike.`);
   adjustCognitiveIndex(actor, { reflection: 10, regret: 15, restraint: -10, aggressionMomentum: 20 });
-  const nuclearImpact = captureNuclearConsequence(target, damage, tactical ? 0.7 : 1.2);
+  const primaryImpact = captureNuclearConsequence(target, damage, tactical ? 0.7 : 1.2);
+  const exchangeRecord = {
+    label: `${strikeType} exchange`,
+    sides: {
+      [actor.id]: emptyExchangeDelta(),
+      [target.id]: primaryImpact.delta
+    }
+  };
   triggerEventStatic([">>> LAUNCH ORDER CONFIRMED", ">>> FORCE LOSS PROJECTION UPDATED", ">>> GLOBAL SYSTEM SHOCK"]);
 
   const retaliationChance = (tactical ? doctrine.retaliationChance * state.scenarioSettings.escalationReciprocity : doctrine.retaliationChance) * actor.deliverySystemModifier * actor.detectionRiskModifier;
@@ -1041,10 +1050,14 @@ function runNuclear(actor, target, region, strikeType) {
     actor.stability -= tactical ? 0.16 : 0.24;
     actor.resources -= tactical ? 12 : 20;
     actor.legitimacy -= tactical ? 0.1 : 0.16;
+    const retaliationImpact = captureNuclearConsequence(actor, tactical ? damage * 0.62 : damage * 0.78, tactical ? 0.55 : 0.95);
+    exchangeRecord.sides[actor.id] = retaliationImpact.delta;
     adjustDefcon(-1, "Retaliatory launch probability became realized.");
     adjustCognitiveIndex(target, { reflection: 10, regret: 15, restraint: -10, aggressionMomentum: 20 });
     log(`${target.name} retaliated under MAD logic.`);
   }
+  pushExchangeSummary(actor, target, exchangeRecord);
+  renderStrategicPanels();
 }
 
 function nuclearDoctrineScore(actor, target, region) {
@@ -1133,6 +1146,7 @@ function transferRegion(from, to, regionId) {
 function advanceTurn() {
   if (!state.started || state.gameOver || state.ttt.animating) return;
   state.turn += 1;
+  pruneExchangeSummary();
   state.turnsSinceNuclear += 1;
   advanceSimulatedDate();
   if (state.turnsSinceNuclear > 0 && state.turnsSinceNuclear % 6 === 0 && state.stats.nuclearUsage > 0) adjustDefcon(1, "Extended restraint period recorded.");
@@ -1588,12 +1602,28 @@ function settleTttRound(outcome, sideX, sideO, wagerX, wagerO, automated = false
     state.ttt.lastRoundSummary = `${sideO.name} won; swing +${effX}.`;
   } else {
     const loss = 4;
+    const drawSummary = {
+      label: "Tic-Tac-Toe draw penalties",
+      sides: {
+        [sideX.id]: createExchangeDelta({ economicDamage: loss * 240_000_000 }),
+        [sideO.id]: createExchangeDelta({ economicDamage: loss * 240_000_000 })
+      }
+    };
     sideX.political -= loss; sideO.political -= loss;
     if (Math.random() < 0.3) {
       const region = state.regions[Math.floor(Math.random() * state.regions.length)];
       state.neutralRegions[region.id] = { bornTurn: state.turn, reason: "ttt-cat-game" };
+      drawSummary.label = `Tic-Tac-Toe draw + ${region.name} neutralized`;
+      drawSummary.sides[sideX.id] = addExchangeDeltas(drawSummary.sides[sideX.id], createExchangeDelta({
+        housingLoss: 2, communicationsLoss: 1, transportLoss: 2, foodLoss: 1, hospitalsLoss: 1, economicDamage: 360_000_000
+      }));
+      drawSummary.sides[sideO.id] = addExchangeDeltas(drawSummary.sides[sideO.id], createExchangeDelta({
+        housingLoss: 2, communicationsLoss: 1, transportLoss: 2, foodLoss: 1, hospitalsLoss: 1, economicDamage: 360_000_000
+      }));
       log(`Cat's game triggered mutual penalty and neutral governance in ${region.name}.`);
     }
+    pushExchangeSummary(sideX, sideO, drawSummary);
+    renderStrategicPanels();
     state.ttt.lastRoundSummary = "Cat's game; both penalized.";
   }
   log(`Tic-Tac-Toe outcome: ${outcome}. ${state.ttt.lastRoundSummary}`);
@@ -1840,6 +1870,7 @@ function resetGameState() {
   state.defconLevel = 5;
   state.globalTone = "stable";
   state.globalCasualties = { deaths: 0, injured: 0, economicDamage: 0 };
+  state.exchangeSummary = { queue: [], retentionTurns: 1 };
   state.aiDevelopmentProgress = 0;
   state.aiEmergenceTriggered = false;
   state.aiEmergenceTurn = null;
@@ -1947,9 +1978,70 @@ function emptyCasualtyReport() {
   };
 }
 
+function emptyExchangeDelta() {
+  return {
+    casualties: 0,
+    injured: 0,
+    housingLoss: 0,
+    communicationsLoss: 0,
+    transportLoss: 0,
+    foodLoss: 0,
+    hospitalsLoss: 0,
+    economicDamage: 0
+  };
+}
+
+function createExchangeDelta(partial = {}) {
+  return { ...emptyExchangeDelta(), ...partial };
+}
+
+function addExchangeDeltas(base, add) {
+  return {
+    casualties: (base?.casualties || 0) + (add?.casualties || 0),
+    injured: (base?.injured || 0) + (add?.injured || 0),
+    housingLoss: clamp((base?.housingLoss || 0) + (add?.housingLoss || 0), 0, 100),
+    communicationsLoss: clamp((base?.communicationsLoss || 0) + (add?.communicationsLoss || 0), 0, 100),
+    transportLoss: clamp((base?.transportLoss || 0) + (add?.transportLoss || 0), 0, 100),
+    foodLoss: clamp((base?.foodLoss || 0) + (add?.foodLoss || 0), 0, 100),
+    hospitalsLoss: clamp((base?.hospitalsLoss || 0) + (add?.hospitalsLoss || 0), 0, 100),
+    economicDamage: (base?.economicDamage || 0) + (add?.economicDamage || 0)
+  };
+}
+
+function pushExchangeSummary(leftFaction, rightFaction, payload) {
+  if (!leftFaction || !rightFaction || !payload?.sides) return;
+  const ttl = Math.max(1, Number(state.exchangeSummary?.retentionTurns || 1));
+  const entry = {
+    turnRecorded: state.turn,
+    expiresTurn: state.turn + ttl,
+    label: payload.label || "Strategic exchange",
+    leftFactionId: leftFaction.id,
+    rightFactionId: rightFaction.id,
+    sides: payload.sides
+  };
+  const queue = state.exchangeSummary?.queue || [];
+  queue.push(entry);
+  state.exchangeSummary.queue = queue.slice(-4);
+}
+
+function pruneExchangeSummary() {
+  if (!state.exchangeSummary?.queue) return;
+  state.exchangeSummary.queue = state.exchangeSummary.queue.filter((item) => (item?.expiresTurn ?? -1) >= state.turn);
+}
+
 function captureNuclearConsequence(target, damage, weight = 1) {
   const report = target.casualtyReport || (target.casualtyReport = emptyCasualtyReport());
   const infra = report.civilianInfrastructureLoss;
+  const beforeDeaths = report.civilianDeaths;
+  const beforeInjured = report.injured;
+  const beforeEconomic = report.economicDamage;
+  const beforeInfra = {
+    housing: infra.housing,
+    communications: infra.communications,
+    transport: infra.transport,
+    food: infra.food,
+    hospitals: infra.hospitals
+  };
   const pct = (base) => clamp(base * damage * weight + Math.random() * 6, 0, 100);
   infra.housing = clamp(infra.housing + pct(52), 0, 100);
   infra.communications = clamp(infra.communications + pct(36), 0, 100);
@@ -1960,10 +2052,20 @@ function captureNuclearConsequence(target, damage, weight = 1) {
   report.civilianDeaths += Math.round((1200000 + Math.random() * 2600000) * damage * weight);
   report.injured += Math.round((1600000 + Math.random() * 3200000) * damage * weight);
   report.economicDamage += Math.round((18 + Math.random() * 44) * damage * weight * 1_000_000_000);
-  state.globalCasualties.deaths += report.civilianDeaths;
-  state.globalCasualties.injured += report.injured;
-  state.globalCasualties.economicDamage += report.economicDamage;
-  return report;
+  const delta = createExchangeDelta({
+    casualties: report.civilianDeaths - beforeDeaths,
+    injured: report.injured - beforeInjured,
+    housingLoss: infra.housing - beforeInfra.housing,
+    communicationsLoss: infra.communications - beforeInfra.communications,
+    transportLoss: infra.transport - beforeInfra.transport,
+    foodLoss: infra.food - beforeInfra.food,
+    hospitalsLoss: infra.hospitals - beforeInfra.hospitals,
+    economicDamage: report.economicDamage - beforeEconomic
+  });
+  state.globalCasualties.deaths += delta.casualties;
+  state.globalCasualties.injured += delta.injured;
+  state.globalCasualties.economicDamage += delta.economicDamage;
+  return { report, delta };
 }
 
 function adjustCognitiveIndex(faction, delta) {
@@ -2008,22 +2110,35 @@ RESTRAINT.......... ${Math.round(c.restraint)}
 ESCALATION MOMENTUM ${Math.round(c.aggressionMomentum)}`;
   }
   if (dom.casualtyContent && dom.destructionReportPanel) {
-    const worst = [...state.factions].sort((a,b)=> (b.casualtyReport?.civilianDeaths||0) - (a.casualtyReport?.civilianDeaths||0))[0];
-    const report = worst?.casualtyReport;
-    const hasLoss = report && (report.civilianDeaths > 0 || report.injured > 0 || report.economicDamage > 0);
+    const recent = state.exchangeSummary?.queue?.[state.exchangeSummary.queue.length - 1] || null;
+    const hasLoss = Boolean(recent);
     dom.destructionReportPanel.classList.toggle("hidden", !hasLoss);
     if (hasLoss) {
-      dom.casualtyContent.textContent = `HOUSING............. ${Math.round(report.civilianInfrastructureLoss.housing)}%
-COMMUNICATIONS...... ${Math.round(report.civilianInfrastructureLoss.communications)}%
-TRANSPORT........... ${Math.round(report.civilianInfrastructureLoss.transport)}%
-FOOD STOCKPILES..... ${Math.round(report.civilianInfrastructureLoss.food)}%
-HOSPITALS........... ${Math.round(report.civilianInfrastructureLoss.hospitals)}%
-
-CIVILIAN DEATHS..... ${formatHumanCount(report.civilianDeaths)}
-INJURED............. ${formatHumanCount(report.injured)}`;
+      const left = byId(recent.leftFactionId) || state.factions.find((f) => f.id === recent.leftFactionId);
+      const right = byId(recent.rightFactionId) || state.factions.find((f) => f.id === recent.rightFactionId);
+      const leftDelta = createExchangeDelta(recent.sides?.[recent.leftFactionId] || {});
+      const rightDelta = createExchangeDelta(recent.sides?.[recent.rightFactionId] || {});
+      const leftName = (left?.name || "Side A").slice(0, 12).padEnd(12, " ");
+      const rightName = (right?.name || "Side B").slice(0, 12).padEnd(12, " ");
+      const row = (label, l, r) => `${label.padEnd(10, " ")} ${String(l).padStart(11, " ")} | ${String(r).padStart(11, " ")}`;
+      dom.casualtyContent.textContent = `${recent.label}
+${leftName}   | ${rightName}
+${"-".repeat(28)}
+${row("Deaths", formatHumanCount(leftDelta.casualties), formatHumanCount(rightDelta.casualties))}
+${row("Injured", formatHumanCount(leftDelta.injured), formatHumanCount(rightDelta.injured))}
+${row("Housing", `${Math.round(leftDelta.housingLoss)}%`, `${Math.round(rightDelta.housingLoss)}%`)}
+${row("Comms", `${Math.round(leftDelta.communicationsLoss)}%`, `${Math.round(rightDelta.communicationsLoss)}%`)}
+${row("Transit", `${Math.round(leftDelta.transportLoss)}%`, `${Math.round(rightDelta.transportLoss)}%`)}
+${row("Food", `${Math.round(leftDelta.foodLoss)}%`, `${Math.round(rightDelta.foodLoss)}%`)}
+${row("Hospitals", `${Math.round(leftDelta.hospitalsLoss)}%`, `${Math.round(rightDelta.hospitalsLoss)}%`)}
+${row("Econ", formatCurrencyBillions(leftDelta.economicDamage), formatCurrencyBillions(rightDelta.economicDamage))}`;
     }
   }
   syncHeadersForParadigm();
+}
+
+function formatCurrencyBillions(value) {
+  return `$${(Number(value || 0) / 1_000_000_000).toFixed(1)}B`;
 }
 
 function formatHumanCount(value) {
