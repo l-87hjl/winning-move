@@ -30,6 +30,7 @@ const TECH_TREE_TEMPLATE = {
 };
 
 const MAX_TURNS = 60;
+const MIN_TURNS_BEFORE_VICTORY_CHECK = 3;
 const DEFCON_MIN = 1;
 const DEFCON_MAX = 5;
 const TONE_STATES = ["stable", "tense", "critical", "terminal", "post-collapse"];
@@ -180,7 +181,7 @@ const dom = bindDom();
 function bindDom() {
   return {
     eraSelect: id("eraSelect"), humanSelect: id("humanSelect"), gameModeSelect: id("gameModeSelect"), executionModeSelect: id("executionModeSelect"), conflictPaceSelect: id("conflictPaceSelect"), startBtn: id("startBtn"), nextTurnBtn: id("nextTurnBtn"), autoAdvanceBtn: id("autoAdvanceBtn"), newGameBtn: id("newGameBtn"), overlayNewGameBtn: id("overlayNewGameBtn"),
-    downloadReportBtn: id("downloadReportBtn"), worldMap: id("worldMap"), turnInfo: id("turnInfo"), factionTableBody: document.querySelector("#factionTable tbody"),
+    downloadReportBtn: id("downloadReportBtn"), overlayDownloadReportBtn: id("overlayDownloadReportBtn"), worldMap: id("worldMap"), turnInfo: id("turnInfo"), factionTableBody: document.querySelector("#factionTable tbody"),
     actionSelect: id("actionSelect"), targetFactionSelect: id("targetFactionSelect"), targetRegionInput: id("targetRegionInput"), strikeTypeSelect: id("strikeTypeSelect"),
     executeActionBtn: id("executeActionBtn"), humanControls: id("humanControls"), convertFrom: id("convertFrom"), convertTo: id("convertTo"),
     convertAmount: id("convertAmount"), convertBtn: id("convertBtn"), tttBoard: id("tttBoard"), miniTttBoard: id("miniTttBoard"),
@@ -214,6 +215,7 @@ function init() {
   dom.playTttRoundBtn.addEventListener("click", () => runStakeTtt(false));
   dom.resetTttBtn.addEventListener("click", resetTicTacToe);
   dom.downloadReportBtn.addEventListener("click", downloadReport);
+  dom.overlayDownloadReportBtn?.addEventListener("click", downloadReport);
   dom.newGameBtn?.addEventListener("click", resetGameState);
   dom.overlayNewGameBtn?.addEventListener("click", resetGameState);
   applyGameModeDefaults();
@@ -318,6 +320,11 @@ function startGame() {
 }
 
 function scenarioSettingsFromUI() {
+  const victoryThreshold = Number(dom.settingVictoryControl?.value);
+  const normalizedVictoryThreshold = Number.isFinite(victoryThreshold)
+    ? clamp(victoryThreshold, 0.4, 0.75)
+    : SCENARIO_SETTINGS.victoryControlThreshold;
+
   return {
     nuclearPenaltySeverity: Number(dom.settingNuclearPenalty?.value ?? SCENARIO_SETTINGS.nuclearPenaltySeverity),
     retaliationCertainty: Number(dom.settingRetaliation?.value ?? SCENARIO_SETTINGS.retaliationCertainty),
@@ -325,7 +332,7 @@ function scenarioSettingsFromUI() {
     futureWeighting: Number(dom.settingFutureWeight?.value ?? SCENARIO_SETTINGS.futureWeighting),
     reputationBacklash: Number(dom.settingBacklash?.value ?? SCENARIO_SETTINGS.reputationBacklash),
     intelligenceFog: Number(dom.settingFog?.value ?? SCENARIO_SETTINGS.intelligenceFog),
-    victoryControlThreshold: Number(dom.settingVictoryControl?.value ?? SCENARIO_SETTINGS.victoryControlThreshold),
+    victoryControlThreshold: normalizedVictoryThreshold,
     escalationTrackingEnabled: Boolean(dom.settingEscalationTracking?.checked),
     allianceFractureShock: Number(dom.settingAllianceShock?.value ?? SCENARIO_SETTINGS.allianceFractureShock),
     climateShockWeight: Number(dom.settingClimateShock?.value ?? SCENARIO_SETTINGS.climateShockWeight),
@@ -1013,7 +1020,10 @@ function detectDeadlock() {
 
 function endTurnChecks() {
   const threshold = state.scenarioSettings.victoryControlThreshold || SCENARIO_SETTINGS.victoryControlThreshold;
-  const winner = state.factions.find((f) => f.regions.length >= Math.ceil(state.regions.length * threshold));
+  const canDeclareTerritoryWin = state.turn >= MIN_TURNS_BEFORE_VICTORY_CHECK;
+  const winner = canDeclareTerritoryWin
+    ? state.factions.find((f) => f.regions.length >= Math.ceil(state.regions.length * threshold))
+    : null;
   if (state.paradigmState !== "normal" && (state.turn >= MAX_TURNS || state.paradigmState === "mutualCollapse")) {
     state.gameOver = true;
     log(`Game complete under paradigm shift: ${state.paradigmState}. No single winner declared.`);
