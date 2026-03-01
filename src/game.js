@@ -155,7 +155,7 @@ const CONTINENT_MASKS = {
 const state = {
   turn: 0, era: "2026", started: false, gameOver: false, humanEnabled: false, gameMode: "standard", executionMode: "observer", autoAdvance: false,
   factions: [], regions: [], mapOwnership: {}, selectedRegionId: null, selectedStrikeType: STRIKE_TYPES[0],
-  contestedRegions: {}, neutralRegions: {}, pendingEffects: [], logEntries: [], skipAIUntil: {},
+  contestedRegions: {}, neutralRegions: {}, pendingEffects: [], logEntries: [], debugLogEntries: [], skipAIUntil: {},
   scenarioSettings: { ...SCENARIO_SETTINGS },
   escalation: { current: "conventional", counts: { conventional: 0, limitedNuclear: 0, fullExchange: 0 } },
   stats: { nuclearUsage: 0, tacticalNuclear: 0, strategicNuclear: 0, surrenderAttempts: 0, maxEscalationStage: {}, collapseTriggered: false },
@@ -164,6 +164,7 @@ const state = {
   paradigmState: "normal",
   aiDevelopmentProgress: 0,
   aiEmergenceTriggered: false,
+  aiEmergenceTurn: null,
   continentContestTurns: {},
   defconLevel: 5,
   globalTone: "stable",
@@ -288,7 +289,7 @@ function updateAutoAdvanceButtonUI() {
 }
 
 function startGame() {
-  state.turn = 0; state.gameOver = false; state.gameOverOverlayDismissed = false; state.started = true; state.logEntries = []; dom.log.innerHTML = "";
+  state.turn = 0; state.gameOver = false; state.gameOverOverlayDismissed = false; state.started = true; state.logEntries = []; state.debugLogEntries = []; dom.log.innerHTML = "";
   state.autoAdvance = false;
   if (autoAdvanceInterval) { clearInterval(autoAdvanceInterval); autoAdvanceInterval = null; }
   state.era = dom.eraSelect.value;
@@ -304,6 +305,7 @@ function startGame() {
   state.paradigmState = "normal";
   state.aiDevelopmentProgress = 0;
   state.aiEmergenceTriggered = false;
+  state.aiEmergenceTurn = null;
   state.continentContestTurns = {};
   state.lastCompletedGame = null;
   state.defconLevel = 5;
@@ -581,12 +583,12 @@ function resolveAction(actor, action, target, regionId, isHuman = false, strikeT
 
 function actionCost(action) {
   const table = {
-    "Military Pressure": { resources: 18, political: 8 }, "Economic Capture": { resources: 10, political: 12 },
-    "Puppet Regime": { resources: 14, political: 16 }, "Support Sovereignty": { resources: 9, political: 9 },
-    "Dialogue Summit": { resources: 5, political: 7 }, "Invest in Technology": { resources: 16, political: 5 },
+    "Military Pressure": { resources: 15, political: 8 }, "Economic Capture": { resources: 7, political: 8 },
+    "Puppet Regime": { resources: 12, political: 14 }, "Support Sovereignty": { resources: 7, political: 8 },
+    "Dialogue Summit": { resources: 4, political: 6 }, "Invest in Technology": { resources: 14, political: 5 },
     "Expand Nuclear Stockpile": { resources: 20, political: 12 }, "Secret Stockpile Build": { resources: 17, political: 10 },
     "Disarmament Deal": { resources: 6, political: 6 }, "Nuclear Strike": { resources: 34, political: 24 },
-    "Deploy Nuclear Triad": { resources: 14, political: 11 }, "Instigate Revolution": { resources: 12, political: 14 }
+    "Deploy Nuclear Triad": { resources: 14, political: 11 }, "Instigate Revolution": { resources: 11, political: 12 }
   };
   return table[action] || { resources: 10, political: 10 };
 }
@@ -603,9 +605,18 @@ function runMilitary(actor, target, region) {
 }
 
 function runEconomic(actor, target, region) {
-  const chance = 0.36 + actor.corporatism * 0.3 - target.democracy * 0.15 + region.chokepoint * 0.08;
-  if (Math.random() < chance) { transferRegion(target, actor, region.id); showAttackVisual(region.id, false, target.regions[0]); actor.resources += 5 + region.resourceValue * 0.6; target.resources -= 7; log(`${actor.name} captured ${region.name} economically.`); }
-  else log(`${actor.name}'s economic capture in ${region.name} was resisted.`);
+  const chance = 0.42 + actor.corporatism * 0.28 - target.democracy * 0.13 + region.chokepoint * 0.08 + actor.memory[target.id].threat * 0.04;
+  if (Math.random() < chance) {
+    transferRegion(target, actor, region.id);
+    showAttackVisual(region.id, false, target.regions[0]);
+    actor.resources += 7 + region.resourceValue * 0.75;
+    target.resources = Math.max(0, target.resources - 8);
+    actor.political += 1.5;
+    log(`${actor.name} captured ${region.name} economically.`);
+  } else {
+    actor.political = Math.max(0, actor.political - 0.5);
+    log(`${actor.name}'s economic capture in ${region.name} was resisted.`);
+  }
 }
 
 function runPuppet(actor, target, region) {
@@ -797,6 +808,7 @@ function advanceTurn() {
   state.turnsSinceNuclear += 1;
   if (state.turnsSinceNuclear > 0 && state.turnsSinceNuclear % 6 === 0 && state.stats.nuclearUsage > 0) adjustDefcon(1, "Extended restraint period recorded.");
   updateEscalationLadder("conventional");
+  logDebugSnapshot("turn-start");
   applyPendingEffects();
   applyDomesticPressure();
   regenerateFactionEconomies();
@@ -809,6 +821,7 @@ function advanceTurn() {
       if (ai.aiSkipCycles > 0) { ai.aiSkipCycles -= 1; log(`${ai.name} skipped turn due to opponent Double Turn perk.`); break; }
       const { action, target, region } = chooseAiAction(ai);
       ai.scoredAction = `${action} vs ${target.name}`;
+      if (["Military Pressure", "Puppet Regime", "Instigate Revolution"].includes(action) && (ai.memory[target.id]?.threat || 0) > 0.62) updateEscalationLadder("limitedNuclear");
       resolveAction(ai, action, target, region.id, false, STRIKE_TYPES[Math.floor(Math.random() * STRIKE_TYPES.length)]);
     }
   }
@@ -817,6 +830,7 @@ function advanceTurn() {
   updateAiEmergence();
   updateParadigmState();
   detectDeadlock();
+  logDebugSnapshot("turn-end");
   endTurnChecks();
   drawStaticImagery();
   updateUI();
@@ -876,11 +890,12 @@ function regenerateFactionEconomies() {
     const regionYield = f.regions
       .map((id) => state.regions.find((r) => r.id === id))
       .filter(Boolean)
-      .reduce((acc, region) => acc + region.resourceValue * 0.16, 0);
-    const baseline = 3 + f.tech * 0.9;
-    const stressPenalty = f.economicStress * 2.2 + f.warFatigue * 1.6;
-    const netResources = baseline + regionYield - stressPenalty;
-    const politicalBase = 2.2 + f.legitimacy * 3.4 + f.publicOpinion * 1.8 - f.warFatigue * 2;
+      .reduce((acc, region) => acc + region.resourceValue * 0.22, 0);
+    const baseline = 4.8 + f.tech * 1.1;
+    const stressPenalty = f.economicStress * 1.7 + f.warFatigue * 1.3;
+    const reserveBoost = f.resources < 24 ? 4.5 : 0;
+    const netResources = baseline + regionYield + reserveBoost - stressPenalty;
+    const politicalBase = 2.8 + f.legitimacy * 3.2 + f.publicOpinion * 1.7 - f.warFatigue * 1.5 - f.economicStress * 0.9;
     f.resources = clamp(f.resources + netResources, 0, 260);
     f.political = clamp(f.political + politicalBase, 0, 260);
   });
@@ -898,12 +913,14 @@ function applyDomesticPressure() {
   state.factions.forEach((f) => {
     refreshFactionTechState(f);
     const avgThreat = Object.values(f.memory || {}).reduce((acc, mem) => acc + (mem?.threat || 0), 0) / Math.max(1, Object.keys(f.memory || {}).length);
-    f.publicOpinion = clamp(f.publicOpinion - f.warFatigue * 0.06 + f.democracy * 0.02 - avgThreat * 0.01, 0, 1);
-    f.economicStress = clamp(f.economicStress + (f.resources < 30 ? 0.05 : -0.02) + avgThreat * 0.01, 0, 1);
-    f.legitimacy = clamp(f.legitimacy + f.publicOpinion * 0.03 - f.economicStress * 0.06 - avgThreat * 0.006, 0, 1);
-    f.stability = clamp(f.stability + f.legitimacy * 0.016 - f.warFatigue * 0.05 - f.economicStress * 0.04 - avgThreat * 0.008, 0, 1);
-    f.democracy = clamp(f.democracy + (Math.random() - 0.5) * 0.04 - f.crazyLeader * 0.02, 0, 1);
-    f.corporatism = clamp(f.corporatism + (Math.random() - 0.5) * 0.04, 0, 1);
+    f.warFatigue = clamp(f.warFatigue + avgThreat * 0.022 - (f.publicOpinion > 0.7 ? 0.01 : 0), 0, 1);
+    f.publicOpinion = clamp(f.publicOpinion - f.warFatigue * 0.07 + f.democracy * 0.016 - avgThreat * 0.02, 0, 1);
+    f.economicStress = clamp(f.economicStress + (f.resources < 32 ? 0.06 : -0.018) + avgThreat * 0.016, 0, 1);
+    f.legitimacy = clamp(f.legitimacy + f.publicOpinion * 0.022 - f.economicStress * 0.08 - avgThreat * 0.01, 0, 1);
+    f.stability = clamp(f.stability + f.legitimacy * 0.01 - f.warFatigue * 0.07 - f.economicStress * 0.06 - avgThreat * 0.012 + (f.resources > 100 ? 0.006 : -0.004), 0, 1);
+    f.democracy = clamp(f.democracy + (Math.random() - 0.5) * 0.04 - Number(Boolean(f.crazyLeader)) * 0.02, 0, 1);
+    f.corporatism = clamp(f.corporatism + (Math.random() - 0.5) * 0.04 + avgThreat * 0.004, 0, 1);
+    if (avgThreat > 0.75) updateEscalationLadder("limitedNuclear");
     if (Math.random() < 0.07 && f.stability < 0.35) f.crazyLeader = true;
   });
 }
@@ -989,8 +1006,9 @@ function computeContinentStates() {
       Object.entries(squareCounts).map(([fId, squares]) => [fId, totalSquares > 0 ? squares / totalSquares : 0])
     );
     const sorted = Object.entries(influencePercentByFaction).sort((a, b) => b[1] - a[1]);
-    const controlledByFaction = sorted[0]?.[1] >= controlThreshold ? sorted[0][0] : null;
+    const controlledByFaction = sorted[0]?.[1] >= (controlThreshold - 0.0001) ? sorted[0][0] : null;
     const showdownEligible = Boolean(sorted[0] && sorted[1] && sorted[0][1] >= showdownThreshold - 0.05 && sorted[0][1] <= showdownThreshold + 0.05);
+    const previousController = state.continentState[continent]?.controlledByFaction || null;
     state.continentState[continent] = {
       totalSquares,
       controlledByFaction,
@@ -999,6 +1017,10 @@ function computeContinentStates() {
       showdownEligible,
       topFactionShare: sorted[0]?.[1] || 0
     };
+    if (controlledByFaction && controlledByFaction !== previousController) {
+      const faction = byId(controlledByFaction);
+      log(`${faction?.name || controlledByFaction} secured ${continent} control (${Math.round((sorted[0]?.[1] || 0) * 100)}%).`);
+    }
   });
 }
 
@@ -1098,7 +1120,7 @@ function buildReportPayload() {
       memory: Object.fromEntries(Object.entries(f.memory || {}).map(([k, v]) => [k, { grievance: Number((v.grievance || 0).toFixed(3)), trust: Number((v.trust || 0).toFixed(3)), threat: Number((v.threat || 0).toFixed(3)) }]))
     })),
     mapOwnership: state.mapOwnership || {}, contestedRegions: state.contestedRegions || {}, neutralRegions: state.neutralRegions || {}, pendingEffects: state.pendingEffects || [],
-    tttSummary: state.ttt?.lastRoundSummary || "", log: state.logEntries || []
+    tttSummary: state.ttt?.lastRoundSummary || "", log: state.logEntries || [], debugLog: state.debugLogEntries || []
   };
 }
 
@@ -1237,14 +1259,17 @@ function updateAiEmergence() {
   if (state.gameMode !== "postHuman") return;
   const avgTech = state.factions.reduce((acc, f) => acc + f.tech, 0) / Math.max(1, state.factions.length);
   state.aiDevelopmentProgress = clamp(state.aiDevelopmentProgress + avgTech * 0.01 + (state.stats.nuclearUsage > 0 ? 0.02 : 0.005), 0, 1.5);
-  if (!state.aiEmergenceTriggered && state.aiDevelopmentProgress >= 0.75) {
-    state.factions.forEach((f) => {
-      f.isHuman = false;
+  if (state.aiEmergenceTriggered) return;
+  if (state.aiDevelopmentProgress < 0.75 || state.turn < 6) return;
+  state.factions.forEach((f) => {
+    f.isHuman = false;
+    if (!f.objectiveProfile || f.objectiveProfile.maximizeCompute < 1) {
       f.objectiveProfile = { maximizeCompute: 1, minimizeHumanRisk: 0.7, maximizeSelfExpansion: 0.9 };
-    });
-    state.aiEmergenceTriggered = true;
-    log("AI emergence threshold crossed; factions converted to AI objective profile.");
-  }
+    }
+  });
+  state.aiEmergenceTriggered = true;
+  state.aiEmergenceTurn = state.turn;
+  log("AI emergence threshold crossed; factions converted to AI objective profile.");
 }
 
 function updateParadigmState() {
@@ -1252,7 +1277,7 @@ function updateParadigmState() {
   const globalStability = state.factions.reduce((acc, f) => acc + f.stability, 0) / Math.max(1, state.factions.length);
   state.allianceFractureLevel = clamp(state.factions.reduce((acc, f) => acc + (f.warFatigue + f.economicStress), 0) / Math.max(1, state.factions.length * 2), 0, 1);
   if (state.scenarioSettings.sharedCollapseEnabled && state.stats.nuclearUsage > 0) state.paradigmState = "mutualCollapse";
-  else if (state.aiDevelopmentProgress >= 0.9) state.paradigmState = "aiEmergence";
+  else if (state.aiEmergenceTriggered && state.aiDevelopmentProgress >= 0.95 && state.turn >= 8) state.paradigmState = "aiEmergence";
   else if (
     state.turn >= 12
     && (state.scenarioSettings.longTermHorizonWeight || 0) > 1.2
@@ -1344,6 +1369,7 @@ function resetGameState() {
   state.globalCasualties = { deaths: 0, injured: 0, economicDamage: 0 };
   state.aiDevelopmentProgress = 0;
   state.aiEmergenceTriggered = false;
+  state.aiEmergenceTurn = null;
   state.continentState = {};
   state.continentContestTurns = {};
   state.turnsSinceNuclear = 0;
@@ -1351,6 +1377,7 @@ function resetGameState() {
   state.neutralRegions = {};
   state.mapOwnership = {};
   state.logEntries = [];
+  state.debugLogEntries = [];
   state.pendingEffects = [];
   state.turn = 0;
   state.ttt.board = Array(9).fill("");
@@ -1403,12 +1430,36 @@ function downloadReport() {
   const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `world-strategy-report-turn-${state.turn}.json`; a.click(); URL.revokeObjectURL(url);
 }
 
-function log(message) {
-  const line = `T${state.turn}: ${message}`;
+function log(message, context = {}) {
+  const meta = {
+    defcon: state.defconLevel,
+    escalation: state.escalation?.current || "conventional",
+    tone: state.globalTone,
+    paradigm: state.paradigmState,
+    ...context
+  };
+  const line = `T${state.turn}: ${message} [dbg ${JSON.stringify(meta)}]`;
   state.logEntries.push(line);
+  state.debugLogEntries.push({ turn: state.turn, message, ...meta });
   const item = document.createElement("div");
   item.className = "log-entry"; item.textContent = line;
   dom.log.prepend(item);
+}
+
+function logDebugSnapshot(phase = "state") {
+  const avg = (values) => values.reduce((acc, val) => acc + val, 0) / Math.max(1, values.length);
+  const resources = avg(state.factions.map((f) => f.resources));
+  const political = avg(state.factions.map((f) => f.political));
+  const stability = avg(state.factions.map((f) => f.stability));
+  const threat = avg(state.factions.flatMap((f) => Object.values(f.memory || {}).map((m) => m?.threat || 0)));
+  log(`Debug snapshot (${phase})`, {
+    avgResources: Number(resources.toFixed(2)),
+    avgPolitical: Number(political.toFixed(2)),
+    avgStability: Number(stability.toFixed(3)),
+    avgThreat: Number(threat.toFixed(3)),
+    contestedRegions: Object.keys(state.contestedRegions || {}).length,
+    neutralRegions: Object.keys(state.neutralRegions || {}).length
+  });
 }
 
 
@@ -1575,7 +1626,7 @@ function inferGlobalTone() {
   if (state.paradigmState === "mutualCollapse") return "post-collapse";
   if (state.defconLevel <= 1 || (state.paradigmState === "noWinCondition" && state.turn >= 12)) return "terminal";
   if (state.defconLevel <= 2 || state.globalCasualties.deaths > 40_000_000) return "critical";
-  if (state.defconLevel <= 3 || state.allianceFractureLevel > 0.45 || state.paradigmState === "aiEmergence") return "tense";
+  if (state.defconLevel <= 3 || state.allianceFractureLevel > 0.45 || state.escalation.current !== "conventional") return "tense";
   return "stable";
 }
 

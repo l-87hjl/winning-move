@@ -1,30 +1,32 @@
 # Winning Move
 
-World Strategy Sandbox is a browser-based geopolitical strategy simulation with one optional human player and four AI factions.
+Winning Move is a browser-based geopolitical strategy simulation with optional human control and multi-faction AI behavior.
 
-## Quick open link
-- Repository-local index file: `file:///workspace/winning-move/index.html`
+## Project structure
 
-## Implemented scope
-- Era-specific region maps for **2026 / 1984 / 1939** with subdivided continental blocks.
-- Optional human mode or observer mode (all AI).
-- Region control via military, economic, puppet, sovereignty support, dialogue, nuclear posture, and **Instigate Revolution**.
-- Multi-turn revolution engine with `state.contestedRegions`, support values, intelligence-based defense, and showdown resolution.
-- High-stakes Tic-Tac-Toe showdown system for revolution contests and continent-control playoffs.
-- TTT perks: **Double Turn**, **Intel Surge**, **Stability Shield**.
-- AI skip-cycle behavior and perk-aware revolution intelligence modifiers.
-- Cat’s-game outcomes with mutual penalties and optional neutral governance creation.
-- Neutral zone and strategic deadlock detection.
-- Expanded JSON report output including contested zones, neutral zones, and pending systemic effects.
-- Nuclear deterrence model with triad deployment, hidden stockpiles, retaliation risk, global instability penalties, and long-term fallout effects.
-- Doctrine-aware AI with strategic memory (grievance/trust/threat), anti-hegemon balancing, and ideology-shaped decision bias.
-- Domestic pressure systems: public opinion, war fatigue, economic stress, legitimacy drift.
+- `index.html` – main app shell and UI layout.
+- `src/game.js` – simulation engine, AI logic, escalation model, reporting, and debug logging.
+- `src/styles.css` – UI styling and tone themes.
+- `docs/CHANGELOG.md` – change history organized by PR.
+- `docs/game-features.md` – implemented features and roadmap tracking.
+- `docs/game-log-spec.md` – game/debug log schema and usage notes.
 
-## Run
-Open `index.html` directly, or run a local server:
+## Run locally
+
+Open the file directly:
+
+- `file:///workspace/winning-move/index.html`
+
+Or run a local server:
 
 ```bash
 python3 -m http.server 8000
 ```
 
-Then visit `http://localhost:8000`.
+Then open `http://localhost:8000`.
+
+## Notes on simulation outputs
+
+- Downloaded reports now include both `log` (human-readable) and `debugLog` (structured diagnostics).
+- Turn logs include DEFCON/escalation/tone/paradigm metadata useful for debugging conditional failures.
+- AI emergence is now one-shot and gated by both threshold and minimum turn count to avoid premature/duplicate triggers.
