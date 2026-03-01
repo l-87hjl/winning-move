@@ -455,6 +455,11 @@ button:hover { border-color: var(--accent); }
   flex-wrap: wrap;
 }
 
+
+.strategic-panels-strip {
+  margin-bottom: 1rem;
+}
+
 .strategic-panels {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
