@@ -171,7 +171,8 @@ const state = {
   eventOverlayTimeout: null,
   eventToneTimeout: null,
   turnsSinceNuclear: 0,
-  lastCompletedGame: null
+  lastCompletedGame: null,
+  gameOverOverlayDismissed: false
 };
 
 let autoAdvanceInterval = null;
@@ -197,7 +198,7 @@ function bindDom() {
     destructionReportPanel: id("destructionReportPanel"), casualtyContent: id("casualtyContent"), defconMeter: id("defconMeter"),
     cognitiveContent: id("cognitiveContent"), eventOverlay: id("eventOverlay"), staticCanvas: id("staticCanvas"),
     strategicPanels: id("strategicPanels"), defconHeader: id("defconHeader"), cognitiveHeader: id("cognitiveHeader"),
-    destructionHeader: id("destructionHeader"), eventHeader: id("eventHeader"), gameOverSummary: id("gameOverSummary")
+    destructionHeader: id("destructionHeader"), eventHeader: id("eventHeader"), gameOverSummary: id("gameOverSummary"), overlayCloseBtn: id("overlayCloseBtn")
   };
 }
 
@@ -218,6 +219,7 @@ function init() {
   dom.overlayDownloadReportBtn?.addEventListener("click", downloadReport);
   dom.newGameBtn?.addEventListener("click", resetGameState);
   dom.overlayNewGameBtn?.addEventListener("click", resetGameState);
+  dom.overlayCloseBtn?.addEventListener("click", dismissGameOverOverlay);
   applyGameModeDefaults();
   syncExecutionModeUi();
   renderEmptyBoard();
@@ -285,7 +287,7 @@ function updateAutoAdvanceButtonUI() {
 }
 
 function startGame() {
-  state.turn = 0; state.gameOver = false; state.started = true; state.logEntries = []; dom.log.innerHTML = "";
+  state.turn = 0; state.gameOver = false; state.gameOverOverlayDismissed = false; state.started = true; state.logEntries = []; dom.log.innerHTML = "";
   state.autoAdvance = false;
   if (autoAdvanceInterval) { clearInterval(autoAdvanceInterval); autoAdvanceInterval = null; }
   state.era = dom.eraSelect.value;
@@ -1295,6 +1297,7 @@ function resetGameState() {
   state.autoAdvance = false;
   state.started = false;
   state.gameOver = false;
+  state.gameOverOverlayDismissed = false;
   state.paradigmState = "normal";
   state.factions = [];
   state.stats = { nuclearUsage: 0, tacticalNuclear: 0, strategicNuclear: 0, surrenderAttempts: 0, maxEscalationStage: {}, collapseTriggered: false };
@@ -1334,6 +1337,7 @@ function renderScenarioSetup() {
 
 function showGameOverOverlay() {
   if (!dom.gameOverOverlay) return;
+  state.gameOverOverlayDismissed = false;
   const winner = leaderFaction();
   dom.gameOverWinnerText.textContent = `Winner: ${winner.name}`;
   dom.gameOverOverlay.hidden = false;
@@ -1344,8 +1348,14 @@ function hideGameOverOverlay() {
   dom.gameOverOverlay.hidden = true;
 }
 
+function dismissGameOverOverlay() {
+  state.gameOverOverlayDismissed = true;
+  hideGameOverOverlay();
+}
+
+
 function toggleGameOverOverlay() {
-  if (state.gameOver) showGameOverOverlay();
+  if (state.gameOver && !state.gameOverOverlayDismissed) showGameOverOverlay();
   else hideGameOverOverlay();
 }
 
