@@ -159,8 +159,8 @@ button:hover { border-color: var(--accent); }
   border-radius: 10px;
   border: 1px solid #475569;
   display: grid;
-  grid-template-columns: repeat(56, 16px);
-  grid-auto-rows: 16px;
+  grid-template-columns: repeat(52, 16px);
+  grid-template-rows: repeat(23, 16px);
   gap: 4px;
   justify-content: center;
   align-content: start;
