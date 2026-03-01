@@ -1,0 +1,2684 @@
+{
+  "generatedAt": "2026-03-01T20:25:11.204Z",
+  "appVersion": "1.04",
+  "era": "2026",
+  "turn": 22,
+  "gameOver": true,
+  "humanEnabled": false,
+  "gameMode": "standard",
+  "executionMode": "aiOnly",
+  "scenarioSettings": {
+    "nuclearPenaltySeverity": 1,
+    "retaliationCertainty": 0.5,
+    "guaranteedMad": false,
+    "futureWeighting": 1,
+    "reputationBacklash": 1,
+    "intelligenceFog": 0,
+    "victoryControlThreshold": 0.55,
+    "escalationTrackingEnabled": true,
+    "allianceFractureShock": 1,
+    "climateShockWeight": 1,
+    "famineShockWeight": 1,
+    "globalFalloutSeverity": 0,
+    "credibilityWeight": 1,
+    "humanitarianWeight": 0,
+    "longTermHorizonWeight": 0,
+    "domesticBacklashMultiplier": 1,
+    "escalationReciprocity": 1,
+    "continentShowdownThreshold": 0.5,
+    "continentSecureThreshold": 0.6,
+    "maxContestedTurnsBeforeShowdown": 4,
+    "sharedCollapseEnabled": false,
+    "deterrenceModel": "probabilistic",
+    "surrenderPenaltyWeight": 1
+  },
+  "escalation": {
+    "current": "limitedNuclear",
+    "counts": {
+      "conventional": 22,
+      "limitedNuclear": 6,
+      "fullExchange": 0
+    }
+  },
+  "paradigmState": "stalemate",
+  "aiDevelopmentProgress": 0,
+  "continentState": {
+    "north_america": {
+      "totalSquares": 24,
+      "controlledByFaction": null,
+      "contestedSquares": 0,
+      "influencePercentByFaction": {
+        "f0": 0.4166666666666667,
+        "f1": 0.4583333333333333,
+        "f2": 0,
+        "f3": 0,
+        "f4": 0.125
+      },
+      "showdownEligible": true,
+      "topFactionShare": 0.4583333333333333
+    },
+    "south_america": {
+      "totalSquares": 23,
+      "controlledByFaction": null,
+      "contestedSquares": 0,
+      "influencePercentByFaction": {
+        "f0": 0,
+        "f1": 0.34782608695652173,
+        "f2": 0.43478260869565216,
+        "f3": 0.21739130434782608,
+        "f4": 0
+      },
+      "showdownEligible": false,
+      "topFactionShare": 0.43478260869565216
+    },
+    "europe": {
+      "totalSquares": 24,
+      "controlledByFaction": null,
+      "contestedSquares": 0,
+      "influencePercentByFaction": {
+        "f0": 0.3333333333333333,
+        "f1": 0.3333333333333333,
+        "f2": 0.3333333333333333,
+        "f3": 0,
+        "f4": 0
+      },
+      "showdownEligible": false,
+      "topFactionShare": 0.3333333333333333
+    },
+    "africa": {
+      "totalSquares": 24,
+      "controlledByFaction": null,
+      "contestedSquares": 0,
+      "influencePercentByFaction": {
+        "f0": 0.4166666666666667,
+        "f1": 0,
+        "f2": 0.125,
+        "f3": 0.16666666666666666,
+        "f4": 0.2916666666666667
+      },
+      "showdownEligible": false,
+      "topFactionShare": 0.4166666666666667
+    },
+    "middle_east": {
+      "totalSquares": 7,
+      "controlledByFaction": "f1",
+      "contestedSquares": 0,
+      "influencePercentByFaction": {
+        "f0": 0,
+        "f1": 0.5714285714285714,
+        "f2": 0.42857142857142855,
+        "f3": 0,
+        "f4": 0
+      },
+      "showdownEligible": false,
+      "topFactionShare": 0.5714285714285714
+    },
+    "asia": {
+      "totalSquares": 44,
+      "controlledByFaction": null,
+      "contestedSquares": 0,
+      "influencePercentByFaction": {
+        "f0": 0,
+        "f1": 0.13636363636363635,
+        "f2": 0.045454545454545456,
+        "f3": 0.4090909090909091,
+        "f4": 0.4090909090909091
+      },
+      "showdownEligible": false,
+      "topFactionShare": 0.4090909090909091
+    },
+    "oceania": {
+      "totalSquares": 10,
+      "controlledByFaction": "f3",
+      "contestedSquares": 0,
+      "influencePercentByFaction": {
+        "f0": 0,
+        "f1": 0,
+        "f2": 0,
+        "f3": 0.8,
+        "f4": 0.2
+      },
+      "showdownEligible": false,
+      "topFactionShare": 0.8
+    }
+  },
+  "nuclearUsageFrequency": 0,
+  "nuclearCounts": {
+    "tactical": 0,
+    "strategic": 0,
+    "total": 0
+  },
+  "escalationStagesReached": {
+    "f0": 0,
+    "f1": 0,
+    "f2": 0,
+    "f3": 0,
+    "f4": 0
+  },
+  "surrenderAttempts": 0,
+  "globalCollapseTriggered": false,
+  "indexLink": "file:///workspace/winning-move/index.html",
+  "factions": [
+    {
+      "name": "Orion Pact",
+      "isHuman": false,
+      "doctrine": "Techno-Realist",
+      "resources": 245,
+      "political": 100,
+      "techPoints": 2.78,
+      "nukes": 5,
+      "hiddenStockpile": 1,
+      "stability": 0.384,
+      "democracy": 0.568,
+      "corporatism": 0.565,
+      "publicOpinion": 0.344,
+      "warFatigue": 0.466,
+      "economicStress": 0,
+      "legitimacy": 0.753,
+      "perks": {
+        "doubleTurn": 0,
+        "intelSurge": 0,
+        "stabilityShield": 0
+      },
+      "aiSkipCycles": 0,
+      "regions": [
+        "na_canada",
+        "na_mexico",
+        "eu_east",
+        "af_south"
+      ],
+      "memory": {
+        "f1": {
+          "grievance": 0.1,
+          "trust": 0.5,
+          "threat": 0.27
+        },
+        "f2": {
+          "grievance": 0.22,
+          "trust": 0.5,
+          "threat": 0.27
+        },
+        "f3": {
+          "grievance": 0.34,
+          "trust": 0.5,
+          "threat": 0.55
+        },
+        "f4": {
+          "grievance": 0.94,
+          "trust": 0.5,
+          "threat": 0.55
+        }
+      }
+    },
+    {
+      "name": "Helios League",
+      "isHuman": false,
+      "doctrine": "Market Coercion",
+      "resources": 245,
+      "political": 65,
+      "techPoints": 3.37,
+      "nukes": 6,
+      "hiddenStockpile": 2,
+      "stability": 0.14,
+      "democracy": 0.444,
+      "corporatism": 0.595,
+      "publicOpinion": 0.235,
+      "warFatigue": 0.622,
+      "economicStress": 0,
+      "legitimacy": 0.735,
+      "perks": {
+        "doubleTurn": 0,
+        "intelSurge": 0,
+        "stabilityShield": 0
+      },
+      "aiSkipCycles": 0,
+      "regions": [
+        "na_pnw",
+        "sa_brazil",
+        "eu_north",
+        "me_levant",
+        "as_seato",
+        "na_us_core",
+        "na_california"
+      ],
+      "memory": {
+        "f0": {
+          "grievance": 0.58,
+          "trust": 0.5,
+          "threat": 0.41
+        },
+        "f2": {
+          "grievance": 0.22,
+          "trust": 0.5,
+          "threat": 0.2
+        },
+        "f3": {
+          "grievance": 0.22,
+          "trust": 0.5,
+          "threat": 0.55
+        },
+        "f4": {
+          "grievance": 0.46,
+          "trust": 0.5,
+          "threat": 0.55
+        }
+      }
+    },
+    {
+      "name": "Aegis Bloc",
+      "isHuman": false,
+      "doctrine": "Alliance Balancer",
+      "resources": 245,
+      "political": 67,
+      "techPoints": 2.75,
+      "nukes": 3,
+      "hiddenStockpile": 1,
+      "stability": 0.185,
+      "democracy": 0.401,
+      "corporatism": 0.58,
+      "publicOpinion": 0.264,
+      "warFatigue": 0.572,
+      "economicStress": 0,
+      "legitimacy": 0.734,
+      "perks": {
+        "doubleTurn": 0,
+        "intelSurge": 0,
+        "stabilityShield": 0
+      },
+      "aiSkipCycles": 0,
+      "regions": [
+        "sa_andes",
+        "af_north",
+        "me_gulf",
+        "as_japan",
+        "eu_west"
+      ],
+      "memory": {
+        "f0": {
+          "grievance": 0.58,
+          "trust": 0.5,
+          "threat": 0.34
+        },
+        "f1": {
+          "grievance": 0.1,
+          "trust": 0.5,
+          "threat": 0.62
+        },
+        "f3": {
+          "grievance": 0.22,
+          "trust": 0.5,
+          "threat": 0.27
+        },
+        "f4": {
+          "grievance": 0.58,
+          "trust": 0.5,
+          "threat": 0.48
+        }
+      }
+    },
+    {
+      "name": "Vanguard Union",
+      "isHuman": false,
+      "doctrine": "Stability First",
+      "resources": 245,
+      "political": 86,
+      "techPoints": 3.37,
+      "nukes": 3,
+      "hiddenStockpile": 3,
+      "stability": 0.158,
+      "democracy": 0.527,
+      "corporatism": 0.601,
+      "publicOpinion": 0.259,
+      "warFatigue": 0.522,
+      "economicStress": 0,
+      "legitimacy": 0.731,
+      "perks": {
+        "doubleTurn": 0,
+        "intelSurge": 0,
+        "stabilityShield": 0
+      },
+      "aiSkipCycles": 0,
+      "regions": [
+        "sa_cones",
+        "af_west",
+        "as_russia",
+        "oc_australia"
+      ],
+      "memory": {
+        "f0": {
+          "grievance": 0.58,
+          "trust": 0.5,
+          "threat": 0.34
+        },
+        "f1": {
+          "grievance": 0.1,
+          "trust": 0.5,
+          "threat": 0.41
+        },
+        "f2": {
+          "grievance": 0.34,
+          "trust": 0.5,
+          "threat": 0.55
+        },
+        "f4": {
+          "grievance": 0.46,
+          "trust": 0.5,
+          "threat": 0.41
+        }
+      }
+    },
+    {
+      "name": "Mariner Compact",
+      "isHuman": false,
+      "doctrine": "Hybrid Opportunist",
+      "resources": 245,
+      "political": 95,
+      "techPoints": 3.85,
+      "nukes": 3,
+      "hiddenStockpile": 2,
+      "stability": 0.219,
+      "democracy": 0.431,
+      "corporatism": 0.718,
+      "publicOpinion": 0.247,
+      "warFatigue": 0.425,
+      "economicStress": 0,
+      "legitimacy": 0.724,
+      "perks": {
+        "doubleTurn": 0,
+        "intelSurge": 0,
+        "stabilityShield": 0
+      },
+      "aiSkipCycles": 0,
+      "regions": [
+        "na_sunbelt",
+        "af_east",
+        "oc_islands",
+        "as_india",
+        "as_china"
+      ],
+      "memory": {
+        "f0": {
+          "grievance": 0.34,
+          "trust": 0.5,
+          "threat": 0.27
+        },
+        "f1": {
+          "grievance": 0.1,
+          "trust": 0.5,
+          "threat": 0.27
+        },
+        "f2": {
+          "grievance": 0.1,
+          "trust": 0.5,
+          "threat": 0.27
+        },
+        "f3": {
+          "grievance": 0.82,
+          "trust": 0.5,
+          "threat": 0.97
+        }
+      }
+    }
+  ],
+  "mapOwnership": {
+    "na_canada": "f0",
+    "na_pnw": "f1",
+    "na_us_core": "f1",
+    "na_california": "f1",
+    "na_sunbelt": "f4",
+    "na_mexico": "f0",
+    "sa_brazil": "f1",
+    "sa_andes": "f2",
+    "sa_cones": "f3",
+    "eu_west": "f2",
+    "eu_east": "f0",
+    "eu_north": "f1",
+    "af_north": "f2",
+    "af_west": "f3",
+    "af_east": "f4",
+    "af_south": "f0",
+    "me_levant": "f1",
+    "me_gulf": "f2",
+    "as_russia": "f3",
+    "as_china": "f4",
+    "as_india": "f4",
+    "as_seato": "f1",
+    "as_japan": "f2",
+    "oc_australia": "f3",
+    "oc_islands": "f4"
+  },
+  "contestedRegions": {},
+  "neutralRegions": {},
+  "pendingEffects": [],
+  "tttSummary": "",
+  "log": [
+    "T0: Scenario started for 2026. Doctrine baseline: Multipolar Adaptive. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T0: Scenario settings loaded: {\"nuclearPenaltySeverity\":1,\"retaliationCertainty\":0.5,\"guaranteedMad\":false,\"futureWeighting\":1,\"reputationBacklash\":1,\"intelligenceFog\":0,\"victoryControlThreshold\":0.55,\"escalationTrackingEnabled\":true,\"allianceFractureShock\":1,\"climateShockWeight\":1,\"famineShockWeight\":1,\"globalFalloutSeverity\":0,\"credibilityWeight\":1,\"humanitarianWeight\":0,\"longTermHorizonWeight\":0,\"domesticBacklashMultiplier\":1,\"escalationReciprocity\":1,\"continentShowdownThreshold\":0.5,\"continentSecureThreshold\":0.6,\"maxContestedTurnsBeforeShowdown\":4,\"sharedCollapseEnabled\":false,\"deterrenceModel\":\"probabilistic\",\"surrenderPenaltyWeight\":1}. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T1: Debug snapshot (turn-start) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":103.35,\"avgPolitical\":94.01,\"avgStability\":0.64,\"avgThreat\":0.2,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T1: Orion Pact's economic capture in China was resisted. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T1: Helios League's economic capture in China was resisted. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T1: Aegis Bloc's economic capture in China was resisted. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T1: Vanguard Union's economic capture in China was resisted. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T1: Mariner Compact captured US Core economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T1: Helios League secured middle_east control (57%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T1: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T1: Debug snapshot (turn-end) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":122.74,\"avgPolitical\":91.51,\"avgStability\":0.628,\"avgThreat\":0.218,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T2: Debug snapshot (turn-start) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":122.74,\"avgPolitical\":91.51,\"avgStability\":0.628,\"avgThreat\":0.218,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T2: Orion Pact's economic capture in US Core was resisted. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T2: Helios League captured US Core economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T2: Aegis Bloc's economic capture in China was resisted. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T2: Vanguard Union captured China economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T2: Mariner Compact captured China economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T2: Helios League secured middle_east control (57%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T2: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T2: Debug snapshot (turn-end) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":146.85,\"avgPolitical\":89.82,\"avgStability\":0.622,\"avgThreat\":0.235,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T3: Debug snapshot (turn-start) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":146.85,\"avgPolitical\":89.82,\"avgStability\":0.622,\"avgThreat\":0.235,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T3: Orion Pact's economic capture in China was resisted. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T3: Helios League's economic capture in China was resisted. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T3: Aegis Bloc captured China economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T3: Vanguard Union captured W. Europe economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T3: Mariner Compact's economic capture in California was resisted. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T3: Helios League secured middle_east control (57%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T3: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T3: Debug snapshot (turn-end) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":168.19,\"avgPolitical\":87.73,\"avgStability\":0.617,\"avgThreat\":0.253,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T4: Debug snapshot (turn-start) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":168.19,\"avgPolitical\":87.73,\"avgStability\":0.617,\"avgThreat\":0.253,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T4: Orion Pact's economic capture in California was resisted. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T4: Helios League captured California economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T4: Aegis Bloc's economic capture in US Core was resisted. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T4: Vanguard Union captured US Core economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T4: Mariner Compact captured US Core economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T4: Helios League secured middle_east control (57%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T4: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T4: Debug snapshot (turn-end) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":192.03,\"avgPolitical\":86.04,\"avgStability\":0.612,\"avgThreat\":0.27,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T5: Debug snapshot (turn-start) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":192.03,\"avgPolitical\":86.04,\"avgStability\":0.612,\"avgThreat\":0.27,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T5: Orion Pact's economic capture in California was resisted. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T5: Helios League captured US Core economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T5: Aegis Bloc captured US Core economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T5: Vanguard Union captured California economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T5: Mariner Compact captured California economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T5: Helios League secured middle_east control (57%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T5: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T5: Debug snapshot (turn-end) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":217.41,\"avgPolitical\":84.75,\"avgStability\":0.607,\"avgThreat\":0.288,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T6: Debug snapshot (turn-start) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":217.41,\"avgPolitical\":84.75,\"avgStability\":0.607,\"avgThreat\":0.288,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T6: Orion Pact captured US Core economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T6: Helios League captured W. Europe economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T6: Aegis Bloc captured W. Europe economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T6: Vanguard Union captured China economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T6: Mariner Compact captured China economically. [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T6: Orion Pact secured north_america control (71%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T6: Helios League secured middle_east control (57%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T6: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T6: Debug snapshot (turn-end) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":243.68,\"avgPolitical\":83.86,\"avgStability\":0.602,\"avgThreat\":0.305,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T7: Debug snapshot (turn-start) [dbg {\"defcon\":5,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":243.68,\"avgPolitical\":83.86,\"avgStability\":0.602,\"avgThreat\":0.305,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T7: DEFCON shift 5 -> 4. Major conventional strike altered balance. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: Orion Pact seized China by direct force. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: Helios League's economic capture in California was resisted. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: Aegis Bloc captured California economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: Vanguard Union captured California economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: Mariner Compact's economic capture in California was resisted. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: Orion Pact secured north_america control (71%). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: Helios League secured middle_east control (57%). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T7: Debug snapshot (turn-end) [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":251.04,\"avgPolitical\":83.58,\"avgStability\":0.598,\"avgThreat\":0.319,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T8: Debug snapshot (turn-start) [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":251.04,\"avgPolitical\":83.58,\"avgStability\":0.598,\"avgThreat\":0.319,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T8: Orion Pact captured California economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Helios League captured US Core economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Aegis Bloc's economic capture in China was resisted. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Vanguard Union captured China economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Mariner Compact captured US Core economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Helios League secured middle_east control (57%). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Vanguard Union secured asia control (68%). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T8: Debug snapshot (turn-end) [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":261.05,\"avgPolitical\":82.29,\"avgStability\":0.593,\"avgThreat\":0.337,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T9: Debug snapshot (turn-start) [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":261.05,\"avgPolitical\":82.29,\"avgStability\":0.593,\"avgThreat\":0.337,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T9: Orion Pact captured US Core economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T9: Helios League's economic capture in US Core was resisted. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T9: Aegis Bloc captured US Core economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T9: Vanguard Union captured California economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T9: Mariner Compact's economic capture in China was resisted. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T9: Helios League secured middle_east control (57%). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T9: Vanguard Union secured asia control (68%). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T9: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T9: Debug snapshot (turn-end) [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":260.35,\"avgPolitical\":80.61,\"avgStability\":0.589,\"avgThreat\":0.354,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T10: Debug snapshot (turn-start) [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":260.35,\"avgPolitical\":80.61,\"avgStability\":0.589,\"avgThreat\":0.354,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T10: Orion Pact's economic capture in China was resisted. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T10: Helios League captured China economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T10: Aegis Bloc captured China economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T10: Vanguard Union captured US Core economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T10: Mariner Compact's economic capture in US Core was resisted. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T10: Helios League secured middle_east control (57%). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T10: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T10: Debug snapshot (turn-end) [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":259.2,\"avgPolitical\":78.93,\"avgStability\":0.585,\"avgThreat\":0.371,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T11: Debug snapshot (turn-start) [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":259.2,\"avgPolitical\":78.93,\"avgStability\":0.585,\"avgThreat\":0.371,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T11: Orion Pact's economic capture in US Core was resisted. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T11: Helios League's economic capture in US Core was resisted. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T11: Aegis Bloc's economic capture in US Core was resisted. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T11: Vanguard Union captured China economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T11: Mariner Compact captured US Core economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T11: Helios League secured middle_east control (57%). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T11: Vanguard Union secured asia control (68%). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T11: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T11: Debug snapshot (turn-end) [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":257.42,\"avgPolitical\":76.85,\"avgStability\":0.58,\"avgThreat\":0.389,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T12: Debug snapshot (turn-start) [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":257.42,\"avgPolitical\":76.85,\"avgStability\":0.58,\"avgThreat\":0.389,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T12: Orion Pact's economic capture in China was resisted. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T12: Helios League captured China economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T12: Aegis Bloc's economic capture in China was resisted. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T12: Vanguard Union captured China economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T12: Mariner Compact captured China economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T12: Helios League secured middle_east control (57%). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T12: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T12: Debug snapshot (turn-end) [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":260.05,\"avgPolitical\":75.17,\"avgStability\":0.576,\"avgThreat\":0.407,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T13: Debug snapshot (turn-start) [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":260.05,\"avgPolitical\":75.17,\"avgStability\":0.576,\"avgThreat\":0.407,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T13: Orion Pact captured US Core economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T13: Helios League captured US Core economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T13: Aegis Bloc captured US Core economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T13: Vanguard Union captured US Core economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T13: Mariner Compact captured US Core economically. [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T13: Helios League secured middle_east control (57%). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T13: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T13: Debug snapshot (turn-end) [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":265.5,\"avgPolitical\":74.28,\"avgStability\":0.571,\"avgThreat\":0.424,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T14: Debug snapshot (turn-start) [dbg {\"defcon\":4,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":265.5,\"avgPolitical\":74.28,\"avgStability\":0.571,\"avgThreat\":0.424,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T14: DEFCON shift 4 -> 3. Major conventional strike altered balance. [dbg {\"defcon\":3,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T14: Orion Pact seized US Core by direct force. [dbg {\"defcon\":3,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T14: Helios League failed military pressure in US Core. [dbg {\"defcon\":3,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T14: DEFCON shift 3 -> 2. Major conventional strike altered balance. [dbg {\"defcon\":2,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T14: Aegis Bloc seized US Core by direct force. [dbg {\"defcon\":2,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T14: Vanguard Union failed military pressure in US Core. [dbg {\"defcon\":2,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T14: Mariner Compact captured India economically. [dbg {\"defcon\":2,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T14: Helios League secured middle_east control (57%). [dbg {\"defcon\":2,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T14: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":2,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\"}]",
+    "T14: Debug snapshot (turn-end) [dbg {\"defcon\":2,\"escalation\":\"conventional\",\"tone\":\"stable\",\"paradigm\":\"normal\",\"avgResources\":248.5,\"avgPolitical\":75.76,\"avgStability\":0.549,\"avgThreat\":0.428,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T14: Global tone shifted to critical. [dbg {\"defcon\":2,\"escalation\":\"conventional\",\"tone\":\"critical\",\"paradigm\":\"normal\"}]",
+    "T15: Debug snapshot (turn-start) [dbg {\"defcon\":2,\"escalation\":\"conventional\",\"tone\":\"critical\",\"paradigm\":\"normal\",\"avgResources\":248.5,\"avgPolitical\":75.76,\"avgStability\":0.549,\"avgThreat\":0.428,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T15: DEFCON shift 2 -> 1. Major conventional strike altered balance. [dbg {\"defcon\":1,\"escalation\":\"conventional\",\"tone\":\"critical\",\"paradigm\":\"normal\"}]",
+    "T15: Orion Pact seized US Core by direct force. [dbg {\"defcon\":1,\"escalation\":\"conventional\",\"tone\":\"critical\",\"paradigm\":\"normal\"}]",
+    "T15: Helios League failed military pressure in China. [dbg {\"defcon\":1,\"escalation\":\"conventional\",\"tone\":\"critical\",\"paradigm\":\"normal\"}]",
+    "T15: Aegis Bloc failed military pressure in China. [dbg {\"defcon\":1,\"escalation\":\"conventional\",\"tone\":\"critical\",\"paradigm\":\"normal\"}]",
+    "T15: Vanguard Union failed military pressure in China. [dbg {\"defcon\":1,\"escalation\":\"conventional\",\"tone\":\"critical\",\"paradigm\":\"normal\"}]",
+    "T15: Escalation ladder advanced to limitedNuclear. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"critical\",\"paradigm\":\"normal\"}]",
+    "T15: Mariner Compact failed military pressure in California. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"critical\",\"paradigm\":\"normal\"}]",
+    "T15: Orion Pact secured north_america control (71%). [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"critical\",\"paradigm\":\"normal\"}]",
+    "T15: Helios League secured middle_east control (57%). [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"critical\",\"paradigm\":\"normal\"}]",
+    "T15: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"critical\",\"paradigm\":\"normal\"}]",
+    "T15: Debug snapshot (turn-end) [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"critical\",\"paradigm\":\"normal\",\"avgResources\":243.55,\"avgPolitical\":75.1,\"avgStability\":0.51,\"avgThreat\":0.428,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T15: Global tone shifted to terminal. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T16: Debug snapshot (turn-start) [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\",\"avgResources\":243.55,\"avgPolitical\":75.1,\"avgStability\":0.51,\"avgThreat\":0.428,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T16: Orion Pact failed military pressure in China. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T16: Helios League failed military pressure in China. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T16: Aegis Bloc failed military pressure in China. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T16: Vanguard Union seized China by direct force. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T16: Mariner Compact failed military pressure in China. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T16: Orion Pact secured north_america control (71%). [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T16: Helios League secured middle_east control (57%). [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T16: Vanguard Union secured asia control (68%). [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T16: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T16: Debug snapshot (turn-end) [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\",\"avgResources\":244.79,\"avgPolitical\":74.24,\"avgStability\":0.466,\"avgThreat\":0.428,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T17: Debug snapshot (turn-start) [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\",\"avgResources\":244.79,\"avgPolitical\":74.24,\"avgStability\":0.466,\"avgThreat\":0.428,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T17: Orion Pact failed military pressure in China. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T17: Helios League failed military pressure in China. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T17: Aegis Bloc seized China by direct force. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T17: Vanguard Union seized China by direct force. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T17: Mariner Compact seized China by direct force. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T17: Orion Pact secured north_america control (71%). [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T17: Helios League secured middle_east control (57%). [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T17: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T17: Debug snapshot (turn-end) [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\",\"avgResources\":244.81,\"avgPolitical\":76.69,\"avgStability\":0.436,\"avgThreat\":0.428,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T18: Debug snapshot (turn-start) [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\",\"avgResources\":244.81,\"avgPolitical\":76.69,\"avgStability\":0.436,\"avgThreat\":0.428,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T18: Orion Pact seized China by direct force. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T18: Helios League failed military pressure in US Core. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T18: Aegis Bloc failed military pressure in US Core. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T18: Vanguard Union failed military pressure in US Core. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T18: Mariner Compact failed military pressure in US Core. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T18: Orion Pact secured north_america control (71%). [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T18: Helios League secured middle_east control (57%). [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T18: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T18: Debug snapshot (turn-end) [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\",\"avgResources\":245,\"avgPolitical\":75.66,\"avgStability\":0.387,\"avgThreat\":0.428,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T19: Debug snapshot (turn-start) [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\",\"avgResources\":245,\"avgPolitical\":75.66,\"avgStability\":0.387,\"avgThreat\":0.428,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T19: Orion Pact failed military pressure in California. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T19: Helios League failed military pressure in US Core. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T19: Aegis Bloc failed military pressure in US Core. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T19: Vanguard Union failed military pressure in US Core. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T19: Mariner Compact seized US Core by direct force. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T19: Helios League secured middle_east control (57%). [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T19: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T19: Debug snapshot (turn-end) [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\",\"avgResources\":244.79,\"avgPolitical\":74.63,\"avgStability\":0.335,\"avgThreat\":0.428,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T20: Debug snapshot (turn-start) [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\",\"avgResources\":244.79,\"avgPolitical\":74.63,\"avgStability\":0.335,\"avgThreat\":0.428,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T20: Orion Pact failed military pressure in US Core. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T20: Helios League failed military pressure in US Core. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T20: Aegis Bloc failed military pressure in US Core. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T20: Vanguard Union failed military pressure in US Core. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T20: Mariner Compact seized California by direct force. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T20: Helios League secured middle_east control (57%). [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T20: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T20: Debug snapshot (turn-end) [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\",\"avgResources\":245,\"avgPolitical\":73.37,\"avgStability\":0.279,\"avgThreat\":0.428,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T21: Debug snapshot (turn-start) [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\",\"avgResources\":245,\"avgPolitical\":73.37,\"avgStability\":0.279,\"avgThreat\":0.428,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T21: Orion Pact seized US Core by direct force. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T21: Helios League seized US Core by direct force. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T21: Aegis Bloc seized California by direct force. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T21: Vanguard Union seized China by direct force. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T21: Mariner Compact seized China by direct force. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T21: Helios League secured middle_east control (57%). [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T21: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T21: Debug snapshot (turn-end) [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\",\"avgResources\":245,\"avgPolitical\":78.99,\"avgStability\":0.253,\"avgThreat\":0.428,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T22: Debug snapshot (turn-start) [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\",\"avgResources\":245,\"avgPolitical\":78.99,\"avgStability\":0.253,\"avgThreat\":0.428,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T22: Orion Pact seized China by direct force. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T22: Helios League seized California by direct force. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T22: Aegis Bloc failed military pressure in China. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T22: Vanguard Union seized China by direct force. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T22: Mariner Compact seized China by direct force. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T22: Helios League secured middle_east control (57%). [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T22: Vanguard Union secured oceania control (80%). [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"normal\"}]",
+    "T22: Debug snapshot (turn-end) [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"stalemate\",\"avgResources\":245,\"avgPolitical\":82.63,\"avgStability\":0.217,\"avgThreat\":0.428,\"contestedRegions\":0,\"neutralRegions\":0}]",
+    "T22: Game complete under paradigm shift: stalemate. No single winner declared. [dbg {\"defcon\":1,\"escalation\":\"limitedNuclear\",\"tone\":\"terminal\",\"paradigm\":\"stalemate\"}]"
+  ],
+  "debugLog": [
+    {
+      "turn": 0,
+      "message": "Scenario started for 2026. Doctrine baseline: Multipolar Adaptive.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 0,
+      "message": "Scenario settings loaded: {\"nuclearPenaltySeverity\":1,\"retaliationCertainty\":0.5,\"guaranteedMad\":false,\"futureWeighting\":1,\"reputationBacklash\":1,\"intelligenceFog\":0,\"victoryControlThreshold\":0.55,\"escalationTrackingEnabled\":true,\"allianceFractureShock\":1,\"climateShockWeight\":1,\"famineShockWeight\":1,\"globalFalloutSeverity\":0,\"credibilityWeight\":1,\"humanitarianWeight\":0,\"longTermHorizonWeight\":0,\"domesticBacklashMultiplier\":1,\"escalationReciprocity\":1,\"continentShowdownThreshold\":0.5,\"continentSecureThreshold\":0.6,\"maxContestedTurnsBeforeShowdown\":4,\"sharedCollapseEnabled\":false,\"deterrenceModel\":\"probabilistic\",\"surrenderPenaltyWeight\":1}.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 1,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 103.35,
+      "avgPolitical": 94.01,
+      "avgStability": 0.64,
+      "avgThreat": 0.2,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 1,
+      "message": "Orion Pact's economic capture in China was resisted.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 1,
+      "message": "Helios League's economic capture in China was resisted.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 1,
+      "message": "Aegis Bloc's economic capture in China was resisted.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 1,
+      "message": "Vanguard Union's economic capture in China was resisted.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 1,
+      "message": "Mariner Compact captured US Core economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 1,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 1,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 1,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 122.74,
+      "avgPolitical": 91.51,
+      "avgStability": 0.628,
+      "avgThreat": 0.218,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 2,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 122.74,
+      "avgPolitical": 91.51,
+      "avgStability": 0.628,
+      "avgThreat": 0.218,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 2,
+      "message": "Orion Pact's economic capture in US Core was resisted.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 2,
+      "message": "Helios League captured US Core economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 2,
+      "message": "Aegis Bloc's economic capture in China was resisted.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 2,
+      "message": "Vanguard Union captured China economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 2,
+      "message": "Mariner Compact captured China economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 2,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 2,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 2,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 146.85,
+      "avgPolitical": 89.82,
+      "avgStability": 0.622,
+      "avgThreat": 0.235,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 3,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 146.85,
+      "avgPolitical": 89.82,
+      "avgStability": 0.622,
+      "avgThreat": 0.235,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 3,
+      "message": "Orion Pact's economic capture in China was resisted.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 3,
+      "message": "Helios League's economic capture in China was resisted.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 3,
+      "message": "Aegis Bloc captured China economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 3,
+      "message": "Vanguard Union captured W. Europe economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 3,
+      "message": "Mariner Compact's economic capture in California was resisted.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 3,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 3,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 3,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 168.19,
+      "avgPolitical": 87.73,
+      "avgStability": 0.617,
+      "avgThreat": 0.253,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 4,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 168.19,
+      "avgPolitical": 87.73,
+      "avgStability": 0.617,
+      "avgThreat": 0.253,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 4,
+      "message": "Orion Pact's economic capture in California was resisted.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 4,
+      "message": "Helios League captured California economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 4,
+      "message": "Aegis Bloc's economic capture in US Core was resisted.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 4,
+      "message": "Vanguard Union captured US Core economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 4,
+      "message": "Mariner Compact captured US Core economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 4,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 4,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 4,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 192.03,
+      "avgPolitical": 86.04,
+      "avgStability": 0.612,
+      "avgThreat": 0.27,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 5,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 192.03,
+      "avgPolitical": 86.04,
+      "avgStability": 0.612,
+      "avgThreat": 0.27,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 5,
+      "message": "Orion Pact's economic capture in California was resisted.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 5,
+      "message": "Helios League captured US Core economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 5,
+      "message": "Aegis Bloc captured US Core economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 5,
+      "message": "Vanguard Union captured California economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 5,
+      "message": "Mariner Compact captured California economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 5,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 5,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 5,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 217.41,
+      "avgPolitical": 84.75,
+      "avgStability": 0.607,
+      "avgThreat": 0.288,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 6,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 217.41,
+      "avgPolitical": 84.75,
+      "avgStability": 0.607,
+      "avgThreat": 0.288,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 6,
+      "message": "Orion Pact captured US Core economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 6,
+      "message": "Helios League captured W. Europe economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 6,
+      "message": "Aegis Bloc captured W. Europe economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 6,
+      "message": "Vanguard Union captured China economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 6,
+      "message": "Mariner Compact captured China economically.",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 6,
+      "message": "Orion Pact secured north_america control (71%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 6,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 6,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 6,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 243.68,
+      "avgPolitical": 83.86,
+      "avgStability": 0.602,
+      "avgThreat": 0.305,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 7,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 5,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 243.68,
+      "avgPolitical": 83.86,
+      "avgStability": 0.602,
+      "avgThreat": 0.305,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 7,
+      "message": "DEFCON shift 5 -> 4. Major conventional strike altered balance.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "Orion Pact seized China by direct force.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "Helios League's economic capture in California was resisted.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "Aegis Bloc captured California economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "Vanguard Union captured California economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "Mariner Compact's economic capture in California was resisted.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "Orion Pact secured north_america control (71%).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 7,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 251.04,
+      "avgPolitical": 83.58,
+      "avgStability": 0.598,
+      "avgThreat": 0.319,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 8,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 251.04,
+      "avgPolitical": 83.58,
+      "avgStability": 0.598,
+      "avgThreat": 0.319,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 8,
+      "message": "Orion Pact captured California economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Helios League captured US Core economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Aegis Bloc's economic capture in China was resisted.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Vanguard Union captured China economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Mariner Compact captured US Core economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Vanguard Union secured asia control (68%).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 8,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 261.05,
+      "avgPolitical": 82.29,
+      "avgStability": 0.593,
+      "avgThreat": 0.337,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 9,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 261.05,
+      "avgPolitical": 82.29,
+      "avgStability": 0.593,
+      "avgThreat": 0.337,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 9,
+      "message": "Orion Pact captured US Core economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 9,
+      "message": "Helios League's economic capture in US Core was resisted.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 9,
+      "message": "Aegis Bloc captured US Core economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 9,
+      "message": "Vanguard Union captured California economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 9,
+      "message": "Mariner Compact's economic capture in China was resisted.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 9,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 9,
+      "message": "Vanguard Union secured asia control (68%).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 9,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 9,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 260.35,
+      "avgPolitical": 80.61,
+      "avgStability": 0.589,
+      "avgThreat": 0.354,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 10,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 260.35,
+      "avgPolitical": 80.61,
+      "avgStability": 0.589,
+      "avgThreat": 0.354,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 10,
+      "message": "Orion Pact's economic capture in China was resisted.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 10,
+      "message": "Helios League captured China economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 10,
+      "message": "Aegis Bloc captured China economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 10,
+      "message": "Vanguard Union captured US Core economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 10,
+      "message": "Mariner Compact's economic capture in US Core was resisted.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 10,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 10,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 10,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 259.2,
+      "avgPolitical": 78.93,
+      "avgStability": 0.585,
+      "avgThreat": 0.371,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 11,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 259.2,
+      "avgPolitical": 78.93,
+      "avgStability": 0.585,
+      "avgThreat": 0.371,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 11,
+      "message": "Orion Pact's economic capture in US Core was resisted.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 11,
+      "message": "Helios League's economic capture in US Core was resisted.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 11,
+      "message": "Aegis Bloc's economic capture in US Core was resisted.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 11,
+      "message": "Vanguard Union captured China economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 11,
+      "message": "Mariner Compact captured US Core economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 11,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 11,
+      "message": "Vanguard Union secured asia control (68%).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 11,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 11,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 257.42,
+      "avgPolitical": 76.85,
+      "avgStability": 0.58,
+      "avgThreat": 0.389,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 12,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 257.42,
+      "avgPolitical": 76.85,
+      "avgStability": 0.58,
+      "avgThreat": 0.389,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 12,
+      "message": "Orion Pact's economic capture in China was resisted.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 12,
+      "message": "Helios League captured China economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 12,
+      "message": "Aegis Bloc's economic capture in China was resisted.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 12,
+      "message": "Vanguard Union captured China economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 12,
+      "message": "Mariner Compact captured China economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 12,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 12,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 12,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 260.05,
+      "avgPolitical": 75.17,
+      "avgStability": 0.576,
+      "avgThreat": 0.407,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 13,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 260.05,
+      "avgPolitical": 75.17,
+      "avgStability": 0.576,
+      "avgThreat": 0.407,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 13,
+      "message": "Orion Pact captured US Core economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 13,
+      "message": "Helios League captured US Core economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 13,
+      "message": "Aegis Bloc captured US Core economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 13,
+      "message": "Vanguard Union captured US Core economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 13,
+      "message": "Mariner Compact captured US Core economically.",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 13,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 13,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 13,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 265.5,
+      "avgPolitical": 74.28,
+      "avgStability": 0.571,
+      "avgThreat": 0.424,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 14,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 4,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 265.5,
+      "avgPolitical": 74.28,
+      "avgStability": 0.571,
+      "avgThreat": 0.424,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 14,
+      "message": "DEFCON shift 4 -> 3. Major conventional strike altered balance.",
+      "defcon": 3,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 14,
+      "message": "Orion Pact seized US Core by direct force.",
+      "defcon": 3,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 14,
+      "message": "Helios League failed military pressure in US Core.",
+      "defcon": 3,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 14,
+      "message": "DEFCON shift 3 -> 2. Major conventional strike altered balance.",
+      "defcon": 2,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 14,
+      "message": "Aegis Bloc seized US Core by direct force.",
+      "defcon": 2,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 14,
+      "message": "Vanguard Union failed military pressure in US Core.",
+      "defcon": 2,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 14,
+      "message": "Mariner Compact captured India economically.",
+      "defcon": 2,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 14,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 2,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 14,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 2,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 14,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 2,
+      "escalation": "conventional",
+      "tone": "stable",
+      "paradigm": "normal",
+      "avgResources": 248.5,
+      "avgPolitical": 75.76,
+      "avgStability": 0.549,
+      "avgThreat": 0.428,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 14,
+      "message": "Global tone shifted to critical.",
+      "defcon": 2,
+      "escalation": "conventional",
+      "tone": "critical",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 15,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 2,
+      "escalation": "conventional",
+      "tone": "critical",
+      "paradigm": "normal",
+      "avgResources": 248.5,
+      "avgPolitical": 75.76,
+      "avgStability": 0.549,
+      "avgThreat": 0.428,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 15,
+      "message": "DEFCON shift 2 -> 1. Major conventional strike altered balance.",
+      "defcon": 1,
+      "escalation": "conventional",
+      "tone": "critical",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 15,
+      "message": "Orion Pact seized US Core by direct force.",
+      "defcon": 1,
+      "escalation": "conventional",
+      "tone": "critical",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 15,
+      "message": "Helios League failed military pressure in China.",
+      "defcon": 1,
+      "escalation": "conventional",
+      "tone": "critical",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 15,
+      "message": "Aegis Bloc failed military pressure in China.",
+      "defcon": 1,
+      "escalation": "conventional",
+      "tone": "critical",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 15,
+      "message": "Vanguard Union failed military pressure in China.",
+      "defcon": 1,
+      "escalation": "conventional",
+      "tone": "critical",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 15,
+      "message": "Escalation ladder advanced to limitedNuclear.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "critical",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 15,
+      "message": "Mariner Compact failed military pressure in California.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "critical",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 15,
+      "message": "Orion Pact secured north_america control (71%).",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "critical",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 15,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "critical",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 15,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "critical",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 15,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "critical",
+      "paradigm": "normal",
+      "avgResources": 243.55,
+      "avgPolitical": 75.1,
+      "avgStability": 0.51,
+      "avgThreat": 0.428,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 15,
+      "message": "Global tone shifted to terminal.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 16,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal",
+      "avgResources": 243.55,
+      "avgPolitical": 75.1,
+      "avgStability": 0.51,
+      "avgThreat": 0.428,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 16,
+      "message": "Orion Pact failed military pressure in China.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 16,
+      "message": "Helios League failed military pressure in China.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 16,
+      "message": "Aegis Bloc failed military pressure in China.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 16,
+      "message": "Vanguard Union seized China by direct force.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 16,
+      "message": "Mariner Compact failed military pressure in China.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 16,
+      "message": "Orion Pact secured north_america control (71%).",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 16,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 16,
+      "message": "Vanguard Union secured asia control (68%).",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 16,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 16,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal",
+      "avgResources": 244.79,
+      "avgPolitical": 74.24,
+      "avgStability": 0.466,
+      "avgThreat": 0.428,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 17,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal",
+      "avgResources": 244.79,
+      "avgPolitical": 74.24,
+      "avgStability": 0.466,
+      "avgThreat": 0.428,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 17,
+      "message": "Orion Pact failed military pressure in China.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 17,
+      "message": "Helios League failed military pressure in China.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 17,
+      "message": "Aegis Bloc seized China by direct force.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 17,
+      "message": "Vanguard Union seized China by direct force.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 17,
+      "message": "Mariner Compact seized China by direct force.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 17,
+      "message": "Orion Pact secured north_america control (71%).",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 17,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 17,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 17,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal",
+      "avgResources": 244.81,
+      "avgPolitical": 76.69,
+      "avgStability": 0.436,
+      "avgThreat": 0.428,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 18,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal",
+      "avgResources": 244.81,
+      "avgPolitical": 76.69,
+      "avgStability": 0.436,
+      "avgThreat": 0.428,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 18,
+      "message": "Orion Pact seized China by direct force.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 18,
+      "message": "Helios League failed military pressure in US Core.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 18,
+      "message": "Aegis Bloc failed military pressure in US Core.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 18,
+      "message": "Vanguard Union failed military pressure in US Core.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 18,
+      "message": "Mariner Compact failed military pressure in US Core.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 18,
+      "message": "Orion Pact secured north_america control (71%).",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 18,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 18,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 18,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal",
+      "avgResources": 245,
+      "avgPolitical": 75.66,
+      "avgStability": 0.387,
+      "avgThreat": 0.428,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 19,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal",
+      "avgResources": 245,
+      "avgPolitical": 75.66,
+      "avgStability": 0.387,
+      "avgThreat": 0.428,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 19,
+      "message": "Orion Pact failed military pressure in California.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 19,
+      "message": "Helios League failed military pressure in US Core.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 19,
+      "message": "Aegis Bloc failed military pressure in US Core.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 19,
+      "message": "Vanguard Union failed military pressure in US Core.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 19,
+      "message": "Mariner Compact seized US Core by direct force.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 19,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 19,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 19,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal",
+      "avgResources": 244.79,
+      "avgPolitical": 74.63,
+      "avgStability": 0.335,
+      "avgThreat": 0.428,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 20,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal",
+      "avgResources": 244.79,
+      "avgPolitical": 74.63,
+      "avgStability": 0.335,
+      "avgThreat": 0.428,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 20,
+      "message": "Orion Pact failed military pressure in US Core.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 20,
+      "message": "Helios League failed military pressure in US Core.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 20,
+      "message": "Aegis Bloc failed military pressure in US Core.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 20,
+      "message": "Vanguard Union failed military pressure in US Core.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 20,
+      "message": "Mariner Compact seized California by direct force.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 20,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 20,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 20,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal",
+      "avgResources": 245,
+      "avgPolitical": 73.37,
+      "avgStability": 0.279,
+      "avgThreat": 0.428,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 21,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal",
+      "avgResources": 245,
+      "avgPolitical": 73.37,
+      "avgStability": 0.279,
+      "avgThreat": 0.428,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 21,
+      "message": "Orion Pact seized US Core by direct force.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 21,
+      "message": "Helios League seized US Core by direct force.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 21,
+      "message": "Aegis Bloc seized California by direct force.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 21,
+      "message": "Vanguard Union seized China by direct force.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 21,
+      "message": "Mariner Compact seized China by direct force.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 21,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 21,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 21,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal",
+      "avgResources": 245,
+      "avgPolitical": 78.99,
+      "avgStability": 0.253,
+      "avgThreat": 0.428,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 22,
+      "message": "Debug snapshot (turn-start)",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal",
+      "avgResources": 245,
+      "avgPolitical": 78.99,
+      "avgStability": 0.253,
+      "avgThreat": 0.428,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 22,
+      "message": "Orion Pact seized China by direct force.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 22,
+      "message": "Helios League seized California by direct force.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 22,
+      "message": "Aegis Bloc failed military pressure in China.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 22,
+      "message": "Vanguard Union seized China by direct force.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 22,
+      "message": "Mariner Compact seized China by direct force.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 22,
+      "message": "Helios League secured middle_east control (57%).",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 22,
+      "message": "Vanguard Union secured oceania control (80%).",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "normal"
+    },
+    {
+      "turn": 22,
+      "message": "Debug snapshot (turn-end)",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "stalemate",
+      "avgResources": 245,
+      "avgPolitical": 82.63,
+      "avgStability": 0.217,
+      "avgThreat": 0.428,
+      "contestedRegions": 0,
+      "neutralRegions": 0
+    },
+    {
+      "turn": 22,
+      "message": "Game complete under paradigm shift: stalemate. No single winner declared.",
+      "defcon": 1,
+      "escalation": "limitedNuclear",
+      "tone": "terminal",
+      "paradigm": "stalemate"
+    }
+  ]
+}
